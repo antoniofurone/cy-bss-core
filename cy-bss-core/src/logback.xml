@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+
+	<property name="USER_HOME" value="c:/Temp" />
+	
+   
+    <appender name="consoleAppender" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <Pattern>.%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg %n
+            </Pattern>
+        </encoder>
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>TRACE</level>
+        </filter>
+    </appender>
+ 
+      <appender name="dailyRollingFileAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
+       
+        <File>${USER_HOME}/cy-bss/logs/cy-bss-core.log</File>
+       
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <!-- daily rollover -->
+            <FileNamePattern>cy-bss-core.%d{yyyy-MM-dd}.log</FileNamePattern>
+ 
+            <!-- keep 30 days' worth of history -->
+            <maxHistory>30</maxHistory>            
+        </rollingPolicy>
+ 
+ 		<filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>DEBUG</level>
+        </filter>
+        
+        <encoder>
+            <Pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{35} - %msg %n</Pattern>
+        </encoder>         
+      </appender>
+      
+      <appender name="minuteRollingFileAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <!-- rollover every minute -->
+            <FileNamePattern>${USER_HOME}/cy-bss/logs/cy-bss-core.%d{yyyy-MM-dd_HH-mm}.log</FileNamePattern>
+ 
+            <!-- keep 30 minutes' worth of history -->
+            <maxHistory>30</maxHistory>            
+        </rollingPolicy>
+ 
+        <encoder>
+            <Pattern>%-4relative [%thread] %-5level %logger{35} - %msg %n</Pattern>
+        </encoder>         
+      </appender>      
+ 
+ 	<logger name="org.cysoft.bss.core.common" level="INFO">
+        <appender-ref ref="dailyRollingFileAppender"/>
+        <appender-ref ref="minuteRollingFileAppender"/>
+    </logger>
+    
+    <logger name="org.cysoft.bss.core.config" level="INFO">
+        <appender-ref ref="dailyRollingFileAppender"/>
+        <appender-ref ref="minuteRollingFileAppender"/>
+    </logger>
+    
+    <logger name="org.cysoft.bss.core.dao.mysql" level="INFO">
+        <appender-ref ref="dailyRollingFileAppender"/>
+        <appender-ref ref="minuteRollingFileAppender"/>
+    </logger>
+    
+    <logger name="org.cysoft.bss.core.model" level="INFO">
+        <appender-ref ref="dailyRollingFileAppender"/>
+        <appender-ref ref="minuteRollingFileAppender"/>
+    </logger>
+    
+    <logger name="org.cysoft.bss.core.web.rest" level="INFO">
+        <appender-ref ref="dailyRollingFileAppender"/>
+        <appender-ref ref="minuteRollingFileAppender"/>
+    </logger>
+    
+    
+    <root level="INFO">
+        <appender-ref ref="consoleAppender" />
+    </root>
+    
+</configuration>

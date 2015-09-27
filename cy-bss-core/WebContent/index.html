@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="ISO-8859-1">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>cy-bss-core</title>
+	
+	<link rel="stylesheet" href="css/bootstrap/3.2.0/bootstrap.min.css">
+	<script src="js/jquery/1.11.3/jquery.min.js"></script>
+	<script src="js/bootstrap/3.3.4/bootstrap.min.js"></script> 
+	<script src="js/angularjs/1.3.15/angular.min.js"></script>   
+</head>
+<body>
+
+<div class="container-fluid" ng-app="serviceApp" ng-controller="serviceCtrl">
+	<div class="well well-sm"><h2>cy-bss-core</h2></div>
+	<form class="form-horizontal" role="form">
+	<div class="form-group">
+		<label class="col-sm-1 control-label">Service</label>
+		<div class="col-sm-4">
+        <select id="service" class="form-control" ng-model="selectedService" ng-change="selectService()" required>
+        	 <option value="">--- Please select ---</option>
+        	 <option ng-repeat="s in services" value="{{s.id}}">{{s.name}}</option>
+        </select>
+      	</div>
+	</div>
+	<div class="form-group">
+		<label class="col-sm-1 control-label">Operation</label>
+		<div class="col-sm-4">
+        <select id="operation" class="form-control" ng-model="selectedOp" 
+        ng-change="selectOperation()" ng-options="op.name for op in service.operations track by op.id" required>
+        	 <option value="">--- Please select ---</option>
+        	 <!-- 
+        	 <option ng-repeat="op in service.operations" value="{{op.id}}">{{op.url}}</option>
+        	 -->
+        </select>
+      	</div>
+	</div>
+	
+	<div class="form-group">
+		<label class="col-sm-1 control-label">Url</label>
+		<div class="col-sm-5">
+        	<input class="form-control" id="url" type="text" ng-model="url" readonly/>
+      	</div>
+	</div>
+	
+	<div class="form-group" ng-show="operation">
+		<label class="col-sm-1 control-label">Method</label>
+		<div class="col-sm-5">
+	        <label class="label label-info">{{operation.method}}</label>
+	    </div>
+	</div>
+	
+	<div class="form-group" ng-show="operation">
+	<label class="col-sm-1 control-label"  ng-repeat="param in operation.params">{{param.name}}</label>
+		<div class="col-sm-5">
+			<input class="form-control" ng-repeat="param in operation.params" id="{{'par_'+param.name}}"   type="text" ng-required="param.required == 'Y'"/>
+		</div>
+	</div>
+		
+	
+	<div class="form-group" ng-show="errorMessage">
+	    <label class="col-sm-1 control-label">Error</label>
+	    <div class="col-sm-9">
+	        <textarea class="form-control" rows="5" ng-model="errorMessage" readonly></textarea>
+	    </div>
+	</div>
+	
+	
+	<button type="submit" class="btn btn-default" ng-show="operation" ng-click="onSubmit()">Submit</button>
+	
+	<div class="form-group" ng-show="operation.response">
+	    <label class="col-sm-1 control-label">Response</label>
+	    <div class="col-sm-9">
+	        <textarea class="form-control" rows="5" ng-model="operation.response" readonly></textarea>
+	    </div>
+	</div>
+	
+	
+	</form> 
+</div>
+
+<script>
+        var app = angular.module('serviceApp', []);
+        
+        app.controller('serviceCtrl', function($scope, $http) {
+        	$scope.url="/cy-bss-core/rest";
+        	
+        	$scope.selectService = function() {
+        	  if ($scope.selectedService==undefined){
+        		  $scope.url="/cy-bss-core/rest";
+        		  $scope.service=undefined;
+        		  $scope.operation=undefined;
+        		  $scope.errorMessage=undefined;
+        		  return;
+        	  }	
+        		  
+	       	  $http.get("/cy-bss-core/rest/cybss-service/get/"+$scope.selectedService)
+	             .success(function(response) {
+	             	$scope.url+=response.url;
+	             	$scope.service=response;
+	             	// end succes
+	             	})
+	             .error(function (data, status, headers, config) {
+	         		//alert("Error:"+status+"-"+data);
+	        		manageError($scope,status,data);
+        	 		return status;
+	             	});
+	         	
+       	  	// end selectService
+            };
+
+            $scope.selectOperation = function() {
+               $scope.errorMessage=undefined;
+         		 
+               if ($scope.selectedOp==undefined){
+          		  $scope.url="/cy-bss-core/rest"+$scope.service.url;
+          		  $scope.operation=undefined;
+          		  return;
+          	  }	
+          	  
+          	  
+          	  $http.get("/cy-bss-core/rest/cybss-service/getOperation/"+$scope.selectedOp.id)
+              .success(function(response) {
+            	$scope.url="/cy-bss-core/rest"+$scope.service.url+response.url;
+            	$scope.operation=response;
+            	// end success
+            	})
+              .error(function (data, status, headers, config) {
+        		manageError($scope,status,data);
+        		return status;
+            	});
+          	  
+          	  
+          	// end selectOperation  
+            }
+        	
+            $scope.onSubmit = function() {
+            	// call rest
+            	$scope.operation.response=undefined;
+            	$scope.errorMessage=undefined;
+            	
+            	var url=$scope.url;
+            	
+            	for(var i in $scope.operation.params){
+            		
+            		if (($('#par_'+$scope.operation.params[i].name).val()=="")&&
+            			 $scope.operation.params[i].required=="Y"
+            			)	
+            		{
+            			window.alert("Param <"+$scope.operation.params[i].name+"> is required !");
+            			return;
+            		}	
+            	}
+            	
+            	if ($scope.operation.method=='GET'){
+            		// Param in Url
+            		for(i in $scope.operation.params){
+            			if ($scope.operation.params[i].flagUrl=='Y')
+            				url+="/"+$('#par_'+$scope.operation.params[i].name).val();
+            		}
+            		
+            		var query=false;
+            		for(i in $scope.operation.params){
+            			if ($scope.operation.params[i].flagUrl!='Y'){	
+	            			if (!query){
+	            				url+="?";
+	            				query=true;
+	            			}
+	            			else
+	            				url+="&";
+	            			
+            				url+=$scope.operation.params[i].name+"="+
+            					$('#par_'+$scope.operation.params[i].name).val();
+            			}
+            		}
+            		
+            		//window.alert("url="+url);
+            		$http.get(url)
+                    .success(function(response) {
+                    	$scope.operation.response=JSON.stringify(response);
+                    	// end success
+                    	})
+                    .error(function (data, status, headers, config) {
+                		manageError($scope,status,data);
+                		return status;
+                    	});
+                	
+            	}
+            	else
+            	{
+            		// Post
+            	}
+            	
+            	
+            }
+            
+            
+        	$http.get("/cy-bss-core/rest/cybss-service/getAll")
+            .success(function(response) {
+            	$scope.services=response;
+            	// end succes
+            	})
+            .error(function (data, status, headers, config) {
+        		manageError($scope,status,data);
+        		return status;
+            	});
+        	    
+        });
+        
+        function manageError($scope,status,data){
+        	$scope.errorMessage="Status:"+status+" - "+data;	
+        	$scope.isErrorMessage=true;
+        }
+        
+        
+        /*
+        var req = {
+        	method: 'POST',
+        	url: 'http://example.com',
+        	headers: {
+        	  'Content-Type': undefined
+        	},
+        	data: { test: 'test' }
+        	}
+       	$http(req).then(function(){...}, function(){...});
+        
+        ---
+        */
+        
+     	// Simple POST request example (passing data) :
+        /*
+     	$http.post('/someUrl', {msg:'hello word!'}).
+          then(function(response) {
+            // this callback will be called asynchronously
+            // when the response is available
+          }, function(response) {
+            // called asynchronously if an error occurs
+            // or server returns response with an error status.
+          });
+        */
+        
+
+</script>
+</body>
+
+</html>
