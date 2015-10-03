@@ -2,7 +2,7 @@ package org.cysoft.bss.core.model;
 
 import java.util.List;
 
-public class BssServOperation {
+public class CyBssServOperation {
 	
 	private int id=-1;
 	public int getId() {
@@ -58,11 +58,11 @@ public class BssServOperation {
 	}
 
 	
-	private List<BssOperationParam> params=null;
-	public List<BssOperationParam> getParams() {
+	private List<CyBssOperationParam> params=null;
+	public List<CyBssOperationParam> getParams() {
 		return params;
 	}
-	public void setParams(List<BssOperationParam> params) {
+	public void setParams(List<CyBssOperationParam> params) {
 		this.params = params;
 	}
 

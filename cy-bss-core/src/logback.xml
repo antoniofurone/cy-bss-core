@@ -69,6 +69,11 @@
         <appender-ref ref="minuteRollingFileAppender"/>
     </logger>
     
+    <logger name="org.cysoft.bss.core.model.rest.response" level="INFO">
+        <appender-ref ref="dailyRollingFileAppender"/>
+        <appender-ref ref="minuteRollingFileAppender"/>
+    </logger>
+    
     <logger name="org.cysoft.bss.core.web.rest" level="INFO">
         <appender-ref ref="dailyRollingFileAppender"/>
         <appender-ref ref="minuteRollingFileAppender"/>

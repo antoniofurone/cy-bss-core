@@ -2,7 +2,7 @@ package org.cysoft.bss.core.model;
 
 import java.util.List;
 
-public class BssService {
+public class CyBssService {
 	
 	private int id=-1;
 	private String name="";
@@ -28,11 +28,11 @@ public class BssService {
 		this.url = url;
 	}
 	
-	private List<BssServOperation> operations=null;
-	public List<BssServOperation> getOperations() {
+	private List<CyBssServOperation> operations=null;
+	public List<CyBssServOperation> getOperations() {
 		return operations;
 	}
-	public void setOperations(List<BssServOperation> operations) {
+	public void setOperations(List<CyBssServOperation> operations) {
 		this.operations = operations;
 	}
 	@Override

@@ -4,32 +4,24 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 
-import org.cysoft.bss.core.common.CyBssDataSource;
-import org.cysoft.bss.core.dao.BssServiceDao;
-import org.cysoft.bss.core.model.BssOperationParam;
-import org.cysoft.bss.core.model.BssServOperation;
-import org.cysoft.bss.core.model.BssService;
+import org.cysoft.bss.core.dao.CyBssServiceDao;
+import org.cysoft.bss.core.model.CyBssOperationParam;
+import org.cysoft.bss.core.model.CyBssServOperation;
+import org.cysoft.bss.core.model.CyBssService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 
-public class BssServiceMysql implements BssServiceDao{
-
-	private CyBssDataSource ds=null;
-	
-	private static final Logger logger = LoggerFactory.getLogger(BssServiceMysql.class);
+public class CyBssServiceMysql extends CyBssMysqlDao 
+	implements CyBssServiceDao{
 
 	
-	@Autowired
-	public void setMySqlDataSource(CyBssDataSource ds){
-			this.ds=ds;
-	}
-		
+	private static final Logger logger = LoggerFactory.getLogger(CyBssServiceMysql.class);
+	
 	
 	@Override
-	public List<BssService> getAll() {
+	public List<CyBssService> getAll() {
 		// TODO Auto-generated method stub
 		logger.info("BssServiceMysql.getAll() >>>");
 		
@@ -38,12 +30,12 @@ public class BssServiceMysql implements BssServiceDao{
 		JdbcTemplate jdbcTemplate = new JdbcTemplate(ds);
 		logger.info("query="+query);
 		
-		List<BssService> ret = jdbcTemplate.query(
+		List<CyBssService> ret = jdbcTemplate.query(
                 query, 
-                new RowMapper<BssService>() {
+                new RowMapper<CyBssService>() {
                     @Override
-                    public BssService mapRow(ResultSet rs, int rowNum) throws SQLException {
-                        BssService serv=new BssService();
+                    public CyBssService mapRow(ResultSet rs, int rowNum) throws SQLException {
+                        CyBssService serv=new CyBssService();
                         
                         serv.setId(rs.getInt("BSV_N_SERVICE_ID"));
                         serv.setName(rs.getString("BSV_S_SERVICE_NAME"));
@@ -62,7 +54,7 @@ public class BssServiceMysql implements BssServiceDao{
 
 
 	@Override
-	public BssService get(String id){
+	public CyBssService get(String id){
 		// TODO Auto-generated method stub
 		logger.info("BssServiceMysql.get() >>>");
 		
@@ -70,10 +62,10 @@ public class BssServiceMysql implements BssServiceDao{
 		JdbcTemplate jdbcTemplate = new JdbcTemplate(ds);
 		logger.info("query="+query+"["+id+"]");
 		
-		BssService ret=jdbcTemplate.queryForObject(query, new Object[] { id },new RowMapper<BssService>() {
+		CyBssService ret=jdbcTemplate.queryForObject(query, new Object[] { id },new RowMapper<CyBssService>() {
             @Override
-            public BssService mapRow(ResultSet rs, int rowNum) throws SQLException {
-            	BssService serv=new BssService();
+            public CyBssService mapRow(ResultSet rs, int rowNum) throws SQLException {
+            	CyBssService serv=new CyBssService();
                 
                 serv.setId(rs.getInt("BSV_N_SERVICE_ID"));
                 serv.setName(rs.getString("BSV_S_SERVICE_NAME"));
@@ -90,7 +82,7 @@ public class BssServiceMysql implements BssServiceDao{
 
 
 	@Override
-	public List<BssServOperation> getServOperations(String id) {
+	public List<CyBssServOperation> getServOperations(String id) {
 		// TODO Auto-generated method stub
 		logger.info("BssServiceMysql.getServOperations() >>>");
 		
@@ -100,12 +92,12 @@ public class BssServiceMysql implements BssServiceDao{
 		JdbcTemplate jdbcTemplate = new JdbcTemplate(ds);
 		logger.info("query="+query+"["+id+"]");
 		
-		List<BssServOperation> ret = jdbcTemplate.query(
+		List<CyBssServOperation> ret = jdbcTemplate.query(
                 query, new Object[] { id },
-                new RowMapper<BssServOperation>() {
+                new RowMapper<CyBssServOperation>() {
                     @Override
-                    public BssServOperation mapRow(ResultSet rs, int rowNum) throws SQLException {
-                    	BssServOperation servOp=new BssServOperation();
+                    public CyBssServOperation mapRow(ResultSet rs, int rowNum) throws SQLException {
+                    	CyBssServOperation servOp=new CyBssServOperation();
                         
                         servOp.setId(rs.getInt("BSO_N_OPERATION_ID"));
                         servOp.setServId(rs.getInt("BSV_N_SERVICE_ID"));
@@ -127,7 +119,7 @@ public class BssServiceMysql implements BssServiceDao{
 
 
 	@Override
-	public BssServOperation getOperation(String id) {
+	public CyBssServOperation getOperation(String id) {
 		// TODO Auto-generated method stub
 		logger.info("BssServiceMysql.getOperation() >>>");
 		
@@ -138,10 +130,10 @@ public class BssServiceMysql implements BssServiceDao{
 		JdbcTemplate jdbcTemplate = new JdbcTemplate(ds);
 		logger.info("query="+query+"["+id+"]");
 		
-		BssServOperation ret=jdbcTemplate.queryForObject(query, new Object[] { id },new RowMapper<BssServOperation>() {
+		CyBssServOperation ret=jdbcTemplate.queryForObject(query, new Object[] { id },new RowMapper<CyBssServOperation>() {
             @Override
-            public BssServOperation mapRow(ResultSet rs, int rowNum) throws SQLException {
-            	BssServOperation servOp=new BssServOperation();
+            public CyBssServOperation mapRow(ResultSet rs, int rowNum) throws SQLException {
+            	CyBssServOperation servOp=new CyBssServOperation();
             	
             	servOp.setId(rs.getInt("BSO_N_OPERATION_ID"));
                 servOp.setServId(rs.getInt("BSV_N_SERVICE_ID"));
@@ -161,22 +153,22 @@ public class BssServiceMysql implements BssServiceDao{
 
 
 	@Override
-	public List<BssOperationParam> getOpParams(String idOp) {
+	public List<CyBssOperationParam> getOpParams(String idOp) {
 		// TODO Auto-generated method stub
 		logger.info("BssServiceMysql.getOpParams() >>>");
 		
 		String query="select BOP_PARAM_NAME,BSO_N_OPERATION_ID,BOP_C_FLG_URL,BOP_S_DESCRIPTION,BOP_C_REQUIRED ";
-		query+=" from BSST_BOP_OPERATION_PARAM where BSO_N_OPERATION_ID=?";
+		query+=" from BSST_BOP_OPERATION_PARAM where BSO_N_OPERATION_ID=? ORDER BY BOP_N_SHOW_ORDER";
 		
 		JdbcTemplate jdbcTemplate = new JdbcTemplate(ds);
 		logger.info("query="+query+"["+idOp+"]");
 		
-		List<BssOperationParam> ret = jdbcTemplate.query(
+		List<CyBssOperationParam> ret = jdbcTemplate.query(
                 query, new Object[] { idOp },
-                new RowMapper<BssOperationParam>() {
+                new RowMapper<CyBssOperationParam>() {
                     @Override
-                    public BssOperationParam mapRow(ResultSet rs, int rowNum) throws SQLException {
-                    	BssOperationParam param=new BssOperationParam();
+                    public CyBssOperationParam mapRow(ResultSet rs, int rowNum) throws SQLException {
+                    	CyBssOperationParam param=new CyBssOperationParam();
                         
                         param.setName(rs.getString("BOP_PARAM_NAME"));
                         param.setOperationId(rs.getInt("BSO_N_OPERATION_ID"));

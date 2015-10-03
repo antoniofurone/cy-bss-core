@@ -1,6 +1,6 @@
 package org.cysoft.bss.core.model;
 
-public class BssOperationParam {
+public class CyBssOperationParam {
 	private String name="";
 
 	public String getName() {

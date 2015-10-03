@@ -16,7 +16,7 @@ public class AppInitializer implements WebApplicationInitializer{
 		// TODO Auto-generated method stub
 		
         AnnotationConfigWebApplicationContext ctx = new AnnotationConfigWebApplicationContext();  
-        ctx.register(RestServiceApp.class);  
+        ctx.register(CyBssRestApp.class);  
         ctx.setServletContext(servletContext);    
         
         Dynamic dynamic = servletContext.addServlet("RestDispatcher", new DispatcherServlet(ctx));

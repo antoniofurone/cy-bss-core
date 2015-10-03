@@ -2,35 +2,49 @@ package org.cysoft.bss.core.config;
 
 
 import org.cysoft.bss.core.common.CyBssDataSource;
-import org.cysoft.bss.core.dao.BssServiceDao;
-import org.cysoft.bss.core.dao.mysql.BssServiceMysql;
+import org.cysoft.bss.core.dao.CyBssAuthDao;
+import org.cysoft.bss.core.dao.CyBssServiceDao;
+import org.cysoft.bss.core.dao.UserDao;
+import org.cysoft.bss.core.dao.mysql.CyBssAuthMysql;
+import org.cysoft.bss.core.dao.mysql.CyBssServiceMysql;
+import org.cysoft.bss.core.dao.mysql.UserMysql;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
+import org.springframework.context.MessageSource;
 //import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Description;
 import org.springframework.context.annotation.PropertySource;
+import org.springframework.context.support.ReloadableResourceBundleMessageSource;
 //import org.springframework.context.support.ReloadableResourceBundleMessageSource;
 import org.springframework.core.env.Environment;
+import org.springframework.scheduling.annotation.EnableAsync;
+import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
 @Configuration
 @ComponentScan({"org.cysoft.bss.core.web.rest"})
 @PropertySource("classpath:cy-bss-core.properties")
 @EnableWebMvc
+@EnableAsync
+@EnableScheduling
 
-public class RestServiceApp {
-	private static final Logger logger = LoggerFactory.getLogger(RestServiceApp.class);
+public class CyBssRestApp {
+	private static final Logger logger = LoggerFactory.getLogger(CyBssRestApp.class);
 	
 	
 	@Autowired
 	Environment environment;
 	
-	 /*
+	@Autowired
+	CyBssAuthDao authDao;
+	
+	
 	 @Bean
 	 @Description("Message Source")
 	 public MessageSource messageSource(){
@@ -39,21 +53,36 @@ public class RestServiceApp {
 		ms.setDefaultEncoding("UTF-8");
 		return ms;
 	 }
-	 */
 	
 	 @Bean
-	 @Description("Service Dao")
-	 public BssServiceDao categoryDao(){
-		 	BssServiceDao serviceDao=new BssServiceMysql();
+	 @Description("Bss Service Dao")
+	 public CyBssServiceDao bssServiceDao(){
+		 	CyBssServiceDao serviceDao=new CyBssServiceMysql();
 			return serviceDao;
 		 }
 	
-    
+	 @Bean
+	 @Description("Bss Auth Dao")
+	 public CyBssAuthDao bssAuthDao(){
+		 	CyBssAuthDao authDao=new CyBssAuthMysql();
+			return authDao;
+		 }
+	
+	
+	 @Bean
+	 @Description("User Dao")
+	 public UserDao userDao(){
+		 	UserDao userDao=new UserMysql();
+			return userDao;
+		 }
+	
+	 
+	 
 	 @Bean
 	 @Description("MySql Data Source")
 	 public CyBssDataSource mySqlDS() {
 		 
-		 logger.info("CyErpApp.mySqlDS() >>>");
+		 logger.info("CyBssRestApp.mySqlDS() >>>");
 		
 		 CyBssDataSource mySql = new CyBssDataSource();
 		 String driver=environment.getProperty("mysql.driver");
@@ -69,17 +98,27 @@ public class RestServiceApp {
 	     mySql.setUsername(user);
          mySql.setPassword(psw);
         
-         logger.info("CyOpcApp.mySqlDS() <<<");
+         logger.info("CyBssRestApp.mySqlDS() <<<");
  		
          
 		 return mySql;
 	 }
 	
 	
+	 @Scheduled(fixedDelay=180000)
+	 public void discardSessions() {
+	     // something that should execute periodically
+		 logger.info("CyBssRestApp.discardSessions() >>>");
+		 authDao.discardSessions();
+		 logger.info("CyBssRestApp.discardSessions() <<<");
+		 
+	 }
+	 
+	 
 	 public static void main(String[] args) {
         
     	logger.info("Start Rest Application ...");
-    	SpringApplication.run(RestServiceApp.class, args);
+    	SpringApplication.run(CyBssRestApp.class, args);
     	
     }
     

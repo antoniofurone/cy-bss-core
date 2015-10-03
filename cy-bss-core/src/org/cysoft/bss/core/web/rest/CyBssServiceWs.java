@@ -2,10 +2,9 @@ package org.cysoft.bss.core.web.rest;
 
 import java.util.List;
 
-import org.cysoft.bss.core.common.CyBssException;
-import org.cysoft.bss.core.dao.BssServiceDao;
-import org.cysoft.bss.core.model.BssServOperation;
-import org.cysoft.bss.core.model.BssService;
+import org.cysoft.bss.core.dao.CyBssServiceDao;
+import org.cysoft.bss.core.model.CyBssServOperation;
+import org.cysoft.bss.core.model.CyBssService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,21 +15,23 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/cybss-service")
-public class CyBssServiceWs {
+public class CyBssServiceWs extends CyBssRestServiceAdapter
+	implements ICyBssRestService
+{
 	
 	private static final Logger logger = LoggerFactory.getLogger(CyBssServiceWs.class);
 	
 	
-	private BssServiceDao serviceDao=null;
+	private CyBssServiceDao serviceDao=null;
 	
 	@Autowired
-	public void setServiceDao(BssServiceDao serviceDao){
+	public void setServiceDao(CyBssServiceDao serviceDao){
 			this.serviceDao=serviceDao;
 	}
 	
 	
 	@RequestMapping(value = "/getAll",method = RequestMethod.GET)
-	public List<BssService> getAll(){
+	public List<CyBssService> getAll(){
 		
 		logger.info("CyBssServiceWs.getAll() >>>");
 		
@@ -38,30 +39,30 @@ public class CyBssServiceWs {
 	}
 	
 	
-	@RequestMapping(value = "/get/{id}",method = RequestMethod.GET)
-	public BssService get(@PathVariable("id") String id){
+	@RequestMapping(value = "/{servId}/get",method = RequestMethod.GET)
+	public CyBssService get(@PathVariable("servId") String id){
 		
 		logger.info("CyBssServiceWs.get() >>> id="+id);
 		
-		BssService serv=serviceDao.get(id);
+		CyBssService serv=serviceDao.get(id);
 		serv.setOperations(serviceDao.getServOperations(id));
 		return serv;
 	}
 
-	@RequestMapping(value = "/getServOperations/{id}",method = RequestMethod.GET)
-	public List<BssServOperation> getOperations(@PathVariable("id") String id){
+	@RequestMapping(value = "/{servId}/getServOperations",method = RequestMethod.GET)
+	public List<CyBssServOperation> getOperations(@PathVariable("servId") String id){
 		
 		logger.info("CyBssServiceWs.getServOperations() >>> id="+id);
 		
 		return serviceDao.getServOperations(id);
 	}
 
-	@RequestMapping(value = "/getOperation/{id}",method = RequestMethod.GET)
-	public BssServOperation getOperation(@PathVariable("id") String id){
+	@RequestMapping(value = "/{opId}/getOperation",method = RequestMethod.GET)
+	public CyBssServOperation getOperation(@PathVariable("opId") String id){
 		
 		logger.info("CyBssServiceWs.getOperation() >>> id="+id);
 		
-		BssServOperation op=serviceDao.getOperation(id);
+		CyBssServOperation op=serviceDao.getOperation(id);
 		op.setParams(serviceDao.getOpParams(id));
 		return op;
 	}

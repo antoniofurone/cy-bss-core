@@ -44,6 +44,13 @@
       	</div>
 	</div>
 	
+	<div class="form-group">
+	<label class="col-sm-1 control-label">Security Token</label>
+		<div class="col-sm-5">
+			<input class="form-control" id="securityToken"  ng-model="securityToken" type="text" />
+		</div>
+	</div>
+	
 	<div class="form-group" ng-show="operation">
 		<label class="col-sm-1 control-label">Method</label>
 		<div class="col-sm-5">
@@ -51,13 +58,14 @@
 	    </div>
 	</div>
 	
-	<div class="form-group" ng-show="operation">
-	<label class="col-sm-1 control-label"  ng-repeat="param in operation.params">{{param.name}}</label>
+	
+	<div class="form-group" ng-show="operation" ng-repeat="param in operation.params">
+	<label class="col-sm-1 control-label">{{param.name}}</label>
 		<div class="col-sm-5">
-			<input class="form-control" ng-repeat="param in operation.params" id="{{'par_'+param.name}}"   type="text" ng-required="param.required == 'Y'"/>
+			<input class="form-control" id="{{'par_'+param.name}}"   type="text" ng-required="param.required == 'Y'"/>
 		</div>
 	</div>
-		
+	
 	
 	<div class="form-group" ng-show="errorMessage">
 	    <label class="col-sm-1 control-label">Error</label>
@@ -95,7 +103,7 @@
         		  return;
         	  }	
         		  
-	       	  $http.get("/cy-bss-core/rest/cybss-service/get/"+$scope.selectedService)
+	       	  $http.get("/cy-bss-core/rest/cybss-service/"+$scope.selectedService+"/get")
 	             .success(function(response) {
 	             	$scope.url+=response.url;
 	             	$scope.service=response;
@@ -118,9 +126,9 @@
           		  $scope.operation=undefined;
           		  return;
           	  }	
-          	  
-          	  
-          	  $http.get("/cy-bss-core/rest/cybss-service/getOperation/"+$scope.selectedOp.id)
+          	   
+               
+          	  $http.get("/cy-bss-core/rest/cybss-service/"+$scope.selectedOp.id+"/getOperation")
               .success(function(response) {
             	$scope.url="/cy-bss-core/rest"+$scope.service.url+response.url;
             	$scope.operation=response;
@@ -153,12 +161,16 @@
             		}	
             	}
             	
+            	
+            	// Param in Url
+        		for(i in $scope.operation.params){
+        			if ($scope.operation.params[i].flagUrl=='Y')
+        				//url+="/"+$('#par_'+$scope.operation.params[i].name).val();
+        			url=url.replace('{'+$scope.operation.params[i].name+'}',$('#par_'+$scope.operation.params[i].name).val());
+        		}
+        		//window.alert("url="+url);
+            	
             	if ($scope.operation.method=='GET'){
-            		// Param in Url
-            		for(i in $scope.operation.params){
-            			if ($scope.operation.params[i].flagUrl=='Y')
-            				url+="/"+$('#par_'+$scope.operation.params[i].name).val();
-            		}
             		
             		var query=false;
             		for(i in $scope.operation.params){
@@ -176,6 +188,11 @@
             		}
             		
             		//window.alert("url="+url);
+            		
+            		var request = '{"method": "GET","url": "'+url+'", "headers": {"Security-Token": "'+$scope.securityToken+'"}}';
+            		callWs($http,$scope,request);	
+            		
+            		/*
             		$http.get(url)
                     .success(function(response) {
                     	$scope.operation.response=JSON.stringify(response);
@@ -185,15 +202,28 @@
                 		manageError($scope,status,data);
                 		return status;
                     	});
-                	
+                	*/
             	}
             	else
             	{
             		// Post
+            		var data="";
+            		for(i in $scope.operation.params){
+            			if ($('#par_'+$scope.operation.params[i].name).val()!=''){
+	            			data+=((i>0)?',':'');
+	            			data+='"'+$scope.operation.params[i].name+'"';
+	            			data+=': ';
+	            			data+='"'+$('#par_'+$scope.operation.params[i].name).val()+'"';
+            				}
+            			}
+            		
+            		var request = '{"method": "POST","url": "'+url+
+            			'", "headers": {"Security-Token": "'+$scope.securityToken+'"},'
+            		request+='"data": {'+data+'}}';
+            		
+            		callWs($http,$scope,request);
             	}
-            	
-            	
-            }
+            } // end onSubmit
             
             
         	$http.get("/cy-bss-core/rest/cybss-service/getAll")
@@ -208,39 +238,26 @@
         	    
         });
         
+        
+        function callWs($http,$scope,request){
+        	//window.alert("request="+request);
+        	var reqObj=JSON.parse(request);
+        	//window.alert("reqObj="+reqObj);
+    		$http(reqObj).then(
+    			function(response){
+    				$scope.operation.response=JSON.stringify(response);
+    			}, 
+    			function(response){
+    				manageError($scope,response.status,response.data);
+    			});
+        }
+        
         function manageError($scope,status,data){
         	$scope.errorMessage="Status:"+status+" - "+data;	
         	$scope.isErrorMessage=true;
         }
         
-        
-        /*
-        var req = {
-        	method: 'POST',
-        	url: 'http://example.com',
-        	headers: {
-        	  'Content-Type': undefined
-        	},
-        	data: { test: 'test' }
-        	}
-       	$http(req).then(function(){...}, function(){...});
-        
-        ---
-        */
-        
-     	// Simple POST request example (passing data) :
-        /*
-     	$http.post('/someUrl', {msg:'hello word!'}).
-          then(function(response) {
-            // this callback will be called asynchronously
-            // when the response is available
-          }, function(response) {
-            // called asynchronously if an error occurs
-            // or server returns response with an error status.
-          });
-        */
-        
-
+ 
 </script>
 </body>
 
