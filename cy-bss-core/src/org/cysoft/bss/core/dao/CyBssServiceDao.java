@@ -2,7 +2,6 @@ package org.cysoft.bss.core.dao;
 
 import java.util.List;
 
-import org.cysoft.bss.core.common.CyBssException;
 import org.cysoft.bss.core.model.CyBssOperationParam;
 import org.cysoft.bss.core.model.CyBssServOperation;
 import org.cysoft.bss.core.model.CyBssService;

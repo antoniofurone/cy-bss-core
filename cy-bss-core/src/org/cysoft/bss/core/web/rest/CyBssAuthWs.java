@@ -3,9 +3,9 @@ package org.cysoft.bss.core.web.rest;
 
 
 
+
+import org.cysoft.bss.core.common.CyBssException;
 import org.cysoft.bss.core.common.CyBssUtility;
-import org.cysoft.bss.core.dao.CyBssAuthDao;
-import org.cysoft.bss.core.dao.UserDao;
 import org.cysoft.bss.core.model.User;
 import org.cysoft.bss.core.model.rest.response.CyBssAuthLogOff;
 import org.cysoft.bss.core.model.rest.response.CyBssAuthLogOn;
@@ -14,7 +14,6 @@ import org.cysoft.bss.core.web.rest.annotation.CyBssOperation;
 import org.cysoft.bss.core.web.rest.annotation.CyBssService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -29,20 +28,6 @@ public class CyBssAuthWs extends CyBssRestServiceAdapter
 {
 	
 	private static final Logger logger = LoggerFactory.getLogger(CyBssAuthWs.class);
-	
-	private CyBssAuthDao authDao=null;
-	
-	@Autowired
-	public void setAuthDao(CyBssAuthDao authDao){
-			this.authDao=authDao;
-	}
-	
-	private UserDao userDao=null;
-	
-	@Autowired
-	public void setUserDao(UserDao userDao){
-			this.userDao=userDao;
-	}
 	
 	
 	@RequestMapping(value = "/logOn",method = RequestMethod.POST)
@@ -80,24 +65,20 @@ public class CyBssAuthWs extends CyBssRestServiceAdapter
 	@CyBssOperation(name = "logOff")
 	public CyBssAuthLogOff logOff(
 			@RequestHeader("Security-Token") String securityToken
-			)
+			) throws CyBssException
 	{		
-		CyBssAuthLogOff response=new CyBssAuthLogOff(); 
-		System.out.println("Security-Token="+securityToken);
-		CyBssService bssService=this.getClass().getAnnotation(CyBssService.class);
-		System.out.println(bssService.name());
 		
-		try {
-			CyBssOperation bssOperation=this.getClass().getMethod("logOff",String.class).getAnnotation(CyBssOperation.class);
-			System.out.println(bssOperation.name());
-		} catch (NoSuchMethodException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (SecurityException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		CyBssAuthLogOff response=new CyBssAuthLogOff(); 
+		
+		// checkGrant
+		if (!checkGrant(response,securityToken,"logOff",String.class))
+				return response;
+		// end checkGrant 
+		
+		authDao.discardSession(securityToken);
 		
 		return response;
 	}
+	
+	
 }

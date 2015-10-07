@@ -2,7 +2,7 @@ package org.cysoft.bss.core.model.rest.response;
 
 public abstract class CyBssRestResponseAdapter implements ICyBssRestResponse{
 	
-	private String resultCode="";
+	private String resultCode=ICyBssResultConst.RESULT_OK;
 	public String getResultCode() {
 		return resultCode;
 	}
@@ -11,7 +11,7 @@ public abstract class CyBssRestResponseAdapter implements ICyBssRestResponse{
 		this.resultCode = resultCode;
 	}
 
-	private String resultDesc="";
+	private String resultDesc="OK";
 	public String getResultDesc() {
 		return resultDesc;
 	}

@@ -3,9 +3,11 @@ package org.cysoft.bss.core.config;
 
 import org.cysoft.bss.core.common.CyBssDataSource;
 import org.cysoft.bss.core.dao.CyBssAuthDao;
+import org.cysoft.bss.core.dao.CyBssListDao;
 import org.cysoft.bss.core.dao.CyBssServiceDao;
 import org.cysoft.bss.core.dao.UserDao;
 import org.cysoft.bss.core.dao.mysql.CyBssAuthMysql;
+import org.cysoft.bss.core.dao.mysql.CyBssListMysql;
 import org.cysoft.bss.core.dao.mysql.CyBssServiceMysql;
 import org.cysoft.bss.core.dao.mysql.UserMysql;
 import org.slf4j.Logger;
@@ -68,6 +70,13 @@ public class CyBssRestApp {
 			return authDao;
 		 }
 	
+	 @Bean
+	 @Description("Bss List Dao")
+	 public CyBssListDao bssListDao(){
+		 	CyBssListDao listDao=new CyBssListMysql();
+			return listDao;
+		 }
+	 
 	
 	 @Bean
 	 @Description("User Dao")

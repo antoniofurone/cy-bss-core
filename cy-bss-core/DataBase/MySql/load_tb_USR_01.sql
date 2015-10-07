@@ -1,4 +1,5 @@
-		
+delete from BSST_OPE_OPERATION_GRANT;
+delete from BSST_USE_USER_SESSION;
 delete from BSST_USR_USER;		
 delete from BSST_URO_ROLE order by URO_N_ROLE_ID desc;
 
@@ -27,5 +28,8 @@ insert into BSST_LAN_LANGUAGE(LAN_S_CODE,LAN_S_NAME)
 ALTER TABLE BSST_USR_USER AUTO_INCREMENT= 1;
 	
 insert into BSST_USR_USER(USR_S_USER_ID,USR_S_PSW,USR_S_NAME,URO_N_ROLE_ID,LAN_N_LANG_ID)
-	values ('cybss','cybss','cybss',3,2);
+	values ('cybss','cybss','cybss',
+	(select URO_N_ROLE_ID from BSST_URO_ROLE where URO_S_NAME='User'),
+	(select LAN_N_LANG_ID from BSST_LAN_LANGUAGE where LAN_S_CODE='EN')
+	);
 		
