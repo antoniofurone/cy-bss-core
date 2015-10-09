@@ -6,7 +6,7 @@ import org.cysoft.bss.core.common.CyBssException;
 import org.cysoft.bss.core.dao.CyBssListDao;
 import org.cysoft.bss.core.dao.CyBssServiceDao;
 import org.cysoft.bss.core.model.Language;
-import org.cysoft.bss.core.model.rest.response.CyBssListGetLanguageAll;
+import org.cysoft.bss.core.rest.response.cybsslist.CyBssListGetLanguageAll;
 import org.cysoft.bss.core.web.rest.annotation.CyBssOperation;
 import org.cysoft.bss.core.web.rest.annotation.CyBssService;
 import org.slf4j.Logger;

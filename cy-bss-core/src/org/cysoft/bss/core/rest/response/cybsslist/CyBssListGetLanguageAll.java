@@ -1,8 +1,10 @@
-package org.cysoft.bss.core.model.rest.response;
+package org.cysoft.bss.core.rest.response.cybsslist;
 
 import java.util.List;
 
 import org.cysoft.bss.core.model.Language;
+import org.cysoft.bss.core.rest.response.CyBssRestResponseAdapter;
+import org.cysoft.bss.core.rest.response.ICyBssRestResponse;
 
 public class CyBssListGetLanguageAll extends CyBssRestResponseAdapter
 implements ICyBssRestResponse{

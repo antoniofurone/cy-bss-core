@@ -5,7 +5,7 @@ public interface ICyBssConst {
 	public static final String NO="N";
 	
 	
-	public static final String LOCALE_IT="IT";
-	public static final String LOCALE_EN="EN";
+	public static final String LOCALE_IT="it";
+	public static final String LOCALE_EN="en";
 	
 }

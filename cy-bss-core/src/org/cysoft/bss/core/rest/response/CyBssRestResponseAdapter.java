@@ -1,4 +1,4 @@
-package org.cysoft.bss.core.model.rest.response;
+package org.cysoft.bss.core.rest.response;
 
 public abstract class CyBssRestResponseAdapter implements ICyBssRestResponse{
 	

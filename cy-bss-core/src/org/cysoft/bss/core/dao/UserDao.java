@@ -8,6 +8,7 @@ import org.cysoft.bss.core.model.UserRole;
 public interface UserDao {
 	public User getByUserId(String userId);
 	public User get(long id);
+	public void add(User user);
 	
 	public List<UserRole> getRoleAll();
 

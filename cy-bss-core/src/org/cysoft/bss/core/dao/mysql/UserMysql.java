@@ -110,5 +110,15 @@ public class UserMysql extends CyBssMysqlDao
 		logger.info("UserMysql.getRoleAll() <<<");
 		
 		return ret;
+	}
+
+
+	@Override
+	public void add(User user) {
+		// TODO Auto-generated method stub
+		logger.info("UserMysql.add() >>>");
+
+		
+		logger.info("UserMysql.add() <<<");
 	}	
 }
