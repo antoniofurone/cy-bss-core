@@ -3,7 +3,7 @@
 <head>
 	<meta charset="ISO-8859-1">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title>cy-bss-core</title>
+	<title>CyBss Core</title>
 	
 	<link rel="stylesheet" href="css/bootstrap/3.2.0/bootstrap.min.css">
 	<script src="js/jquery/1.11.3/jquery.min.js"></script>
@@ -13,7 +13,7 @@
 <body>
 
 <div class="container-fluid" ng-app="serviceApp" ng-controller="serviceCtrl">
-	<div class="well well-sm"><h2>cy-bss-core</h2></div>
+	<div class="well well-sm"><h2>CyBss Core</h2></div>
 	<form class="form-horizontal" role="form">
 	<div class="form-group">
 		<label class="col-sm-1 control-label">Service</label>
@@ -183,7 +183,7 @@
 	            				url+="&";
 	            			
             				url+=$scope.operation.params[i].name+"="+
-            					$('#par_'+$scope.operation.params[i].name).val();
+            				encodeURIComponent($('#par_'+$scope.operation.params[i].name).val());
             			}
             		}
             		
@@ -240,6 +240,7 @@
         
         
         function callWs($http,$scope,request){
+        	console.log("request="+request);
         	//window.alert("request="+request);
         	var reqObj=JSON.parse(request);
         	//window.alert("reqObj="+reqObj);

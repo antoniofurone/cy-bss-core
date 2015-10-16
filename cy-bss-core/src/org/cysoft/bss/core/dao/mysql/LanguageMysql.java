@@ -4,18 +4,18 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 
-import org.cysoft.bss.core.dao.CyBssListDao;
+import org.cysoft.bss.core.dao.LanguageDao;
 import org.cysoft.bss.core.model.Language;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 
-public class CyBssListMysql extends CyBssMysqlDao
-	implements CyBssListDao
+public class LanguageMysql extends CyBssMysqlDao
+	implements LanguageDao
 {
 	
-	private static final Logger logger = LoggerFactory.getLogger(CyBssListMysql.class);
+	private static final Logger logger = LoggerFactory.getLogger(LanguageMysql.class);
 	
 	@Override
 	public List<Language> getLanguageAll() {
@@ -25,7 +25,7 @@ public class CyBssListMysql extends CyBssMysqlDao
 		String query="select LAN_N_LANG_ID,LAN_S_CODE,LAN_S_NAME from BSST_LAN_LANGUAGE";
 		
 		JdbcTemplate jdbcTemplate = new JdbcTemplate(ds);
-		logger.info("query="+query);
+		logger.info(query);
 		
 		List<Language> ret = jdbcTemplate.query(
                 query, 

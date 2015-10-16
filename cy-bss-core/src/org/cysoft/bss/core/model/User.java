@@ -2,8 +2,6 @@ package org.cysoft.bss.core.model;
 
 import java.util.Locale;
 
-import org.cysoft.bss.core.common.ICyBssConst;
-
 public class User {
 	
 	private long id;

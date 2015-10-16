@@ -1,0 +1,27 @@
+To do List:
+- sessions;
+- person;
+- organization/company/group;
+- products;
+- services;
+- wharehouse;
+- 
+
+
+html input types:
+    text
+    password
+    ...
+    color
+    date
+    datetime
+    datetime-local
+    email
+    month
+    number
+    range
+    search
+    tel
+    time
+    url
+    week

@@ -1,4 +1,4 @@
-package org.cysoft.bss.core.common;
+package org.cysoft.bss.core.model;
 
 public interface ICyBssConst {
 	public static final String YES="Y";

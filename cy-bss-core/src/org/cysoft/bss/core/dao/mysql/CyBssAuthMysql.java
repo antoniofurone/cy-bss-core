@@ -29,7 +29,7 @@ public class CyBssAuthMysql extends CyBssMysqlDao
 
 		String query="select count(0) ";
 		query+="from BSST_USR_USER where USR_S_USER_ID=? and USR_S_PSW=? and USR_C_ACTIVE='Y'";
-		logger.info("query="+query+"["+userId+",****]");
+		logger.info(query+"["+userId+",****]");
 		
 		Long count=jdbcTemplate.queryForObject(query,Long.class,new Object[] { userId,pwd });
 		if (count>0)
@@ -49,7 +49,7 @@ public class CyBssAuthMysql extends CyBssMysqlDao
 	
 		String cmd = "DELETE FROM BSST_USE_USER_SESSION WHERE USR_N_USER_ID=?";
 		JdbcTemplate jdbcTemplate = new JdbcTemplate(ds);
-		logger.info("cmd="+cmd+"["+userId+"]");
+		logger.info(cmd+"["+userId+"]");
 		
 		
 		jdbcTemplate.update(cmd, new Object[]{
@@ -59,7 +59,7 @@ public class CyBssAuthMysql extends CyBssMysqlDao
 		cmd = "insert into BSST_USE_USER_SESSION (USR_N_USER_ID,USE_S_TOKEN,USE_T_CREATE_TIME,USE_T_UPDATE_TIME)";
 		cmd+=" values";
 		cmd+=" (?,?,now(),now())";
-		logger.info("cmd="+cmd+"["+userId+","+securityToken+"]");
+		logger.info(cmd+"["+userId+","+securityToken+"]");
 		
 		jdbcTemplate.update(cmd, new Object[]{
 				userId,securityToken		
@@ -72,13 +72,6 @@ public class CyBssAuthMysql extends CyBssMysqlDao
 
 
 	@Override
-	public void logOff(String securityToken) {
-		// TODO Auto-generated method stub
-		
-	}
-
-
-	@Override
 	public void discardSessions() {
 		// TODO Auto-generated method stub
 		logger.info("BssAuthMysql.discardSessions() >>>");
@@ -86,7 +79,7 @@ public class CyBssAuthMysql extends CyBssMysqlDao
 		int sessionTimeOut=Integer.parseInt(env.getProperty("user.session.timeOut"));
 		
 		String cmd = "DELETE FROM BSST_USE_USER_SESSION WHERE (now()-USE_T_UPDATE_TIME)>?";
-		logger.info("cmd="+cmd+"["+sessionTimeOut+"]");
+		logger.info(cmd+"["+sessionTimeOut+"]");
 		
 		JdbcTemplate jdbcTemplate = new JdbcTemplate(ds);
 
@@ -112,7 +105,7 @@ public class CyBssAuthMysql extends CyBssMysqlDao
 		
 		
 		JdbcTemplate jdbcTemplate = new JdbcTemplate(ds);
-		logger.info("query="+query+"["+securityToken+"]");
+		logger.info(query+"["+securityToken+"]");
 		
 		try {
 			ret=jdbcTemplate.queryForObject(query, new Object[] { securityToken },new RowMapper<Long>() {
@@ -139,7 +132,7 @@ public class CyBssAuthMysql extends CyBssMysqlDao
 		logger.info("BssAuthMysql.refreshSession() >>>");
 		
 		String cmd = "UPDATE BSST_USE_USER_SESSION SET USE_T_UPDATE_TIME=now() WHERE USE_S_TOKEN=?";
-		logger.info("cmd="+cmd+"["+securityToken+"]");
+		logger.info(cmd+"["+securityToken+"]");
 		
 		JdbcTemplate jdbcTemplate = new JdbcTemplate(ds);
 
@@ -164,7 +157,7 @@ public class CyBssAuthMysql extends CyBssMysqlDao
 		query+=" join BSST_BSV_SERVICE c on c.BSV_N_SERVICE_ID=b.BSV_N_SERVICE_ID";
 		query+=" where a.URO_N_ROLE_ID=? and a.OPE_C_ACTIVE='Y' and b.BSO_S_NAME=? and c.BSV_S_SERVICE_NAME=?";		
 		
-		logger.info("query="+query+"["+roleId+","+serviceName+","+operationName+"]");
+		logger.info(query+"["+roleId+","+serviceName+","+operationName+"]");
 		
 		JdbcTemplate jdbcTemplate = new JdbcTemplate(ds);
 		Long count=jdbcTemplate.queryForObject(query,Long.class,new Object[] { roleId,operationName,serviceName });
@@ -183,7 +176,7 @@ public class CyBssAuthMysql extends CyBssMysqlDao
 		
 		
 		String cmd = "DELETE FROM BSST_USE_USER_SESSION WHERE USE_S_TOKEN=?";
-		logger.info("cmd="+cmd+"["+securityToken+"]");
+		logger.info(cmd+"["+securityToken+"]");
 		
 		JdbcTemplate jdbcTemplate = new JdbcTemplate(ds);
 

@@ -4,7 +4,7 @@ import java.util.List;
 
 import org.cysoft.bss.core.model.Language;
 
-public interface CyBssListDao {
+public interface LanguageDao {
 	public List<Language> getLanguageAll();
 
 }

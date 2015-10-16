@@ -28,7 +28,7 @@ public class CyBssServiceMysql extends CyBssMysqlDao
 		String query="select BSV_N_SERVICE_ID,BSV_S_SERVICE_NAME,BSV_S_SERVICE_URL from BSST_BSV_SERVICE";
 		
 		JdbcTemplate jdbcTemplate = new JdbcTemplate(ds);
-		logger.info("query="+query);
+		logger.info(query);
 		
 		List<CyBssService> ret = jdbcTemplate.query(
                 query, 
@@ -60,7 +60,7 @@ public class CyBssServiceMysql extends CyBssMysqlDao
 		
 		String query="select BSV_N_SERVICE_ID,BSV_S_SERVICE_NAME,BSV_S_SERVICE_URL from BSST_BSV_SERVICE where BSV_N_SERVICE_ID=?";
 		JdbcTemplate jdbcTemplate = new JdbcTemplate(ds);
-		logger.info("query="+query+"["+id+"]");
+		logger.info(query+"["+id+"]");
 		
 		CyBssService ret=jdbcTemplate.queryForObject(query, new Object[] { id },new RowMapper<CyBssService>() {
             @Override
@@ -90,7 +90,7 @@ public class CyBssServiceMysql extends CyBssMysqlDao
 		query+=" from BSST_BSO_SERVICE_OPERATION where BSV_N_SERVICE_ID=?";
 		
 		JdbcTemplate jdbcTemplate = new JdbcTemplate(ds);
-		logger.info("query="+query+"["+id+"]");
+		logger.info(query+"["+id+"]");
 		
 		List<CyBssServOperation> ret = jdbcTemplate.query(
                 query, new Object[] { id },
@@ -128,7 +128,7 @@ public class CyBssServiceMysql extends CyBssMysqlDao
 		
 		
 		JdbcTemplate jdbcTemplate = new JdbcTemplate(ds);
-		logger.info("query="+query+"["+id+"]");
+		logger.info(query+"["+id+"]");
 		
 		CyBssServOperation ret=jdbcTemplate.queryForObject(query, new Object[] { id },new RowMapper<CyBssServOperation>() {
             @Override
@@ -161,7 +161,7 @@ public class CyBssServiceMysql extends CyBssMysqlDao
 		query+=" from BSST_BOP_OPERATION_PARAM where BSO_N_OPERATION_ID=? ORDER BY BOP_N_SHOW_ORDER";
 		
 		JdbcTemplate jdbcTemplate = new JdbcTemplate(ds);
-		logger.info("query="+query+"["+idOp+"]");
+		logger.info(query+"["+idOp+"]");
 		
 		List<CyBssOperationParam> ret = jdbcTemplate.query(
                 query, new Object[] { idOp },

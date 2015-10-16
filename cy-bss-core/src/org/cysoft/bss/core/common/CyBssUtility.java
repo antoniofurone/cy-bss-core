@@ -4,6 +4,8 @@ import java.math.BigInteger;
 import java.security.SecureRandom;
 import java.util.Locale;
 
+import org.cysoft.bss.core.model.ICyBssConst;
+
 public class CyBssUtility {
 	private static SecureRandom random=new SecureRandom();
 	
@@ -19,4 +21,19 @@ public class CyBssUtility {
 			return Locale.ENGLISH;
 	}
 
+	public static String toCamelCase(String s){
+		 String[] parts = s.replaceAll("\\s+", " ").split(" ");
+		 String camelCaseString = "";
+		 for (String part : parts){
+			 	camelCaseString = camelCaseString + (!camelCaseString.equals("")?" ":"")+ toProperCase(part);
+		   }
+		 return camelCaseString;
+		}
+
+	public static String toProperCase(String s) {
+		 return s.substring(0, 1).toUpperCase() +
+		        s.substring(1).toLowerCase();
+	}
+	
+	
 }

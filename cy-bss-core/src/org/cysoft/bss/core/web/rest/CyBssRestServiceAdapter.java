@@ -54,11 +54,16 @@ public abstract class CyBssRestServiceAdapter {
 	}
 
 	protected void setResult(ICyBssRestResponse response,
+			String resultCode,String resultDescId,String languageCode){
+		setResult(response,resultCode,resultDescId,CyBssUtility.getLocale(languageCode));	
+	}
+	
+	protected void setResult(ICyBssRestResponse response,
 			String resultCode,String resultDescId){
 		setResult(response,resultCode,resultDescId,Locale.ENGLISH);	
 	}
 	
-	protected boolean checkGrant(ICyBssRestResponse response,Method method, String securityToken){
+	private boolean checkGrant(ICyBssRestResponse response,Method method, String securityToken, long id){
 		boolean ret=false;
 		
 		authDao.refreshSession(securityToken);
@@ -69,6 +74,13 @@ public abstract class CyBssRestServiceAdapter {
 		}
 		
 		User user=userDao.get(userId);
+		response.setUserId(user.getId());
+		response.setLanguageCode(user.getLanguageCode());
+		
+		// Grant self
+		if (response.getUserId()==id)
+			return true;
+		
 		List<UserRole> roles=userDao.getRoleAll(); 
 		
 		List<UserRole> userRoles=new ArrayList<UserRole>();
@@ -101,13 +113,33 @@ public abstract class CyBssRestServiceAdapter {
 		return ret;
 	}
 	
+	protected boolean checkGrantSelf(ICyBssRestResponse response, String securityToken, 
+			long id,String methodName,Class<?> ...paramClasses) throws CyBssException{
+		
+		boolean ret=false;
+		
+		try {
+			ret=checkGrant(response,this.getClass().getMethod(methodName, paramClasses),securityToken,id);
+		} catch (NoSuchMethodException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			throw new CyBssException(e);
+		} catch (SecurityException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			throw new CyBssException(e);
+		}
+		
+		return ret;
+	} 
+	
 	protected boolean checkGrant(ICyBssRestResponse response, String securityToken, 
 			String methodName,Class<?> ...paramClasses) throws CyBssException{
 		
 		boolean ret=false;
 		
 		try {
-			ret=checkGrant(response,this.getClass().getMethod(methodName, paramClasses),securityToken);
+			ret=checkGrant(response,this.getClass().getMethod(methodName, paramClasses),securityToken,0);
 		} catch (NoSuchMethodException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -121,6 +153,7 @@ public abstract class CyBssRestServiceAdapter {
 		return ret;
 	}
 		
+	
 	
 	
 	private UserRole getUserRole(long roleId,List<UserRole> roles){

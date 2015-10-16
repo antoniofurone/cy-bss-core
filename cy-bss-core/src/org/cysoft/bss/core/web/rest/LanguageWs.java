@@ -1,12 +1,9 @@
 package org.cysoft.bss.core.web.rest;
 
-import java.util.List;
 
 import org.cysoft.bss.core.common.CyBssException;
-import org.cysoft.bss.core.dao.CyBssListDao;
-import org.cysoft.bss.core.dao.CyBssServiceDao;
-import org.cysoft.bss.core.model.Language;
-import org.cysoft.bss.core.rest.response.cybsslist.CyBssListGetLanguageAll;
+import org.cysoft.bss.core.dao.LanguageDao;
+import org.cysoft.bss.core.rest.response.language.LanguageListResponse;
 import org.cysoft.bss.core.web.rest.annotation.CyBssOperation;
 import org.cysoft.bss.core.web.rest.annotation.CyBssService;
 import org.slf4j.Logger;
@@ -18,33 +15,33 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/cybss-list")
-@CyBssService(name = "BssList")
-public class CyBssListWs extends CyBssRestServiceAdapter
+@RequestMapping("/language")
+@CyBssService(name = "Language")
+public class LanguageWs extends CyBssRestServiceAdapter
 	implements ICyBssRestService{
 	
-	private static final Logger logger = LoggerFactory.getLogger(CyBssListWs.class);
+	private static final Logger logger = LoggerFactory.getLogger(LanguageWs.class);
 	
 	
 	
-	private CyBssListDao listDao=null;
+	private LanguageDao listDao=null;
 	
 	@Autowired
-	public void setListDao(CyBssListDao listDao){
+	public void setListDao(LanguageDao listDao){
 			this.listDao=listDao;
 	}
 	
 	
 	@RequestMapping(value = "/getLanguageAll",method = RequestMethod.GET)
 	@CyBssOperation(name = "getLanguageAll")
-	public CyBssListGetLanguageAll getLanguageAll(
+	public LanguageListResponse getLanguageAll(
 			@RequestHeader("Security-Token") String securityToken
 			) throws CyBssException{
 		
 		logger.info("CyBssListWs.getLanguageAll() >>>");
 		
 		
-		CyBssListGetLanguageAll response=new CyBssListGetLanguageAll(); 
+		LanguageListResponse response=new LanguageListResponse(); 
 		
 		// checkGrant
 		if (!checkGrant(response,securityToken,"getLanguageAll",String.class))

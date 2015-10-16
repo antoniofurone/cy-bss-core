@@ -1,5 +1,7 @@
 package org.cysoft.bss.core.rest.response;
 
+import org.cysoft.bss.core.model.ICyBssConst;
+
 public abstract class CyBssRestResponseAdapter implements ICyBssRestResponse{
 	
 	private String resultCode=ICyBssResultConst.RESULT_OK;
@@ -19,5 +21,24 @@ public abstract class CyBssRestResponseAdapter implements ICyBssRestResponse{
 		this.resultDesc = resultDesc;
 	}
 	
+	private String languageCode=ICyBssConst.LOCALE_EN;
+	public String getLanguageCode() {
+		return languageCode;
+	}
+	public void setLanguageCode(String languageCode) {
+		this.languageCode = languageCode;
+	}
+	
+	private long userId;
+	public long getUserId() {
+		return userId;
+	}
+	public void setUserId(long userId) {
+		this.userId = userId;
+	}
+	
+	public void reset(){
+		resultCode=ICyBssResultConst.RESULT_OK;resultDesc="OK";
+	}
 	
 }
