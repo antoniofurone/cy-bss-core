@@ -14,6 +14,7 @@
 
 <div class="container-fluid" ng-app="serviceApp" ng-controller="serviceCtrl">
 	<div class="well well-sm"><h2>CyBss Core</h2></div>
+	<a href="upload.html">Upload</a><br>
 	<form class="form-horizontal" role="form">
 	<div class="form-group">
 		<label class="col-sm-1 control-label">Service</label>
@@ -62,7 +63,7 @@
 	<div class="form-group" ng-show="operation" ng-repeat="param in operation.params">
 	<label class="col-sm-1 control-label">{{param.name}}</label>
 		<div class="col-sm-5">
-			<input class="form-control" id="{{'par_'+param.name}}"   type="text" ng-required="param.required == 'Y'"/>
+			<input class="form-control" id="{{'par_'+param.name}}"   type="{{param.type}}" ng-required="param.required == 'Y'"/>
 		</div>
 	</div>
 	

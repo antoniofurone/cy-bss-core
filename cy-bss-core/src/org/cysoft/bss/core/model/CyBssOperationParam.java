@@ -46,17 +46,28 @@ public class CyBssOperationParam {
 	public String getRequired() {
 		return required;
 	}
-
 	public void setRequired(String required) {
 		this.required = required;
+	}
+	
+	private String type="";
+	
+	public String getType() {
+		return type;
+	}
+
+	public void setType(String type) {
+		this.type = type;
 	}
 
 	@Override
 	public String toString() {
-		return "BssOperationParam [name=" + name + ", operationId="
+		return "CyBssOperationParam [name=" + name + ", operationId="
 				+ operationId + ", flagUrl=" + flagUrl + ", description="
-				+ description + ", required=" + required + "]";
+				+ description + ", required=" + required + ", type=" + type
+				+ "]";
 	}
+
 	
 	
 }

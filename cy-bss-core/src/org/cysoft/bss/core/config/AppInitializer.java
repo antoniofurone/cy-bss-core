@@ -15,13 +15,23 @@ public class AppInitializer implements WebApplicationInitializer{
 	public void onStartup(ServletContext servletContext) throws ServletException {
 		// TODO Auto-generated method stub
 		
-        AnnotationConfigWebApplicationContext ctx = new AnnotationConfigWebApplicationContext();  
-        ctx.register(CyBssRestApp.class);  
-        ctx.setServletContext(servletContext);    
+		// Rest context
+        AnnotationConfigWebApplicationContext ctxRest = new AnnotationConfigWebApplicationContext();  
+        ctxRest.register(CyBssRestApp.class);  
+        ctxRest.setServletContext(servletContext);    
         
-        Dynamic dynamic = servletContext.addServlet("RestDispatcher", new DispatcherServlet(ctx));
-        dynamic.addMapping("/rest/*");
-        dynamic.setLoadOnStartup(1);
+        Dynamic dynamicRest = servletContext.addServlet("RestDispatcher", new DispatcherServlet(ctxRest));
+        dynamicRest.addMapping("/rest/*");
+        dynamicRest.setLoadOnStartup(1);
+        
+        // File context
+        AnnotationConfigWebApplicationContext ctxFile = new AnnotationConfigWebApplicationContext();  
+        ctxFile.register(CyBssFileApp.class);  
+        ctxFile.setServletContext(servletContext);  
+               
+        Dynamic dynamicFile = servletContext.addServlet("FileDispatcher", new DispatcherServlet(ctxFile));
+        dynamicFile.addMapping("/file/*");
+        dynamicFile.setLoadOnStartup(1);
         
 	}
 

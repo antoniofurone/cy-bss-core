@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="ISO-8859-1">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>CyBss Core</title>
+	
+	<link rel="stylesheet" href="css/bootstrap/3.2.0/bootstrap.min.css">
+	<script src="js/jquery/1.11.3/jquery.min.js"></script>
+	<script src="js/bootstrap/3.3.4/bootstrap.min.js"></script> 
+	<script src="js/angularjs/1.3.15/angular.min.js"></script>   
+</head>
+<body>
+
+<!-- 	
+<form method="post" enctype="multipart/form-data" action="/cy-bss-core/file/upload">
+File to upload:<input type="file" name="file"><br>
+<button type="submit" >Submit</button>
+</form>
+-->
+<div class="container-fluid" ng-app="uploadApp" ng-controller = "uploadCtrl">
+	<div>
+		<input type="text" ng-model="fileName"/>
+    	<input type="file" file-model="file"/>
+    	<button ng-click="uploadFile()">Upload</button>
+	</div>
+	
+	<div class="form-group" ng-show="response">
+	    <label class="col-sm-1 control-label">Response</label>
+  	    <div class="col-sm-9">
+	    	<div class="alert alert-info">
+          		{{ response }}
+        	</div>
+		</div>
+	</div>
+	
+	
+</div>
+
+<script>
+var app = angular.module('uploadApp', []);
+
+app.directive('fileModel', ['$parse', function ($parse) {
+    return {
+        restrict: 'A',
+        link: function(scope, element, attrs) {
+            var model = $parse(attrs.fileModel);
+            var modelSetter = model.assign;
+            
+            element.bind('change', function(){
+                scope.$apply(function(){
+                    modelSetter(scope, element[0].files[0]);
+                });
+            });
+        }
+    };
+}]);
+
+app.service('fileUpload', ['$http', function ($http) {
+    this.uploadFileToUrl = function(name,file,uploadUrl,$scope){
+        var fd = new FormData();
+        fd.append('file', file);
+        fd.append('name', name);
+        $http.post(uploadUrl, fd, {
+            transformRequest: angular.identity,
+            headers: {'Content-Type': undefined}
+        })
+        .success(function(response){
+        	$scope.response=JSON.stringify(response);
+        })
+        .error(function(data, status, headers, config){
+        	alert("Error:"+status+" "+data);
+        });
+    }
+}]);
+
+app.controller('uploadCtrl', ['$scope', 'fileUpload', function($scope, fileUpload){
+    
+    $scope.uploadFile = function(){
+        var file = $scope.file;
+        var name = $scope.fileName;
+        console.log('file name = '+name);
+        console.log('file is ' );
+        console.dir(file);
+        var uploadUrl = "/cy-bss-core/file/upload";
+        fileUpload.uploadFileToUrl(name,file, uploadUrl,$scope);
+    };
+    
+}]);
+
+</script>
+
+</body>
+</html>

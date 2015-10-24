@@ -157,7 +157,7 @@ public class CyBssServiceMysql extends CyBssMysqlDao
 		// TODO Auto-generated method stub
 		logger.info("BssServiceMysql.getOpParams() >>>");
 		
-		String query="select BOP_PARAM_NAME,BSO_N_OPERATION_ID,BOP_C_FLG_URL,BOP_S_DESCRIPTION,BOP_C_REQUIRED ";
+		String query="select BOP_PARAM_NAME,BSO_N_OPERATION_ID,BOP_C_FLG_URL,BOP_S_DESCRIPTION,BOP_C_REQUIRED,BOP_S_TYPE ";
 		query+=" from BSST_BOP_OPERATION_PARAM where BSO_N_OPERATION_ID=? ORDER BY BOP_N_SHOW_ORDER";
 		
 		JdbcTemplate jdbcTemplate = new JdbcTemplate(ds);
@@ -175,6 +175,7 @@ public class CyBssServiceMysql extends CyBssMysqlDao
                         param.setFlagUrl(rs.getString("BOP_C_FLG_URL"));
                         param.setDescription(rs.getString("BOP_S_DESCRIPTION"));
                         param.setRequired(rs.getString("BOP_C_REQUIRED"));
+                        param.setType(rs.getString("BOP_S_TYPE"));
                          
                         return param;
 		            }
