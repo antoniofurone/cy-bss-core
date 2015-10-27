@@ -64,7 +64,7 @@ public class CyBssRestApp {
 		 }
 	
 	 @Bean
-	 @Description("Bss Auth Dao")
+	 @Description("Bss Auth Dao Rest")
 	 public CyBssAuthDao bssAuthDao(){
 		 	CyBssAuthDao authDao=new CyBssAuthMysql();
 			return authDao;
@@ -79,7 +79,7 @@ public class CyBssRestApp {
 	 
 	
 	 @Bean
-	 @Description("User Dao")
+	 @Description("User Dao Rest")
 	 public UserDao userDao(){
 		 	UserDao userDao=new UserMysql();
 			return userDao;
@@ -88,7 +88,7 @@ public class CyBssRestApp {
 	 
 	 
 	 @Bean
-	 @Description("MySql Data Source")
+	 @Description("MySql Data Source Rest ")
 	 public CyBssDataSource mySqlDS() {
 		 
 		 logger.info("CyBssRestApp.mySqlDS() >>>");

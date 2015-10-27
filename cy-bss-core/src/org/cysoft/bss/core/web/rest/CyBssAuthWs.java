@@ -7,11 +7,13 @@ package org.cysoft.bss.core.web.rest;
 import org.cysoft.bss.core.common.CyBssException;
 import org.cysoft.bss.core.common.CyBssUtility;
 import org.cysoft.bss.core.model.User;
-import org.cysoft.bss.core.rest.response.ICyBssResultConst;
-import org.cysoft.bss.core.rest.response.cybssauth.CyBssAuthLogOff;
-import org.cysoft.bss.core.rest.response.cybssauth.CyBssAuthLogOn;
-import org.cysoft.bss.core.web.rest.annotation.CyBssOperation;
-import org.cysoft.bss.core.web.rest.annotation.CyBssService;
+import org.cysoft.bss.core.web.CyBssOperation;
+import org.cysoft.bss.core.web.CyBssService;
+import org.cysoft.bss.core.web.CyBssWebServiceAdapter;
+import org.cysoft.bss.core.web.ICyBssWebService;
+import org.cysoft.bss.core.web.response.ICyBssResultConst;
+import org.cysoft.bss.core.web.rest.response.cybssauth.CyBssAuthLogOff;
+import org.cysoft.bss.core.web.rest.response.cybssauth.CyBssAuthLogOn;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -23,8 +25,8 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/cybss-auth")
 @CyBssService(name = "BssAuth")
-public class CyBssAuthWs extends CyBssRestServiceAdapter
-	implements ICyBssRestService
+public class CyBssAuthWs extends CyBssWebServiceAdapter
+	implements ICyBssWebService
 {
 	
 	private static final Logger logger = LoggerFactory.getLogger(CyBssAuthWs.class);

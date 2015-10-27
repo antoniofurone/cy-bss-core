@@ -5,6 +5,8 @@ import java.util.List;
 import org.cysoft.bss.core.dao.CyBssServiceDao;
 import org.cysoft.bss.core.model.CyBssServOperation;
 import org.cysoft.bss.core.model.CyBssService;
+import org.cysoft.bss.core.web.CyBssWebServiceAdapter;
+import org.cysoft.bss.core.web.ICyBssWebService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,8 +17,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/cybss-service")
-public class CyBssServiceWs extends CyBssRestServiceAdapter
-	implements ICyBssRestService
+public class CyBssServiceWs extends CyBssWebServiceAdapter
+	implements ICyBssWebService
 {
 	
 	private static final Logger logger = LoggerFactory.getLogger(CyBssServiceWs.class);

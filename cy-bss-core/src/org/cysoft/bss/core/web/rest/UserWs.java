@@ -5,11 +5,13 @@ import java.util.List;
 import org.cysoft.bss.core.common.CyBssException;
 import org.cysoft.bss.core.model.ChangePwd;
 import org.cysoft.bss.core.model.User;
-import org.cysoft.bss.core.rest.response.ICyBssResultConst;
-import org.cysoft.bss.core.rest.response.user.UserListResponse;
-import org.cysoft.bss.core.rest.response.user.UserResponse;
-import org.cysoft.bss.core.web.rest.annotation.CyBssOperation;
-import org.cysoft.bss.core.web.rest.annotation.CyBssService;
+import org.cysoft.bss.core.web.CyBssOperation;
+import org.cysoft.bss.core.web.CyBssService;
+import org.cysoft.bss.core.web.CyBssWebServiceAdapter;
+import org.cysoft.bss.core.web.ICyBssWebService;
+import org.cysoft.bss.core.web.response.ICyBssResultConst;
+import org.cysoft.bss.core.web.rest.response.user.UserListResponse;
+import org.cysoft.bss.core.web.rest.response.user.UserResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -23,8 +25,8 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/user")
 @CyBssService(name = "User")
-public class UserWs extends CyBssRestServiceAdapter
-	implements ICyBssRestService{
+public class UserWs extends CyBssWebServiceAdapter
+	implements ICyBssWebService{
 	
 	private static final Logger logger = LoggerFactory.getLogger(UserWs.class);
 	

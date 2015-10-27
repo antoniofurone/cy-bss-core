@@ -30,7 +30,7 @@ public class AppInitializer implements WebApplicationInitializer{
         ctxFile.setServletContext(servletContext);  
                
         Dynamic dynamicFile = servletContext.addServlet("FileDispatcher", new DispatcherServlet(ctxFile));
-        dynamicFile.addMapping("/file/*");
+        dynamicFile.addMapping("/fileservice/*");
         dynamicFile.setLoadOnStartup(1);
         
 	}
