@@ -21,7 +21,7 @@
 		<div class="col-sm-4">
         <select id="service" class="form-control" ng-model="selectedService" ng-change="selectService()" required>
         	 <option value="">--- Please select ---</option>
-        	 <option ng-repeat="s in services" value="{{s.id}}">{{s.name}}</option>
+        	 <option ng-repeat="s in services | filter:'!File'" value="{{s.id}}">{{s.name}}</option>
         </select>
       	</div>
 	</div>
@@ -77,12 +77,21 @@
 	
 	
 	<button type="submit" class="btn btn-info" ng-show="operation" ng-click="onSubmit()">Submit</button>
-	
+	<!-- 
 	<div class="form-group" ng-show="operation.response">
 	    <label class="col-sm-1 control-label">Response</label>
 	    <div class="col-sm-9">
 	        <textarea class="form-control" rows="5" ng-model="operation.response" readonly></textarea>
 	    </div>
+	</div>
+	-->
+	<div class="form-group" ng-show="operation.response">
+	    <label class="col-sm-1 control-label">Response</label>
+  	    <div class="col-sm-9">
+	    	<div class="alert alert-info">
+          		{{ operation.response }}
+        	</div>
+		</div>
 	</div>
 	
 	

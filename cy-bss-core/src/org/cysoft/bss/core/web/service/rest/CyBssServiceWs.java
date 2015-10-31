@@ -1,12 +1,12 @@
-package org.cysoft.bss.core.web.rest;
+package org.cysoft.bss.core.web.service.rest;
 
 import java.util.List;
 
 import org.cysoft.bss.core.dao.CyBssServiceDao;
 import org.cysoft.bss.core.model.CyBssServOperation;
 import org.cysoft.bss.core.model.CyBssService;
-import org.cysoft.bss.core.web.CyBssWebServiceAdapter;
-import org.cysoft.bss.core.web.ICyBssWebService;
+import org.cysoft.bss.core.web.service.CyBssWebServiceAdapter;
+import org.cysoft.bss.core.web.service.ICyBssWebService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

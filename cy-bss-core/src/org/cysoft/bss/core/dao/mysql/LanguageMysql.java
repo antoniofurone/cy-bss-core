@@ -5,6 +5,7 @@ import java.sql.SQLException;
 import java.util.List;
 
 import org.cysoft.bss.core.dao.LanguageDao;
+import org.cysoft.bss.core.model.CyBssServOperation;
 import org.cysoft.bss.core.model.Language;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,6 +49,35 @@ public class LanguageMysql extends CyBssMysqlDao
 		
 		return ret;
 
+	}
+
+	@Override
+	public Language getLanguage(String languageCode) {
+		// TODO Auto-generated method stub
+		logger.info("Language.getLanguage() >>>");
+	
+		String query="select LAN_N_LANG_ID,LAN_S_CODE,LAN_S_NAME from BSST_LAN_LANGUAGE where LAN_S_CODE=?";
+		
+		JdbcTemplate jdbcTemplate = new JdbcTemplate(ds);
+		logger.info(query+"["+languageCode+"]");
+		
+		Language ret=jdbcTemplate.queryForObject(query, new Object[] { languageCode },new RowMapper<Language>() {
+            @Override
+            public Language mapRow(ResultSet rs, int rowNum) throws SQLException {
+            	Language lang=new Language();
+            	
+            	lang.setId(rs.getInt("LAN_N_LANG_ID"));
+                lang.setCode(rs.getString("LAN_S_CODE"));
+                lang.setName(rs.getString("LAN_S_NAME"));
+                
+                return lang;
+            }
+        });
+		
+		
+		logger.info("Language.getLanguage() <<<");
+		return ret;
+		
 	}
 
 }

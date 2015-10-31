@@ -5,9 +5,11 @@ import javax.servlet.MultipartConfigElement;
 import org.cysoft.bss.core.common.CyBssDataSource;
 import org.cysoft.bss.core.dao.CyBssAuthDao;
 import org.cysoft.bss.core.dao.FileDao;
+import org.cysoft.bss.core.dao.LanguageDao;
 import org.cysoft.bss.core.dao.UserDao;
 import org.cysoft.bss.core.dao.mysql.CyBssAuthMysql;
 import org.cysoft.bss.core.dao.mysql.FileMysql;
+import org.cysoft.bss.core.dao.mysql.LanguageMysql;
 import org.cysoft.bss.core.dao.mysql.UserMysql;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,7 +29,7 @@ import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
 @Configuration
 @EnableWebMvc
-@ComponentScan({"org.cysoft.bss.core.web.file"})
+@ComponentScan({"org.cysoft.bss.core.web.service.file"})
 @PropertySource("classpath:cy-bss-core.properties")
 public class CyBssFileApp {
 private static final Logger logger = LoggerFactory.getLogger(CyBssFileApp.class);
@@ -37,7 +39,7 @@ private static final Logger logger = LoggerFactory.getLogger(CyBssFileApp.class)
 	
 	
 	 @Bean
-	 @Description("Message Source")
+	 @Description("Message Source File")
 	 public MessageSource messageSource(){
 		ReloadableResourceBundleMessageSource ms=new ReloadableResourceBundleMessageSource();
 		ms.setBasename("/WEB-INF/messages/messages");
@@ -62,6 +64,13 @@ private static final Logger logger = LoggerFactory.getLogger(CyBssFileApp.class)
 		 }
 	 
 	
+	 @Bean
+	 @Description("Language Dao File")
+	 public LanguageDao languageDao(){
+		 	LanguageDao langDao=new LanguageMysql();
+			return langDao;
+		 }
+	 
 	 @Bean
 	 @Description("User Dao File")
 	 public UserDao userDao(){

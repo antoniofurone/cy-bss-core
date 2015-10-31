@@ -1,4 +1,4 @@
-package org.cysoft.bss.core.web.rest.response.user;
+package org.cysoft.bss.core.web.response.rest;
 
 import org.cysoft.bss.core.model.User;
 import org.cysoft.bss.core.web.response.CyBssResponseAdapter;

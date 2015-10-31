@@ -2,10 +2,12 @@ package org.cysoft.bss.core.config;
 
 
 import org.cysoft.bss.core.common.CyBssDataSource;
+import org.cysoft.bss.core.dao.AppDao;
 import org.cysoft.bss.core.dao.CyBssAuthDao;
 import org.cysoft.bss.core.dao.LanguageDao;
 import org.cysoft.bss.core.dao.CyBssServiceDao;
 import org.cysoft.bss.core.dao.UserDao;
+import org.cysoft.bss.core.dao.mysql.AppMysql;
 import org.cysoft.bss.core.dao.mysql.CyBssAuthMysql;
 import org.cysoft.bss.core.dao.mysql.LanguageMysql;
 import org.cysoft.bss.core.dao.mysql.CyBssServiceMysql;
@@ -30,7 +32,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
 @Configuration
-@ComponentScan({"org.cysoft.bss.core.web.rest"})
+@ComponentScan({"org.cysoft.bss.core.web.service.rest"})
 @PropertySource("classpath:cy-bss-core.properties")
 @EnableWebMvc
 @EnableAsync
@@ -48,7 +50,7 @@ public class CyBssRestApp {
 	
 	
 	 @Bean
-	 @Description("Message Source")
+	 @Description("Message Source Rest")
 	 public MessageSource messageSource(){
 		ReloadableResourceBundleMessageSource ms=new ReloadableResourceBundleMessageSource();
 		ms.setBasename("/WEB-INF/messages/messages");
@@ -71,13 +73,21 @@ public class CyBssRestApp {
 		 }
 	
 	 @Bean
-	 @Description("Bss List Dao")
-	 public LanguageDao bssListDao(){
-		 	LanguageDao listDao=new LanguageMysql();
-			return listDao;
+	 @Description("Language Dao Rest")
+	 public LanguageDao languageDao(){
+		 	LanguageDao langDao=new LanguageMysql();
+			return langDao;
 		 }
 	 
+	 @Bean
+	 @Description("App Dao Rest")
+	 public AppDao appDao(){
+		 	AppDao appDao=new AppMysql();
+			return appDao;
+		 }
 	
+	 
+	 
 	 @Bean
 	 @Description("User Dao Rest")
 	 public UserDao userDao(){

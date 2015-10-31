@@ -1,4 +1,4 @@
-package org.cysoft.bss.core.web.rest;
+package org.cysoft.bss.core.web.service.rest;
 
 
 
@@ -7,13 +7,13 @@ package org.cysoft.bss.core.web.rest;
 import org.cysoft.bss.core.common.CyBssException;
 import org.cysoft.bss.core.common.CyBssUtility;
 import org.cysoft.bss.core.model.User;
-import org.cysoft.bss.core.web.CyBssOperation;
-import org.cysoft.bss.core.web.CyBssService;
-import org.cysoft.bss.core.web.CyBssWebServiceAdapter;
-import org.cysoft.bss.core.web.ICyBssWebService;
+import org.cysoft.bss.core.web.annotation.CyBssOperation;
+import org.cysoft.bss.core.web.annotation.CyBssService;
 import org.cysoft.bss.core.web.response.ICyBssResultConst;
-import org.cysoft.bss.core.web.rest.response.cybssauth.CyBssAuthLogOff;
-import org.cysoft.bss.core.web.rest.response.cybssauth.CyBssAuthLogOn;
+import org.cysoft.bss.core.web.response.rest.CyBssAuthLogOff;
+import org.cysoft.bss.core.web.response.rest.CyBssAuthLogOn;
+import org.cysoft.bss.core.web.service.CyBssWebServiceAdapter;
+import org.cysoft.bss.core.web.service.ICyBssWebService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.RequestBody;

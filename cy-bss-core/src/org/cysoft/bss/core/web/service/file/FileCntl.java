@@ -1,4 +1,4 @@
-package org.cysoft.bss.core.web.file;
+package org.cysoft.bss.core.web.service.file;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -9,12 +9,12 @@ import javax.servlet.http.HttpServletResponse;
 import org.cysoft.bss.core.common.CyBssException;
 import org.cysoft.bss.core.dao.FileDao;
 import org.cysoft.bss.core.model.CyBssFile;
-import org.cysoft.bss.core.web.CyBssOperation;
-import org.cysoft.bss.core.web.CyBssService;
-import org.cysoft.bss.core.web.CyBssWebServiceAdapter;
-import org.cysoft.bss.core.web.ICyBssWebService;
-import org.cysoft.bss.core.web.file.response.file.FileResponse;
+import org.cysoft.bss.core.web.annotation.CyBssOperation;
+import org.cysoft.bss.core.web.annotation.CyBssService;
 import org.cysoft.bss.core.web.response.ICyBssResultConst;
+import org.cysoft.bss.core.web.response.file.FileResponse;
+import org.cysoft.bss.core.web.service.CyBssWebServiceAdapter;
+import org.cysoft.bss.core.web.service.ICyBssWebService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

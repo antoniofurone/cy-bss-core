@@ -1,4 +1,4 @@
-package org.cysoft.bss.core.web.rest.response.user;
+package org.cysoft.bss.core.web.response.rest;
 
 import java.util.List;
 

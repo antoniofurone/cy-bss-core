@@ -1,4 +1,4 @@
-package org.cysoft.bss.core.web;
+package org.cysoft.bss.core.web.service;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -8,11 +8,12 @@ import java.util.Locale;
 import org.cysoft.bss.core.common.CyBssException;
 import org.cysoft.bss.core.common.CyBssUtility;
 import org.cysoft.bss.core.dao.CyBssAuthDao;
+import org.cysoft.bss.core.dao.LanguageDao;
 import org.cysoft.bss.core.dao.UserDao;
 import org.cysoft.bss.core.model.User;
 import org.cysoft.bss.core.model.UserRole;
-import org.cysoft.bss.core.web.CyBssOperation;
-import org.cysoft.bss.core.web.CyBssService;
+import org.cysoft.bss.core.web.annotation.CyBssOperation;
+import org.cysoft.bss.core.web.annotation.CyBssService;
 import org.cysoft.bss.core.web.response.ICyBssResponse;
 import org.cysoft.bss.core.web.response.ICyBssResultConst;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,6 +45,12 @@ public abstract class CyBssWebServiceAdapter {
 	@Autowired
 	public void setUserDao(UserDao userDao){
 			this.userDao=userDao;
+	}
+	
+	protected LanguageDao languageDao=null;
+	@Autowired
+	public void setLanguageDao(LanguageDao languageDao){
+			this.languageDao=languageDao;
 	}
 	
 	
