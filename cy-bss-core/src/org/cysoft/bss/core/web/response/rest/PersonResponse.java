@@ -1,11 +1,9 @@
-package org.cysoft.bss.core.web.response.file;
+package org.cysoft.bss.core.web.response.rest;
 
 import org.cysoft.bss.core.web.response.CyBssResponseAdapter;
 import org.cysoft.bss.core.web.response.ICyBssResponse;
 
-public class FileResponse extends CyBssResponseAdapter
+public class PersonResponse extends CyBssResponseAdapter
 implements ICyBssResponse{
-	
-	
 
 }

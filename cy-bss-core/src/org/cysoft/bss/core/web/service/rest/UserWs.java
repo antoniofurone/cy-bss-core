@@ -5,11 +5,13 @@ import java.util.List;
 import org.cysoft.bss.core.common.CyBssException;
 import org.cysoft.bss.core.model.ChangePwd;
 import org.cysoft.bss.core.model.User;
+import org.cysoft.bss.core.model.UserRole;
 import org.cysoft.bss.core.web.annotation.CyBssOperation;
 import org.cysoft.bss.core.web.annotation.CyBssService;
 import org.cysoft.bss.core.web.response.ICyBssResultConst;
 import org.cysoft.bss.core.web.response.rest.UserListResponse;
 import org.cysoft.bss.core.web.response.rest.UserResponse;
+import org.cysoft.bss.core.web.response.rest.UserRoleListResponse;
 import org.cysoft.bss.core.web.service.CyBssWebServiceAdapter;
 import org.cysoft.bss.core.web.service.ICyBssWebService;
 import org.slf4j.Logger;
@@ -291,4 +293,30 @@ public class UserWs extends CyBssWebServiceAdapter
 		
 		return response;
 	}
+	
+	
+	@RequestMapping(value = "/getRoleAll",method = RequestMethod.GET)
+	@CyBssOperation(name = "getRoleAll")
+	public UserRoleListResponse getRoleAll(
+			@RequestHeader("Security-Token") String securityToken
+			) throws CyBssException{
+		
+		logger.info("UserWs.getRoleAll() >>>");
+		UserRoleListResponse response=new UserRoleListResponse();
+		
+		// checkGrant
+		if (!checkGrant(response,securityToken,"getRoleAll",String.class))
+			return response;
+		// end checkGrant 
+		
+		
+		List<UserRole> roles=userDao.getRoleAll();
+		response.setRoles(roles);
+		
+		logger.info("UserWs.getRoleAll() <<<");
+		
+		return response;
+	}
+	
+	
 }
