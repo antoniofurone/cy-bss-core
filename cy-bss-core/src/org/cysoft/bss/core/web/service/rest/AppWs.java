@@ -1,7 +1,6 @@
 package org.cysoft.bss.core.web.service.rest;
 
 import org.cysoft.bss.core.common.CyBssException;
-import org.cysoft.bss.core.dao.AppDao;
 import org.cysoft.bss.core.model.App;
 import org.cysoft.bss.core.model.AppVariable;
 import org.cysoft.bss.core.web.annotation.CyBssOperation;
@@ -12,7 +11,6 @@ import org.cysoft.bss.core.web.service.CyBssWebServiceAdapter;
 import org.cysoft.bss.core.web.service.ICyBssWebService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -28,13 +26,6 @@ public class AppWs extends CyBssWebServiceAdapter
 	implements ICyBssWebService{
 
 	private static final Logger logger = LoggerFactory.getLogger(AppWs.class);
-	
-	
-	private AppDao appDao=null;
-	@Autowired
-	public void setAppDao(AppDao appDao){
-			this.appDao=appDao;
-	}
 	
 	
 	@RequestMapping(value = "/add",method = RequestMethod.POST)

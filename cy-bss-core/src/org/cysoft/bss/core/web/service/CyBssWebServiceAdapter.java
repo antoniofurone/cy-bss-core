@@ -7,6 +7,7 @@ import java.util.Locale;
 
 import org.cysoft.bss.core.common.CyBssException;
 import org.cysoft.bss.core.common.CyBssUtility;
+import org.cysoft.bss.core.dao.AppDao;
 import org.cysoft.bss.core.dao.CyBssAuthDao;
 import org.cysoft.bss.core.dao.LanguageDao;
 import org.cysoft.bss.core.dao.UserDao;
@@ -53,6 +54,11 @@ public abstract class CyBssWebServiceAdapter {
 			this.languageDao=languageDao;
 	}
 	
+	protected AppDao appDao=null;
+	@Autowired
+	public void setAppDao(AppDao appDao){
+			this.appDao=appDao;
+	}
 	
 	protected void setResult(ICyBssResponse response,
 					String resultCode,String resultDescId,Locale locale){

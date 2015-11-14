@@ -6,11 +6,13 @@ import org.cysoft.bss.core.dao.AppDao;
 import org.cysoft.bss.core.dao.CyBssAuthDao;
 import org.cysoft.bss.core.dao.LanguageDao;
 import org.cysoft.bss.core.dao.CyBssServiceDao;
+import org.cysoft.bss.core.dao.PersonDao;
 import org.cysoft.bss.core.dao.UserDao;
 import org.cysoft.bss.core.dao.mysql.AppMysql;
 import org.cysoft.bss.core.dao.mysql.CyBssAuthMysql;
 import org.cysoft.bss.core.dao.mysql.LanguageMysql;
 import org.cysoft.bss.core.dao.mysql.CyBssServiceMysql;
+import org.cysoft.bss.core.dao.mysql.PersonMysql;
 import org.cysoft.bss.core.dao.mysql.UserMysql;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -85,8 +87,6 @@ public class CyBssRestApp {
 		 	AppDao appDao=new AppMysql();
 			return appDao;
 		 }
-	
-	 
 	 
 	 @Bean
 	 @Description("User Dao Rest")
@@ -95,6 +95,12 @@ public class CyBssRestApp {
 			return userDao;
 		 }
 	
+	 @Bean
+	 @Description("Person Dao Rest")
+	 public PersonDao personDao(){
+		 	PersonDao personDao=new PersonMysql();
+			return personDao;
+		 }
 	 
 	 
 	 @Bean

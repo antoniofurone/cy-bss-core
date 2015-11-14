@@ -218,9 +218,11 @@
             	{
             		// Post
             		var data="";
+            		var first=false;
             		for(i in $scope.operation.params){
             			if ($('#par_'+$scope.operation.params[i].name).val()!=''){
-	            			data+=((i>0)?',':'');
+	            			data+=(first?',':'');
+	            			first=true;
 	            			data+='"'+$scope.operation.params[i].name+'"';
 	            			data+=': ';
 	            			data+='"'+$('#par_'+$scope.operation.params[i].name).val()+'"';

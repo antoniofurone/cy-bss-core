@@ -13,17 +13,6 @@ insert into BSST_URO_ROLE(URO_S_NAME,URO_S_DESCRIPTION,URO_N_PARENT_ROLE_ID)
 	values ('Super Administrator', 'Super Administrator User',2);
 insert into BSST_URO_ROLE(URO_S_NAME,URO_S_DESCRIPTION,URO_N_PARENT_ROLE_ID)
 	values ('Partner', 'Partner User',1);
-	
-	
-delete from BSST_LAN_LANGUAGE;
-
-ALTER TABLE BSST_LAN_LANGUAGE AUTO_INCREMENT= 1;
-
-insert into BSST_LAN_LANGUAGE(LAN_S_CODE,LAN_S_NAME)
-	values ('it', 'Italiano');
-insert into BSST_LAN_LANGUAGE(LAN_S_CODE,LAN_S_NAME)
-	values ('en', 'English');
-	
 
 ALTER TABLE BSST_USR_USER AUTO_INCREMENT= 1;
 	

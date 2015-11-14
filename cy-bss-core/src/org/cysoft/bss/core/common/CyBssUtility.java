@@ -2,6 +2,9 @@ package org.cysoft.bss.core.common;
 
 import java.math.BigInteger;
 import java.security.SecureRandom;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Locale;
 
 import org.cysoft.bss.core.model.ICyBssConst;
@@ -35,5 +38,40 @@ public class CyBssUtility {
 		        s.substring(1).toLowerCase();
 	}
 	
+	   public static final String DATE_ddsMMsyyyy="dd/MM/yyyy";
+	   public static final String DATE_yyyy_MM_dd="yyyy-MM-dd";
+	   
+	   public static Date stringToDate(String date,String fmt) throws java.text.ParseException{
+		   DateFormat datefmt = new SimpleDateFormat(fmt);
+		   return datefmt.parse(date);
+	   }
+		
+	   public static String dateToString(Date date,String fmt) {
+		   DateFormat datefmt = new SimpleDateFormat(fmt);
+		   return datefmt.format(date);	  
+	   }
+	   
+	   public static Date tryStringToDate(String date) 
+			   throws java.text.ParseException{
+		   Date dt=null;
+		   try {
+			dt=stringToDate(date,DATE_ddsMMsyyyy);
+		   } catch (java.text.ParseException e) {
+			// TODO Auto-generated catch block
+			   try {
+				dt=stringToDate(date,DATE_yyyy_MM_dd);
+			} catch (java.text.ParseException e1) {
+				// TODO Auto-generated catch block
+				throw e1;
+			}
+		   }
+		   return dt;
+	   }
+	   
+	   
+	   public static String dateChangeFormat(String sDate,String fmtOut) throws java.text.ParseException{
+		   return dateToString(tryStringToDate(sDate),fmtOut);
+	   }
+
 	
 }

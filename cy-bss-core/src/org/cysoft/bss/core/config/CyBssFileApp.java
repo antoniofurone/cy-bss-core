@@ -3,10 +3,12 @@ package org.cysoft.bss.core.config;
 import javax.servlet.MultipartConfigElement;
 
 import org.cysoft.bss.core.common.CyBssDataSource;
+import org.cysoft.bss.core.dao.AppDao;
 import org.cysoft.bss.core.dao.CyBssAuthDao;
 import org.cysoft.bss.core.dao.FileDao;
 import org.cysoft.bss.core.dao.LanguageDao;
 import org.cysoft.bss.core.dao.UserDao;
+import org.cysoft.bss.core.dao.mysql.AppMysql;
 import org.cysoft.bss.core.dao.mysql.CyBssAuthMysql;
 import org.cysoft.bss.core.dao.mysql.FileMysql;
 import org.cysoft.bss.core.dao.mysql.LanguageMysql;
@@ -69,6 +71,13 @@ private static final Logger logger = LoggerFactory.getLogger(CyBssFileApp.class)
 	 public LanguageDao languageDao(){
 		 	LanguageDao langDao=new LanguageMysql();
 			return langDao;
+		 }
+	 
+	 @Bean
+	 @Description("App Dao File")
+	 public AppDao appDao(){
+		 	AppDao appDao=new AppMysql();
+			return appDao;
 		 }
 	 
 	 @Bean
