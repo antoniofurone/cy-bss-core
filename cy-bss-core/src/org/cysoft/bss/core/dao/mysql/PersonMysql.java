@@ -10,7 +10,6 @@ import org.cysoft.bss.core.common.CyBssException;
 import org.cysoft.bss.core.common.CyBssUtility;
 import org.cysoft.bss.core.dao.PersonDao;
 import org.cysoft.bss.core.model.Person;
-import org.cysoft.bss.core.model.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.dao.DataAccessException;

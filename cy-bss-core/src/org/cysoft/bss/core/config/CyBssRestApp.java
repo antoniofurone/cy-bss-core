@@ -4,15 +4,21 @@ package org.cysoft.bss.core.config;
 import org.cysoft.bss.core.common.CyBssDataSource;
 import org.cysoft.bss.core.dao.AppDao;
 import org.cysoft.bss.core.dao.CyBssAuthDao;
+import org.cysoft.bss.core.dao.FileDao;
 import org.cysoft.bss.core.dao.LanguageDao;
 import org.cysoft.bss.core.dao.CyBssServiceDao;
+import org.cysoft.bss.core.dao.LocationDao;
 import org.cysoft.bss.core.dao.PersonDao;
+import org.cysoft.bss.core.dao.TicketDao;
 import org.cysoft.bss.core.dao.UserDao;
 import org.cysoft.bss.core.dao.mysql.AppMysql;
 import org.cysoft.bss.core.dao.mysql.CyBssAuthMysql;
+import org.cysoft.bss.core.dao.mysql.FileMysql;
 import org.cysoft.bss.core.dao.mysql.LanguageMysql;
 import org.cysoft.bss.core.dao.mysql.CyBssServiceMysql;
+import org.cysoft.bss.core.dao.mysql.LocationMysql;
 import org.cysoft.bss.core.dao.mysql.PersonMysql;
+import org.cysoft.bss.core.dao.mysql.TicketMysql;
 import org.cysoft.bss.core.dao.mysql.UserMysql;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -66,6 +72,13 @@ public class CyBssRestApp {
 		 	CyBssServiceDao serviceDao=new CyBssServiceMysql();
 			return serviceDao;
 		 }
+	 
+	 @Bean
+	 @Description("File Dao Rest")
+	 public FileDao fileDao(){
+		 	FileDao fileDao=new FileMysql();
+			return fileDao;
+		 }
 	
 	 @Bean
 	 @Description("Bss Auth Dao Rest")
@@ -102,6 +115,22 @@ public class CyBssRestApp {
 			return personDao;
 		 }
 	 
+	
+	 @Bean
+	 @Description("Location Dao Rest")
+	 public LocationDao locationDao(){
+		 	LocationDao locationDao=new LocationMysql();
+			return locationDao;
+		 }
+	
+	
+	 @Bean
+	 @Description("Ticket Dao Rest")
+	 public TicketDao ticketDao(){
+		 	TicketDao ticketDao=new TicketMysql();
+			return ticketDao;
+		 }
+	
 	 
 	 @Bean
 	 @Description("MySql Data Source Rest ")

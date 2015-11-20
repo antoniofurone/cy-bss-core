@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.sql.Blob;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.List;
 
 import org.cysoft.bss.core.common.CyBssException;
 import org.cysoft.bss.core.dao.FileDao;
@@ -96,5 +97,49 @@ public class FileMysql extends CyBssMysqlDao
 		logger.info("FileMysql.remove() <<<");
 				
 	}
+
+	@Override
+	public List<CyBssFile> getByEntity(String entityName, long id) {
+		// TODO Auto-generated method stub
+		logger.info("FileMysql.getByEntity >>>");
+		
+		String query="select  FILE_N_FILE_ID, FILE_S_NAME, FILE_N_SIZE, FILE_S_CONTENT_TYPE,";
+		query+="FILE_S_TYPE, FILE_S_ENTITY_NAME, FILE_N_ENTITY_ID, FILE_S_NOTE  ";
+		query+="from BSST_FIL_FILE ";
+		query+="where FILE_S_ENTITY_NAME=? and FILE_N_ENTITY_ID=?";
+		
+		
+		JdbcTemplate jdbcTemplate = new JdbcTemplate(ds);
+		logger.info(query+"[entityName="+entityName+";entityId="+id+"]");
+		
+		List<CyBssFile> ret=jdbcTemplate.query(query, new Object[] { entityName, id },new RowMapperFile());
+			
+		logger.info("FileMysql.getByEntity <<<");
+		return ret;
+
+	}
+	
+	private class RowMapperFile implements RowMapper<CyBssFile>{
+
+		@Override
+		public CyBssFile mapRow(ResultSet rs, int rownum) throws SQLException {
+			// TODO Auto-generated method stub
+			CyBssFile file=new CyBssFile();
+            
+			file.setId(rs.getLong("FILE_N_FILE_ID"));
+			file.setName(rs.getString("FILE_S_NAME"));
+		    file.setLength(rs.getInt("FILE_N_SIZE"));
+			file.setContentType(rs.getString("FILE_S_CONTENT_TYPE"));
+			file.setFileType(rs.getString("FILE_S_TYPE"));
+			file.setEntityName(rs.getString("FILE_S_ENTITY_NAME"));
+			file.setEntityId(rs.getLong("FILE_N_ENTITY_ID"));
+			file.setNote(rs.getString("FILE_S_NOTE"));
+			
+		    
+            return file;
+		}
+		
+	}
+	
 
 }
