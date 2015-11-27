@@ -3,8 +3,12 @@ package org.cysoft.bss.core.dao.mysql;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.ParseException;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.cysoft.bss.core.common.CyBssException;
+import org.cysoft.bss.core.common.CyBssUtility;
 import org.cysoft.bss.core.dao.TicketDao;
 import org.cysoft.bss.core.model.Ticket;
 import org.slf4j.Logger;
@@ -65,9 +69,10 @@ public class TicketMysql extends CyBssMysqlDao
 		JdbcTemplate jdbcTemplate = new JdbcTemplate(ds);
 		
 		
-		String query="select  TIC_N_TICKET_ID,TIC_S_TEXT,TIC_D_CREATION_DATE,USR_N_USER_ID,TCA_N_CATEGORY_ID,PER_N_PERSON_ID,LOC_N_LOCATION_ID,TST_N_STATUS_ID";
-		query+=" from BSST_TIC_TICKET";
-		query+=" where TIC_N_TICKET_ID=?";
+		String query="select  ID,TEXT,CREATION_DATE,STATUS_ID,STATUS_NAME,USER_ID,USER_NAME,CATEGORY_ID,CATEGORY_NAME,";
+		query+="PERSON_ID,PERSON_FIRST_NAME,PERSON_SECOND_NAME,LOCATION_ID";
+		query+=" from BSSV_TICKET";
+		query+=" where ID=?";
 		
 		logger.info(query+"["+id+"]");
 		Ticket ret=null;
@@ -83,27 +88,6 @@ public class TicketMysql extends CyBssMysqlDao
 
 	}
 	
-	private class RowMapperTicket implements RowMapper<Ticket>{
-
-		@Override
-		public Ticket mapRow(ResultSet rs, int rownum) throws SQLException {
-			// TODO Auto-generated method stub
-			Ticket ticket=new Ticket();
-            
-			ticket.setId(rs.getLong("TIC_N_TICKET_ID"));
-			ticket.setText(rs.getString("TIC_S_TEXT"));
-			ticket.setCreationDate(rs.getString("TIC_D_CREATION_DATE"));
-			ticket.setUserId(rs.getLong("USR_N_USER_ID"));
-			ticket.setCategoryId(rs.getLong("TCA_N_CATEGORY_ID"));
-			ticket.setPersonId(rs.getLong("PER_N_PERSON_ID"));
-			ticket.setLocationId(rs.getLong("LOC_N_LOCATION_ID"));
-			ticket.setStatusId(rs.getLong("TST_N_STATUS_ID"));
-			
-            return ticket;
-		}
-		
-	}
-
 	@Override
 	public void update(long id, Ticket ticket) throws CyBssException {
 		// TODO Auto-generated method stub
@@ -122,7 +106,7 @@ public class TicketMysql extends CyBssMysqlDao
 					(ticket.getPersonId()==0)?null:ticket.getPersonId(),
 					(ticket.getLocationId()==0)?null:ticket.getLocationId(),id
 				});
-		} catch (DataAccessException  e) {
+			} catch (DataAccessException  e) {
 			// TODO Auto-generated catch block
 			logger.error(e.toString());
 			throw new CyBssException(e);
@@ -131,5 +115,123 @@ public class TicketMysql extends CyBssMysqlDao
 		logger.info("TicketMysql.update() <<<");
 
 	}
+	
+	@Override
+	public List<Ticket> find(String text, long categoryId, long statusId,
+			long personId,String fromDate,String toDate) throws CyBssException {
+		// TODO Auto-generated method stub
+		logger.info("TicketMysql.find() >>>");
+		
+		// TODO Auto-generated method stub
+		JdbcTemplate jdbcTemplate = new JdbcTemplate(ds);
+				
+				
+		String query="select  ID,TEXT,CREATION_DATE,STATUS_ID,STATUS_NAME,USER_ID,USER_NAME,CATEGORY_ID,CATEGORY_NAME,";
+		query+="PERSON_ID,PERSON_FIRST_NAME,PERSON_SECOND_NAME,LOCATION_ID";
+		query+=" from BSSV_TICKET";
+		
+		if (!text.equals("") || categoryId!=0 || statusId!=0 || personId!=0 || !fromDate.equals("") || !toDate.equals("") )
+			query+=" WHERE ";
+		boolean insAnd=false;
+		
+		List<Object> parms=new ArrayList<Object>();
+		if (!text.equals("")){
+			if (!text.contains("%"))
+				query+=" TEXT=?";
+			else
+				query+=" TEXT like ?";
+			insAnd=true;
+			parms.add(text);
+		}
+		
+		if (categoryId!=0){
+			query+=(insAnd?" AND":"")+" CATEGORY_ID=?";
+			insAnd=true;
+			parms.add(categoryId);
+		}
+		
+		if (statusId!=0){
+			query+=(insAnd?" AND":"")+" STATUS_ID=?";
+			insAnd=true;
+			parms.add(statusId);
+		}
+		
+		if (personId!=0){
+			query+=(insAnd?" AND":"")+" PERSON_ID=?";
+			insAnd=true;
+			parms.add(personId);
+		}
+		
+		if (!fromDate.equals("")){
+			query+=(insAnd?" AND":"")+" CREATION_DATE>=?";
+			insAnd=true;
+			try {
+				parms.add(CyBssUtility.dateChangeFormat(fromDate, CyBssUtility.DATE_yyyy_MM_dd));
+			} catch (ParseException e) {
+				// TODO Auto-generated catch block
+				throw new CyBssException(e);
+			}
+		}
 
+		if (!toDate.equals("")){
+			query+=(insAnd?" AND":"")+" DATE_SUB(CREATION_DATE,INTERVAL 1 DAY)<=?";
+			insAnd=true;
+			try {
+				parms.add(CyBssUtility.dateChangeFormat(toDate, CyBssUtility.DATE_yyyy_MM_dd));
+			} catch (ParseException e) {
+				// TODO Auto-generated catch block
+				throw new CyBssException(e);
+			}
+		}
+			
+		logger.info(query+"[text="+text+";categoryId="+categoryId+";statusId="+statusId
+				+";personId="+personId+";fromDate="+fromDate+";toDate="+toDate
+				+"]");
+		
+		List<Ticket> ret=jdbcTemplate.query(query, parms.toArray(),new RowMapperTicket());
+		
+		
+		logger.info("TicketMysql.find() <<<");
+		
+		return ret;
+	}
+
+	
+	
+	
+	private class RowMapperTicket implements RowMapper<Ticket>{
+
+		@Override
+		public Ticket mapRow(ResultSet rs, int rownum) throws SQLException {
+			// TODO Auto-generated method stub
+			Ticket ticket=new Ticket();
+            
+			ticket.setId(rs.getLong("ID"));
+			ticket.setText(rs.getString("TEXT"));
+			ticket.setCreationDate(rs.getString("CREATION_DATE"));
+			
+			ticket.setStatusId(rs.getLong("STATUS_ID"));
+			ticket.setStatusName(rs.getString("STATUS_NAME"));
+			
+			ticket.setUserId(rs.getLong("USER_ID"));
+			ticket.setUserName(rs.getString("USER_NAME"));
+			
+			ticket.setCategoryId(rs.getLong("CATEGORY_ID"));
+			ticket.setCategoryName(rs.getString("CATEGORY_NAME"));
+			
+			ticket.setPersonId(rs.getLong("PERSON_ID"));
+			ticket.setPersonFirstName(rs.getString("PERSON_FIRST_NAME"));
+			ticket.setPersonSecondName(rs.getString("PERSON_SECOND_NAME"));
+			
+			ticket.setLocationId(rs.getLong("LOCATION_ID"));
+			
+            return ticket;
+		}
+		
+	}
+
+	
+
+
+	
 } 

@@ -34,6 +34,14 @@ public class Ticket {
 	public void setStatusId(long statusId) {
 		this.statusId = statusId;
 	}
+	
+	private String statusName="";
+	public String getStatusName() {
+		return statusName;
+	}
+	public void setStatusName(String statusName) {
+		this.statusName = statusName;
+	}
 
 	private long userId;
 	public long getUserId() {
@@ -41,6 +49,14 @@ public class Ticket {
 	}
 	public void setUserId(long userId) {
 		this.userId = userId;
+	}
+
+	private String userName="";
+	public String getUserName() {
+		return userName;
+	}
+	public void setUserName(String userName) {
+		this.userName = userName;
 	}
 
 	private long categoryId;
@@ -51,12 +67,36 @@ public class Ticket {
 		this.categoryId = categoryId;
 	}
 	
+	private String categoryName="";
+	public String getCategoryName() {
+		return categoryName;
+	}
+	public void setCategoryName(String categoryName) {
+		this.categoryName = categoryName;
+	}
+	
 	private long personId;
 	public long getPersonId() {
 		return personId;
 	}
 	public void setPersonId(long personId) {
 		this.personId = personId;
+	}
+	
+	private String personFirstName="";
+	public String getPersonFirstName() {
+		return personFirstName;
+	}
+	public void setPersonFirstName(String personFirstName) {
+		this.personFirstName = personFirstName;
+	}
+
+	private String personSecondName="";
+	public String getPersonSecondName() {
+		return personSecondName;
+	}
+	public void setPersonSecondName(String personSecondName) {
+		this.personSecondName = personSecondName;
 	}
 
 	private long locationId;
@@ -74,14 +114,16 @@ public class Ticket {
 	public void setLocation(Location location) {
 		this.location = location;
 	}
-	
 	@Override
 	public String toString() {
 		return "Ticket [id=" + id + ", text=" + text + ", creationDate="
-				+ creationDate + ", statusId=" + statusId + ", userId="
-				+ userId + ", categoryId=" + categoryId + ", personId="
-				+ personId + ", locationId=" + locationId + ", location="
-				+ location +  "]";
+				+ creationDate + ", statusId=" + statusId + ", statusName="
+				+ statusName + ", userId=" + userId + ", userName=" + userName
+				+ ", categoryId=" + categoryId + ", categoryName="
+				+ categoryName + ", personId=" + personId
+				+ ", personFirstName=" + personFirstName
+				+ ", personSecondName=" + personSecondName + ", locationId="
+				+ locationId + ", location=" + location + "]";
 	}
 	
 		

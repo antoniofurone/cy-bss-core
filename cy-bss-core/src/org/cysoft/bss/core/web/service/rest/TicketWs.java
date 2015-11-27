@@ -1,5 +1,7 @@
 package org.cysoft.bss.core.web.service.rest;
 
+import java.util.List;
+
 import org.cysoft.bss.core.common.CyBssException;
 import org.cysoft.bss.core.dao.FileDao;
 import org.cysoft.bss.core.dao.LocationDao;
@@ -10,6 +12,7 @@ import org.cysoft.bss.core.web.annotation.CyBssOperation;
 import org.cysoft.bss.core.web.annotation.CyBssService;
 import org.cysoft.bss.core.web.response.ICyBssResultConst;
 import org.cysoft.bss.core.web.response.file.FileListResponse;
+import org.cysoft.bss.core.web.response.rest.TicketListResponse;
 import org.cysoft.bss.core.web.response.rest.TicketResponse;
 import org.cysoft.bss.core.web.service.CyBssWebServiceAdapter;
 import org.cysoft.bss.core.web.service.ICyBssWebService;
@@ -21,6 +24,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -182,6 +186,45 @@ public class TicketWs extends CyBssWebServiceAdapter
 		
 		return response;
 	}
+	
+	
+	@RequestMapping(value = "/find",method = RequestMethod.GET)
+	@CyBssOperation(name = "find")
+	public TicketListResponse find(
+			@RequestHeader("Security-Token") String securityToken,
+			@RequestParam(value="text", required=false, defaultValue="") String text,
+			@RequestParam(value="categoryId", required=false, defaultValue="0") Long categoryId,
+			@RequestParam(value="statusId", required=false, defaultValue="0") Long statusId,
+			@RequestParam(value="personId", required=false, defaultValue="0") Long personId,
+			@RequestParam(value="fromDate", required=false, defaultValue="") String fromDate,
+			@RequestParam(value="toDate", required=false, defaultValue="") String toDate,
+			@RequestParam(value="offset", required=false, defaultValue="0") Integer offset,
+			@RequestParam(value="size", required=false, defaultValue="100") Integer size
+			) throws CyBssException{
+		
+		logger.info("TicketWs.find() >>>" );
+		TicketListResponse response=new TicketListResponse();
+		
+		
+		// checkGrant
+		if (!checkGrant(response,securityToken,"find",String.class,String.class,
+				Long.class,Long.class,Long.class,
+				String.class,String.class,
+				Integer.class,Integer.class))
+			return response;
+		// end checkGrant 
+		List<Ticket> tickets=ticketDao.find(text, categoryId, statusId, personId, fromDate, toDate);
+		int lsize=tickets.size();
+		if (offset!=0)
+			response.setTickets(tickets.subList(offset-1, (offset-1)+(size>lsize?lsize:size)));
+		else
+			response.setTickets(tickets);
+		
+		logger.info("TicketWs.find() <<< ");
+		
+		return response;
+	}
+	
 	
 	
 }
