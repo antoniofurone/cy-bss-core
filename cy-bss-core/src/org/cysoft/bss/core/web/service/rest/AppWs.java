@@ -3,6 +3,7 @@ package org.cysoft.bss.core.web.service.rest;
 import org.cysoft.bss.core.common.CyBssException;
 import org.cysoft.bss.core.model.App;
 import org.cysoft.bss.core.model.AppVariable;
+import org.cysoft.bss.core.model.Language;
 import org.cysoft.bss.core.web.annotation.CyBssOperation;
 import org.cysoft.bss.core.web.annotation.CyBssService;
 import org.cysoft.bss.core.web.response.ICyBssResultConst;
@@ -169,12 +170,12 @@ public class AppWs extends CyBssWebServiceAdapter
 		return response;
 	}
 	
-	@RequestMapping(value = "/{appId}/getMessage/{langCode}/{id}",method = RequestMethod.GET)
+	@RequestMapping(value = "/{appId}/getMessage/{id}",method = RequestMethod.GET)
 	@CyBssOperation(name = "getMessage")
 	public AppResponse getMessage(
 			@RequestHeader("Security-Token") String securityToken,
+			@RequestHeader(value="Language",required=false, defaultValue="") String langCode,
 			@PathVariable("appId") Long appId,
-			@PathVariable("langCode") String langCode,
 			@PathVariable("id") String id
 			) throws CyBssException
 	{
@@ -183,11 +184,17 @@ public class AppWs extends CyBssWebServiceAdapter
 		logger.info("AppWs.getMessage() >>>");
 		
 		// checkGrant
-		if (!checkGrant(response,securityToken,"getMessage",String.class,Long.class,String.class,String.class))
+		if (!checkGrant(response,securityToken,"getMessage",String.class,String.class,Long.class,String.class))
 			return response;
 		//end checkGrant 
 	
-		response.setAppMessage(appDao.getMessage(appId, languageDao.getLanguage(langCode).getId(), id));
+		Language language=null;
+		if (langCode.equals(""))
+			language=languageDao.getLanguage(response.getLanguageCode());
+		else	
+			language=languageDao.getLanguage(langCode);
+		
+		response.setAppMessage(appDao.getMessage(appId, language.getId(), id));
 
 		logger.info("AppWs.getMessage() <<<");
 		

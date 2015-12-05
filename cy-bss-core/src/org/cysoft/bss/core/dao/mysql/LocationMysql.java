@@ -101,6 +101,29 @@ public class LocationMysql extends CyBssMysqlDao
 		
 	}
 
+	@Override
+	public void remove(long id) throws CyBssException {
+		// TODO Auto-generated method stub
+		logger.info("LocationMysql.remove() >>>");
+		
+		
+		String cmd="delete from BSST_LOC_LOCATION where LOC_N_LOCATION_ID=?";
+		JdbcTemplate jdbcTemplate = new JdbcTemplate(ds);
+		logger.info(cmd+"["+id+"]");
+		try {
+			jdbcTemplate.update(cmd, new Object[]{
+					id
+				});
+		} catch (DataAccessException e) {
+			// TODO Auto-generated catch block
+			logger.error(e.toString());
+			throw new CyBssException(e);
+		}
+		
+		logger.info("LocationMysql.remove() <<<");
+		
+	}
+
 	
 	
 }

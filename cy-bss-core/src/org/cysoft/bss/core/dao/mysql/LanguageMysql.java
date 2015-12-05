@@ -20,7 +20,7 @@ public class LanguageMysql extends CyBssMysqlDao
 	@Override
 	public List<Language> getLanguageAll() {
 		// TODO Auto-generated method stub
-		logger.info("CyBssListMysql.getLanguageAll() >>>");
+		logger.info("LanguageMysql.getLanguageAll() >>>");
 		
 		String query="select LAN_N_LANG_ID,LAN_S_CODE,LAN_S_NAME from BSST_LAN_LANGUAGE";
 		
@@ -44,7 +44,7 @@ public class LanguageMysql extends CyBssMysqlDao
 		
 		
         
-		logger.info("CyBssListMysql.getLanguageAll() <<<");
+		logger.info("LanguageMysql.getLanguageAll() <<<");
 		
 		return ret;
 
@@ -53,7 +53,7 @@ public class LanguageMysql extends CyBssMysqlDao
 	@Override
 	public Language getLanguage(String languageCode) {
 		// TODO Auto-generated method stub
-		logger.info("Language.getLanguage() >>>");
+		logger.info("LanguageMysql.getLanguage() >>>");
 	
 		String query="select LAN_N_LANG_ID,LAN_S_CODE,LAN_S_NAME from BSST_LAN_LANGUAGE where LAN_S_CODE=?";
 		
@@ -74,7 +74,7 @@ public class LanguageMysql extends CyBssMysqlDao
         });
 		
 		
-		logger.info("Language.getLanguage() <<<");
+		logger.info("LanguageMysql.getLanguage() <<<");
 		return ret;
 		
 	}

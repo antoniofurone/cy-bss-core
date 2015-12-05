@@ -52,6 +52,13 @@
 		</div>
 	</div>
 	
+	<div class="form-group">
+	<label class="col-sm-1 control-label">Language</label>
+		<div class="col-sm-5">
+			<input class="form-control" id="language"  ng-model="language" type="text" />
+		</div>
+	</div>
+	
 	<div class="form-group" ng-show="operation">
 		<label class="col-sm-1 control-label">Method</label>
 		<div class="col-sm-5">
@@ -199,7 +206,8 @@
             		
             		//window.alert("url="+url);
             		
-            		var request = '{"method": "GET","url": "'+url+'", "headers": {"Security-Token": "'+$scope.securityToken+'"}}';
+            		var request = '{"method": "GET","url": "'+url+'", "headers": {"Security-Token": "'+$scope.securityToken+'"';
+            		request+= (($scope.language!=undefined && $scope.language!='')?',"Language": "'+$scope.language+'"':'')+'}}';
             		callWs($http,$scope,request);	
             		
             		/*
@@ -229,8 +237,8 @@
             				}
             			}
             		
-            		var request = '{"method": "POST","url": "'+url+
-            			'", "headers": {"Security-Token": "'+$scope.securityToken+'"},'
+            		var request = '{"method": "POST","url": "'+url+'", "headers": {"Security-Token": "'+$scope.securityToken+'"';
+            		request+=(($scope.language!=undefined && $scope.language!='')?',"Language": "'+$scope.language+'"':'')+'},';
             		request+='"data": {'+data+'}}';
             		
             		callWs($http,$scope,request);

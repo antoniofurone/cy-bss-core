@@ -6,4 +6,5 @@ import org.cysoft.bss.core.model.Location;
 public interface LocationDao {
 	public long add(Location location) throws CyBssException;
 	public Location get(long id);
+	public void remove(long id) throws CyBssException;
 }

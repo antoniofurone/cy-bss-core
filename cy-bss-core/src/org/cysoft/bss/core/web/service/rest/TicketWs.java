@@ -6,14 +6,20 @@ import org.cysoft.bss.core.common.CyBssException;
 import org.cysoft.bss.core.dao.FileDao;
 import org.cysoft.bss.core.dao.LocationDao;
 import org.cysoft.bss.core.dao.TicketDao;
+import org.cysoft.bss.core.model.Language;
 import org.cysoft.bss.core.model.Location;
 import org.cysoft.bss.core.model.Ticket;
+import org.cysoft.bss.core.model.TicketCategory;
+import org.cysoft.bss.core.model.TicketChangeStatus;
+import org.cysoft.bss.core.model.TicketStatus;
 import org.cysoft.bss.core.web.annotation.CyBssOperation;
 import org.cysoft.bss.core.web.annotation.CyBssService;
 import org.cysoft.bss.core.web.response.ICyBssResultConst;
 import org.cysoft.bss.core.web.response.file.FileListResponse;
+import org.cysoft.bss.core.web.response.rest.TicketCategoryListResponse;
 import org.cysoft.bss.core.web.response.rest.TicketListResponse;
 import org.cysoft.bss.core.web.response.rest.TicketResponse;
+import org.cysoft.bss.core.web.response.rest.TicketStatusListResponse;
 import org.cysoft.bss.core.web.service.CyBssWebServiceAdapter;
 import org.cysoft.bss.core.web.service.ICyBssWebService;
 import org.slf4j.Logger;
@@ -95,8 +101,8 @@ public class TicketWs extends CyBssWebServiceAdapter
 		if (!checkGrant(response,securityToken,"getFiles",String.class,Long.class))
 			return response;
 		// end checkGrant 
-				
-		Ticket ticket=ticketDao.get(id);
+		Language language=languageDao.getLanguage(response.getLanguageCode());		
+		Ticket ticket=ticketDao.get(id,language.getId());
 		if (ticket!=null){
 			response.setFiles(fileDao.getByEntity(Ticket.ENTITY_NAME, id));
 		}
@@ -111,13 +117,11 @@ public class TicketWs extends CyBssWebServiceAdapter
 	}
 	
 	
-	
-	
-	
 	@RequestMapping(value = "/{id}/get",method = RequestMethod.GET)
 	@CyBssOperation(name = "get")
 	public TicketResponse get(
 			@RequestHeader("Security-Token") String securityToken,
+			@RequestHeader(value="Language",required=false, defaultValue="") String languageCode,
 			@PathVariable("id") Long id
 			) throws CyBssException{
 		
@@ -125,11 +129,17 @@ public class TicketWs extends CyBssWebServiceAdapter
 		TicketResponse response=new TicketResponse();
 		
 		// checkGrant
-		if (!checkGrant(response,securityToken,"get",String.class,Long.class))
+		if (!checkGrant(response,securityToken,"get",String.class,String.class,Long.class))
 			return response;
 		// end checkGrant 
-				
-		Ticket ticket=ticketDao.get(id);
+		
+		Language language=null;
+		if (languageCode.equals(""))
+			language=languageDao.getLanguage(response.getLanguageCode());
+		else	
+			language=languageDao.getLanguage(languageCode);
+		
+		Ticket ticket=ticketDao.get(id,language.getId());
 		if (ticket!=null){
 			response.setTicket(ticket);
 			if (ticket.getLocationId()!=0)
@@ -146,10 +156,118 @@ public class TicketWs extends CyBssWebServiceAdapter
 	}
 	
 	
+	@RequestMapping(value = "/getCategoryAll",method = RequestMethod.GET)
+	@CyBssOperation(name = "getCategoryAll")
+	public TicketCategoryListResponse getCategoryAll(
+			@RequestHeader("Security-Token") String securityToken,
+			@RequestHeader(value="Language",required=false, defaultValue="") String languageCode
+			) throws CyBssException{
+		
+		logger.info("TicketWs.getCategoryAll() >>> ");
+		TicketCategoryListResponse response=new TicketCategoryListResponse();
+		
+		// checkGrant
+		if (!checkGrant(response,securityToken,"getCategoryAll",String.class,String.class))
+			return response;
+		// end checkGrant 
+		
+		Language language=null;
+		if (languageCode.equals(""))
+			language=languageDao.getLanguage(response.getLanguageCode());
+		else	
+			language=languageDao.getLanguage(languageCode);
+			
+		List<TicketCategory> categories=ticketDao.getCategoryAll(language.getId());
+		response.setTicketCategories(categories);
+		
+		logger.info("TicketWs.getCategoryAll() <<< ");
+		
+		return response;
+	}
+	
+	@RequestMapping(value = "/{statusId}/getNextStates",method = RequestMethod.GET)
+	@CyBssOperation(name = "getNextStates")
+	public TicketStatusListResponse getNextStates(
+			@RequestHeader("Security-Token") String securityToken,
+			@RequestHeader(value="Language",required=false, defaultValue="") String languageCode,
+			@PathVariable("statusId") Long statusId
+			) throws CyBssException{
+		
+		logger.info("TicketWs.getStatusNext() >>> "+statusId);
+		TicketStatusListResponse response=new TicketStatusListResponse();
+		
+		// checkGrant
+		if (!checkGrant(response,securityToken,"getNextStates",String.class,String.class,Long.class))
+			return response;
+		// end checkGrant 
+		
+		
+		Language language=null;
+		if (languageCode.equals(""))
+			language=languageDao.getLanguage(response.getLanguageCode());
+		else	
+			language=languageDao.getLanguage(languageCode);
+		
+		
+		List<TicketStatus> states=ticketDao.getNextStates(statusId, language.getId());
+		response.setTicketStates(states);
+		
+		logger.info("TicketWs.getStatusNext() <<< ");
+		
+		return response;
+	}
+	
+	@RequestMapping(value = "/{id}/changeStatus",method = RequestMethod.POST)
+	@CyBssOperation(name = "changeStatus")
+	public TicketResponse changeStatus(
+			@RequestHeader("Security-Token") String securityToken,
+			@RequestHeader(value="Language",required=false, defaultValue="") String languageCode,
+			@PathVariable("id") Long id,
+			@RequestBody TicketChangeStatus changeStatus
+			) throws CyBssException
+	{
+	TicketResponse response=new TicketResponse();
+	logger.info("TicketWs.changeStatus() >>> id="+id+";changeStatus="+changeStatus);
+	
+	// checkGrant
+	if (!checkGrant(response,securityToken,"changeStatus",String.class,String.class,Long.class,TicketChangeStatus.class))
+		return response;
+	// end checkGrant 
+	
+	Language language=null;
+	if (languageCode.equals(""))
+		language=languageDao.getLanguage(response.getLanguageCode());
+	else	
+		language=languageDao.getLanguage(languageCode);
+	
+	Ticket ticket=ticketDao.get(id, language.getId());
+	if (ticket==null){
+		setResult(response, ICyBssResultConst.RESULT_NOT_FOUND, 
+				ICyBssResultConst.RESULT_D_NOT_FOUND,response.getLanguageCode());
+		return response;
+	}
+	
+	List<TicketStatus> nextStates=ticketDao.getNextStates(ticket.getStatusId(), language.getId());
+	TicketStatus newState=new TicketStatus();
+	newState.setId(changeStatus.getStatusId());
+	if (nextStates==null || !nextStates.contains(newState)){
+		setResult(response, ICyBssResultConst.RESULT_STATUS_CANNOT, 
+				ICyBssResultConst.RESULT_D_STATUS_CANNOT,response.getLanguageCode());
+		return response;
+	}
+	
+	ticketDao.changeStatus(ticket,changeStatus.getStatusId(),response.getUserId(),changeStatus.getNote(),language.getId());
+	response.setTicket(ticketDao.get(id, language.getId()));
+	
+	logger.info("TicketWs.changeStatus() <<< ");
+	return response;
+	}	
+	
 	@RequestMapping(value = "/{id}/setLocation",method = RequestMethod.POST)
 	@CyBssOperation(name = "setLocation")
 	public TicketResponse setLocation(
 			@RequestHeader("Security-Token") String securityToken,
+			@RequestHeader(value="Language",required=false, defaultValue="") String languageCode,
 			@PathVariable("id") Long id,
 			@RequestBody Location location
 			) throws CyBssException
@@ -159,11 +277,17 @@ public class TicketWs extends CyBssWebServiceAdapter
 		logger.info("TicketWs.setLocation() >>> id="+id);
 		
 		// checkGrant
-		if (!checkGrant(response,securityToken,"setLocation",String.class,Long.class,Location.class))
-			return response;
+		if (!checkGrant(response,securityToken,"setLocation",String.class,String.class,Long.class,Location.class))
+				return response;
 		// end checkGrant 
 		
-		Ticket ticket=ticketDao.get(id);
+		Language language=null;
+		if (languageCode.equals(""))
+			language=languageDao.getLanguage(response.getLanguageCode());
+		else	
+			language=languageDao.getLanguage(languageCode);
+		
+		Ticket ticket=ticketDao.get(id,language.getId());
 		if (ticket==null){
 			setResult(response, ICyBssResultConst.RESULT_NOT_FOUND, 
 					ICyBssResultConst.RESULT_D_NOT_FOUND,response.getLanguageCode());
@@ -173,12 +297,11 @@ public class TicketWs extends CyBssWebServiceAdapter
 		
 		location.setName("Ticket #"+id);
 		location.setLocationType(Ticket.ENTITY_NAME);
-		long locationId=locationDao.add(location);
+		ticket.setLocation(location);
 		
-		ticket.setLocationId(locationId);
-		ticket.setLocation(locationDao.get(locationId));
-		
-		ticketDao.update(id, ticket);
+		ticketDao.update(id, ticket,language.getId());
+		ticket=ticketDao.get(id, language.getId());
+		ticket.setLocation(locationDao.get(ticket.getLocationId()));
 		
 		response.setTicket(ticket);
 		
@@ -188,10 +311,75 @@ public class TicketWs extends CyBssWebServiceAdapter
 	}
 	
 	
+	@RequestMapping(value = "/{id}/update",method = RequestMethod.POST)
+	@CyBssOperation(name = "update")
+	public TicketResponse update(
+			@RequestHeader("Security-Token") String securityToken,
+			@RequestHeader(value="Language",required=false, defaultValue="") String languageCode,
+			@PathVariable("id") Long id,
+			@RequestBody Ticket ticket
+			) throws CyBssException
+	{
+		TicketResponse response=new TicketResponse();
+		
+		logger.info("TicketWs.update() >>> id="+id);
+		
+		// checkGrant
+		if (!checkGrant(response,securityToken,"update",String.class,String.class,Long.class,Ticket.class))
+			return response;
+		// end checkGrant 
+		
+		Language language=null;
+		if (languageCode.equals(""))
+			language=languageDao.getLanguage(response.getLanguageCode());
+		else	
+			language=languageDao.getLanguage(languageCode);
+		
+		if (ticketDao.get(id,language.getId())==null){
+			setResult(response, ICyBssResultConst.RESULT_NOT_FOUND, 
+					ICyBssResultConst.RESULT_D_NOT_FOUND,response.getLanguageCode());
+			return response;
+			}
+		
+		ticketDao.update(id, ticket,language.getId());
+		ticket=ticketDao.get(id, language.getId());
+		ticket.setLocation(locationDao.get(ticket.getLocationId()));
+		
+		response.setTicket(ticket);
+		
+		logger.info("TicketWs.update() <<<");
+		return response;
+	}
+	
+	@RequestMapping(value = "/{id}/remove",method = RequestMethod.GET)
+	@CyBssOperation(name = "remove")
+	public TicketResponse remove(
+			@RequestHeader("Security-Token") String securityToken,
+			@PathVariable("id") Long id
+			) throws CyBssException{
+		
+		logger.info("TicketWs.remove() >>> id="+id);
+		TicketResponse response=new TicketResponse();
+		
+		// checkGrant
+		if (!checkGrant(response,securityToken,"remove",String.class,Long.class))
+			return response;
+		// end checkGrant 
+		
+		Language language=languageDao.getLanguage(response.getLanguageCode());
+		ticketDao.remove(id,language.getId());
+		
+		logger.info("TicketWs.remove() <<< ");
+		return response;
+	}
+	
+	
+	
 	@RequestMapping(value = "/find",method = RequestMethod.GET)
 	@CyBssOperation(name = "find")
 	public TicketListResponse find(
 			@RequestHeader("Security-Token") String securityToken,
+			@RequestHeader(value="Language",required=false, defaultValue="") String languageCode,
 			@RequestParam(value="text", required=false, defaultValue="") String text,
 			@RequestParam(value="categoryId", required=false, defaultValue="0") Long categoryId,
 			@RequestParam(value="statusId", required=false, defaultValue="0") Long statusId,
@@ -207,13 +395,21 @@ public class TicketWs extends CyBssWebServiceAdapter
 		
 		
 		// checkGrant
-		if (!checkGrant(response,securityToken,"find",String.class,String.class,
+		if (!checkGrant(response,securityToken,"find",String.class,String.class,String.class,
 				Long.class,Long.class,Long.class,
 				String.class,String.class,
 				Integer.class,Integer.class))
 			return response;
 		// end checkGrant 
-		List<Ticket> tickets=ticketDao.find(text, categoryId, statusId, personId, fromDate, toDate);
+		
+		Language language=null;
+		if (languageCode.equals(""))
+			language=languageDao.getLanguage(response.getLanguageCode());
+		else	
+			language=languageDao.getLanguage(languageCode);
+		
+		
+		List<Ticket> tickets=ticketDao.find(text, categoryId, statusId, personId, fromDate, toDate,language.getId());
 		int lsize=tickets.size();
 		if (offset!=0)
 			response.setTickets(tickets.subList(offset-1, (offset-1)+(size>lsize?lsize:size)));
