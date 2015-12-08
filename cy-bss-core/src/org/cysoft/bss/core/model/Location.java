@@ -20,7 +20,16 @@ public class Location {
 	public void setName(String name) {
 		this.name = name;
 	}
-	
+
+	private String description="";
+	public String getDescription() {
+		return description;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
+	}
+
 	private String locationType="";
 	public String getLocationType() {
 		return locationType;
@@ -58,10 +67,10 @@ public class Location {
 
 	@Override
 	public String toString() {
-		return "Location [id=" + id + ", name=" + name + ", type=" + locationType
+		return "Location [id=" + id + ", name=" + name + ", description="
+				+ description + ", locationType=" + locationType
 				+ ", latitude=" + latitude + ", longitude=" + longitude
 				+ ", cityId=" + cityId + "]";
 	}
-	
 	
 }

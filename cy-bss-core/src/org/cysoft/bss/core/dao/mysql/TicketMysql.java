@@ -82,13 +82,12 @@ public class TicketMysql extends CyBssMysqlDao
 	@Override
 	public Ticket get(long id,long langId) {
 		// TODO Auto-generated method stub
-		logger.info("TicketMysql.get() >>>");
 		
 		// TODO Auto-generated method stub
 		JdbcTemplate jdbcTemplate = new JdbcTemplate(ds);
 		
 		
-		String query="select  ID,TEXT,CREATION_DATE,STATUS_ID,IFNULL(C.TSL_S_NAME,STATUS_NAME) AS STATUS_NAME,USER_ID,USER_NAME,CATEGORY_ID,IFNULL(B.TCL_S_NAME,CATEGORY_NAME) AS CATEGORY_NAME,";
+		String query="select  ID,TEXT,CREATION_DATE,STATUS_ID,IFNULL(c.TSL_S_NAME,STATUS_NAME) AS STATUS_NAME,USER_ID,USER_NAME,CATEGORY_ID,IFNULL(b.TCL_S_NAME,CATEGORY_NAME) AS CATEGORY_NAME,";
 		query+="PERSON_ID,PERSON_FIRST_NAME,PERSON_SECOND_NAME,LOCATION_ID";
 		query+=" from BSSV_TICKET a";
 		query+=" left join BSST_TCL_TICKET_CATEGORY_LANG b on a.CATEGORY_ID=b.TCA_N_CATEGORY_ID AND b.LAN_N_LANG_ID=?";
@@ -104,7 +103,6 @@ public class TicketMysql extends CyBssMysqlDao
 			logger.info("UserMysql.IncorrectResultSizeDataAccessException:"+e.getMessage());
 		
 		}
-		logger.info("TicketMysql.get() <<<");
 		return ret;
 
 	}
@@ -113,13 +111,12 @@ public class TicketMysql extends CyBssMysqlDao
 	@Transactional
 	public void update(long id, Ticket ticket,long langId) throws CyBssException {
 		// TODO Auto-generated method stub
-		logger.info("TicketMysql.update() >>>");
 		
 		JdbcTemplate jdbcTemplate = new JdbcTemplate(ds);
 		
 		Ticket oldVersion=get(id, langId);
 		if (oldVersion.getLocationId()!=0){
-			Location location=locationDao.get(oldVersion.getLocationId());
+			Location location=locationDao.get(oldVersion.getLocationId(),langId);
 			if (location.getLocationType().equals(Ticket.ENTITY_NAME)){
 			   String cmd="update BSST_TIC_TICKET set LOC_N_LOCATION_ID=? where TIC_N_TICKET_ID=?";
 			   logger.info(cmd+"["+id+","+ticket+"]");
@@ -168,21 +165,19 @@ public class TicketMysql extends CyBssMysqlDao
 			throw new CyBssException(e);
 		}
 		
-		logger.info("TicketMysql.update() <<<");
-
+	
 	}
 	
 	@Override
 	public List<Ticket> find(String text, long categoryId, long statusId,
 			long personId,String fromDate,String toDate,long langId) throws CyBssException {
 		// TODO Auto-generated method stub
-		logger.info("TicketMysql.find() >>>");
 		
 		// TODO Auto-generated method stub
 		JdbcTemplate jdbcTemplate = new JdbcTemplate(ds);
 				
 				
-		String query="select  ID,TEXT,CREATION_DATE,STATUS_ID,IFNULL(C.TSL_S_NAME,STATUS_NAME) AS STATUS_NAME,USER_ID,USER_NAME,CATEGORY_ID,IFNULL(B.TCL_S_NAME,CATEGORY_NAME) AS CATEGORY_NAME,";
+		String query="select  ID,TEXT,CREATION_DATE,STATUS_ID,IFNULL(c.TSL_S_NAME,STATUS_NAME) AS STATUS_NAME,USER_ID,USER_NAME,CATEGORY_ID,IFNULL(b.TCL_S_NAME,CATEGORY_NAME) AS CATEGORY_NAME,";
 		query+="PERSON_ID,PERSON_FIRST_NAME,PERSON_SECOND_NAME,LOCATION_ID";
 		query+=" from BSSV_TICKET a";
 		query+=" left join BSST_TCL_TICKET_CATEGORY_LANG b on a.CATEGORY_ID=b.TCA_N_CATEGORY_ID AND b.LAN_N_LANG_ID=?";
@@ -253,7 +248,6 @@ public class TicketMysql extends CyBssMysqlDao
 		List<Ticket> ret=jdbcTemplate.query(query, parms.toArray(),new RowMapperTicket());
 		
 		
-		logger.info("TicketMysql.find() <<<");
 		
 		return ret;
 	}
@@ -295,7 +289,6 @@ public class TicketMysql extends CyBssMysqlDao
 	@Override
 	public List<TicketCategory> getCategoryAll(long langId) {
 		// TODO Auto-generated method stub
-		logger.info("TicketMysql.getCategoryAll() >>>");
 		
 		String query="select a.TCA_N_CATEGORY_ID,IFNULL(b.TCL_S_NAME,a.TCA_S_NAME) AS TCA_S_NAME,IFNULL(b.TCL_S_DESC,a.TCA_S_DESC) AS TCA_S_DESC from BSST_TCA_TICKET_CATEGORY a";
 		query+=" left join BSST_TCL_TICKET_CATEGORY_LANG b on a.TCA_N_CATEGORY_ID=b.TCA_N_CATEGORY_ID AND LAN_N_LANG_ID="+langId;
@@ -320,7 +313,6 @@ public class TicketMysql extends CyBssMysqlDao
 		
 		
         
-		logger.info("TicketMysql.getCategoryAll() <<<");
 		
 		return ret;
 
@@ -330,9 +322,8 @@ public class TicketMysql extends CyBssMysqlDao
 	@Override
 	public List<TicketStatus> getNextStates(long stateId, long langId) {
 		// TODO Auto-generated method stub
-		logger.info("TicketMysql.getNextStates() >>>"+stateId);
 		
-		String query="SELECT a.TWF_N_END_STATUS_ID,IFNULL(C.TSL_S_NAME,B.TST_S_NAME) AS STATUS_NAME,IFNULL(C.TSL_S_DESC,B.TST_S_DESC) as STATUS_DESC";
+		String query="SELECT a.TWF_N_END_STATUS_ID,IFNULL(c.TSL_S_NAME,b.TST_S_NAME) AS STATUS_NAME,IFNULL(c.TSL_S_DESC,b.TST_S_DESC) as STATUS_DESC";
 		query+=" from BSST_TWF_TICKET_WORKFLOW a";
 		query+=" left join BSST_TST_TICKET_STATUS b on a.TWF_N_END_STATUS_ID=b.TST_N_STATUS_ID ";
 		query+=" left join BSST_TSL_TICKET_STATUS_LANG c on a.TWF_N_END_STATUS_ID=c.TST_N_STATUS_ID AND c.LAN_N_LANG_ID=?";
@@ -359,7 +350,6 @@ public class TicketMysql extends CyBssMysqlDao
                 });
 		
 	 	
-		logger.info("TicketMysql.getNextStates() <<<");
 		
 		return ret;
 	}
@@ -402,13 +392,20 @@ public class TicketMysql extends CyBssMysqlDao
 		
 		Location location=null;
 		if (ticket.getLocationId()!=0){
-			location=locationDao.get(ticket.getId());
+			location=locationDao.get(ticket.getLocationId(),langId);
 		}
 		
 		List<CyBssFile> files=fileDao.getByEntity(Ticket.ENTITY_NAME,id);
 		if (files!=null)
-			for(CyBssFile file:files)
-				fileDao.remove(file.getId());
+			for(CyBssFile file:files){
+				String cmd="delete from BSST_FIL_FILE where FILE_N_FILE_ID=? ";
+				logger.info(cmd+"["+file.getId()+"]");
+				
+				jdbcTemplate.update(cmd, new Object[]{
+						file.getId()	
+					});
+				
+			}
 		
 		String cmd="delete from BSST_TTR_TICKET_TRACE where TIC_N_TICKET_ID=?";
 		logger.info(cmd+"["+id+"]");
@@ -434,8 +431,20 @@ public class TicketMysql extends CyBssMysqlDao
 			throw new CyBssException(e);
 		}
 		
-		if (location!=null && location.getLocationType().equals(Ticket.ENTITY_NAME))
-			locationDao.remove(location.getId());
+		if (location!=null && location.getLocationType().equals(Ticket.ENTITY_NAME)){
+			cmd="delete from BSST_LOC_LOCATION where LOC_N_LOCATION_ID=?";
+			logger.info(cmd+"["+id+"]");
+			try {
+				jdbcTemplate.update(cmd, new Object[]{
+						id
+					});
+			} catch (DataAccessException e) {
+				// TODO Auto-generated catch block
+				logger.error(e.toString());
+				throw new CyBssException(e);
+			}
+			
+		}
 		
 	}
 	

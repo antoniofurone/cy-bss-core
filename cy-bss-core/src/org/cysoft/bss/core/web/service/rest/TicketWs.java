@@ -90,7 +90,7 @@ public class TicketWs extends CyBssWebServiceAdapter
 	@RequestMapping(value = "/{id}/getFiles",method = RequestMethod.GET)
 	@CyBssOperation(name = "getFiles")
 	public FileListResponse getFiles(
-			@RequestHeader("Security-Token") String securityToken,
+			@RequestHeader(value="Security-Token",required=false, defaultValue="") String securityToken,
 			@PathVariable("id") Long id
 			) throws CyBssException{
 		
@@ -98,8 +98,8 @@ public class TicketWs extends CyBssWebServiceAdapter
 		FileListResponse response=new FileListResponse();
 		
 		// checkGrant
-		if (!checkGrant(response,securityToken,"getFiles",String.class,Long.class))
-			return response;
+		//if (!checkGrant(response,securityToken,"getFiles",String.class,Long.class))
+		//	return response;
 		// end checkGrant 
 		Language language=languageDao.getLanguage(response.getLanguageCode());		
 		Ticket ticket=ticketDao.get(id,language.getId());
@@ -120,7 +120,7 @@ public class TicketWs extends CyBssWebServiceAdapter
 	@RequestMapping(value = "/{id}/get",method = RequestMethod.GET)
 	@CyBssOperation(name = "get")
 	public TicketResponse get(
-			@RequestHeader("Security-Token") String securityToken,
+			@RequestHeader(value="Security-Token",required=false, defaultValue="") String securityToken,
 			@RequestHeader(value="Language",required=false, defaultValue="") String languageCode,
 			@PathVariable("id") Long id
 			) throws CyBssException{
@@ -129,8 +129,8 @@ public class TicketWs extends CyBssWebServiceAdapter
 		TicketResponse response=new TicketResponse();
 		
 		// checkGrant
-		if (!checkGrant(response,securityToken,"get",String.class,String.class,Long.class))
-			return response;
+		// if (!checkGrant(response,securityToken,"get",String.class,String.class,Long.class))
+		//	return response;
 		// end checkGrant 
 		
 		Language language=null;
@@ -143,7 +143,7 @@ public class TicketWs extends CyBssWebServiceAdapter
 		if (ticket!=null){
 			response.setTicket(ticket);
 			if (ticket.getLocationId()!=0)
-				ticket.setLocation(locationDao.get(ticket.getLocationId()));
+				ticket.setLocation(locationDao.get(ticket.getLocationId(),language.getId()));
 		}
 		else
 			setResult(response, ICyBssResultConst.RESULT_NOT_FOUND, 
@@ -159,7 +159,7 @@ public class TicketWs extends CyBssWebServiceAdapter
 	@RequestMapping(value = "/getCategoryAll",method = RequestMethod.GET)
 	@CyBssOperation(name = "getCategoryAll")
 	public TicketCategoryListResponse getCategoryAll(
-			@RequestHeader("Security-Token") String securityToken,
+			@RequestHeader(value="Security-Token",required=false, defaultValue="") String securityToken,
 			@RequestHeader(value="Language",required=false, defaultValue="") String languageCode
 			) throws CyBssException{
 		
@@ -167,8 +167,8 @@ public class TicketWs extends CyBssWebServiceAdapter
 		TicketCategoryListResponse response=new TicketCategoryListResponse();
 		
 		// checkGrant
-		if (!checkGrant(response,securityToken,"getCategoryAll",String.class,String.class))
-			return response;
+		//if (!checkGrant(response,securityToken,"getCategoryAll",String.class,String.class))
+		//	return response;
 		// end checkGrant 
 		
 		Language language=null;
@@ -301,7 +301,7 @@ public class TicketWs extends CyBssWebServiceAdapter
 		
 		ticketDao.update(id, ticket,language.getId());
 		ticket=ticketDao.get(id, language.getId());
-		ticket.setLocation(locationDao.get(ticket.getLocationId()));
+		ticket.setLocation(locationDao.get(ticket.getLocationId(),language.getId()));
 		
 		response.setTicket(ticket);
 		
@@ -343,7 +343,7 @@ public class TicketWs extends CyBssWebServiceAdapter
 		
 		ticketDao.update(id, ticket,language.getId());
 		ticket=ticketDao.get(id, language.getId());
-		ticket.setLocation(locationDao.get(ticket.getLocationId()));
+		ticket.setLocation(locationDao.get(ticket.getLocationId(),language.getId()));
 		
 		response.setTicket(ticket);
 		
@@ -378,7 +378,7 @@ public class TicketWs extends CyBssWebServiceAdapter
 	@RequestMapping(value = "/find",method = RequestMethod.GET)
 	@CyBssOperation(name = "find")
 	public TicketListResponse find(
-			@RequestHeader("Security-Token") String securityToken,
+			@RequestHeader(value="Security-Token",required=false, defaultValue="") String securityToken,
 			@RequestHeader(value="Language",required=false, defaultValue="") String languageCode,
 			@RequestParam(value="text", required=false, defaultValue="") String text,
 			@RequestParam(value="categoryId", required=false, defaultValue="0") Long categoryId,
@@ -395,11 +395,11 @@ public class TicketWs extends CyBssWebServiceAdapter
 		
 		
 		// checkGrant
-		if (!checkGrant(response,securityToken,"find",String.class,String.class,String.class,
-				Long.class,Long.class,Long.class,
-				String.class,String.class,
-				Integer.class,Integer.class))
-			return response;
+		// if (!checkGrant(response,securityToken,"find",String.class,String.class,String.class,
+		//		Long.class,Long.class,Long.class,
+		//		String.class,String.class,
+		//		Integer.class,Integer.class))
+		//	return response;
 		// end checkGrant 
 		
 		Language language=null;
