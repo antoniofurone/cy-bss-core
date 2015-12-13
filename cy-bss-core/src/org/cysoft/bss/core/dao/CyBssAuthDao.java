@@ -1,7 +1,9 @@
 package org.cysoft.bss.core.dao;
 
+import org.cysoft.bss.core.common.CyBssException;
+
 public interface CyBssAuthDao {
-	public boolean logOn(String userId,String pwd);
+	public boolean logOn(String userId,String pwd) throws CyBssException;
 	
 	public void createSession(long userId,String securityToken);
 	public void refreshSession(String securityToken);

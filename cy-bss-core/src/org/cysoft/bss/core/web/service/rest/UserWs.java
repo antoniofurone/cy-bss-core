@@ -3,7 +3,9 @@ package org.cysoft.bss.core.web.service.rest;
 import java.util.List;
 
 import org.cysoft.bss.core.common.CyBssException;
+import org.cysoft.bss.core.common.CyBssPwdEncryption;
 import org.cysoft.bss.core.model.ChangePwd;
+import org.cysoft.bss.core.model.PwdEncrypted;
 import org.cysoft.bss.core.model.User;
 import org.cysoft.bss.core.model.UserRole;
 import org.cysoft.bss.core.web.annotation.CyBssOperation;
@@ -224,6 +226,67 @@ public class UserWs extends CyBssWebServiceAdapter
 		return response;
 	}
 	
+	
+	@RequestMapping(value = "/{id}/removePerson",method = RequestMethod.GET)
+	@CyBssOperation(name = "removePerson")
+	public UserResponse removePerson(
+			@RequestHeader("Security-Token") String securityToken,
+			@PathVariable("id") Long id
+			) throws CyBssException{
+		
+		logger.info("UserWs.removePerson() >>> id="+id);
+		UserResponse response=new UserResponse();
+		
+		// checkGrant
+		if (!checkGrant(response,securityToken,"removePerson",String.class,Long.class))
+			return response;
+		// end checkGrant 
+		
+		userDao.updatePeson(id, 0);
+		User user=userDao.get(id);
+		if (user!=null)
+			response.setUser(user);
+		else
+			setResult(response, ICyBssResultConst.RESULT_NOT_FOUND, 
+					ICyBssResultConst.RESULT_D_NOT_FOUND,response.getLanguageCode());
+		
+		logger.info("UserWs.removePerson() <<< ");
+		
+		return response;
+	}
+	
+	
+	@RequestMapping(value = "/{id}/addPerson/{personId}",method = RequestMethod.GET)
+	@CyBssOperation(name = "addPerson")
+	public UserResponse addPerson(
+			@RequestHeader("Security-Token") String securityToken,
+			@PathVariable("id") Long id,
+			@PathVariable("personId") Long personId
+			) throws CyBssException{
+		
+		logger.info("UserWs.addPerson() >>> id="+id+";personId="+personId);
+		UserResponse response=new UserResponse();
+		
+		// checkGrant
+		if (!checkGrant(response,securityToken,"addPerson",String.class,Long.class,Long.class))
+			return response;
+		// end checkGrant 
+		
+		userDao.updatePeson(id, personId);
+		
+		User user=userDao.get(id);
+		if (user!=null)
+			response.setUser(user);
+		else
+			setResult(response, ICyBssResultConst.RESULT_NOT_FOUND, 
+					ICyBssResultConst.RESULT_D_NOT_FOUND,response.getLanguageCode());
+		
+		logger.info("UserWs.addPerson() <<< ");
+		
+		return response;
+	}
+	
+	
 	@RequestMapping(value = "/{id}/changePwd",method = RequestMethod.POST)
 	@CyBssOperation(name = "changePwd")
 	public UserResponse changePwd(
@@ -241,14 +304,15 @@ public class UserWs extends CyBssWebServiceAdapter
 			return response;
 		// end checkGrant 
 		
-		String oldPwd=userDao.getPwd(id);
+		PwdEncrypted oldPwd=userDao.getPwd(id);
+		
 		if (oldPwd==null){
 			setResult(response, ICyBssResultConst.RESULT_NOT_FOUND, 
 					ICyBssResultConst.RESULT_D_NOT_FOUND,response.getLanguageCode());
 			return response;
 		}
 		
-		if (!oldPwd.equals(changePwd.getOldPwd())){
+		if (!CyBssPwdEncryption.authenticate(changePwd.getOldPwd(), oldPwd.getPwd(), oldPwd.getSalt())){
 			setResult(response, ICyBssResultConst.RESULT_PWD_DIFF, 
 					ICyBssResultConst.RESULT_D_PWD_DIFF,response.getLanguageCode());
 			return response;

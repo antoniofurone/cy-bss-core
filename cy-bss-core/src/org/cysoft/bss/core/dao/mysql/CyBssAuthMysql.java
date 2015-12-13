@@ -3,7 +3,10 @@ package org.cysoft.bss.core.dao.mysql;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+import org.cysoft.bss.core.common.CyBssException;
+import org.cysoft.bss.core.common.CyBssPwdEncryption;
 import org.cysoft.bss.core.dao.CyBssAuthDao;
+import org.cysoft.bss.core.model.PwdEncrypted;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
@@ -18,7 +21,7 @@ public class CyBssAuthMysql extends CyBssMysqlDao
 	
 	
 	@Override
-	public boolean logOn(String userId, String pwd) {
+	public boolean logOn(String userId, String pwd) throws CyBssException {
 		// TODO Auto-generated method stub
 		boolean ret=false;
 		
@@ -27,20 +30,35 @@ public class CyBssAuthMysql extends CyBssMysqlDao
 		// TODO Auto-generated method stub
 		JdbcTemplate jdbcTemplate = new JdbcTemplate(ds);
 
-		String query="select count(0) ";
-		query+="from BSST_USR_USER where USR_S_USER_ID=? and USR_S_PSW=? and USR_C_ACTIVE='Y'";
-		logger.info(query+"["+userId+",****]");
+		String query="select USR_B_PSW,USR_B_SALT ";
+		query+="from BSST_USR_USER where USR_S_USER_ID=? AND USR_C_ACTIVE='Y'";
+		logger.info(query+"["+userId+"]");
 		
-		Long count=jdbcTemplate.queryForObject(query,Long.class,new Object[] { userId,pwd });
-		if (count>0)
-			ret=true;
+		PwdEncrypted pwdEncr=null;
+		try {
+			pwdEncr=jdbcTemplate.queryForObject(query, new Object[] { userId },new RowMapper<PwdEncrypted>() {
+	            @Override
+	            public PwdEncrypted mapRow(ResultSet rs, int rowNum) throws SQLException {
+	            	PwdEncrypted pwdEncr=new PwdEncrypted(); 
+	            	pwdEncr.setPwd(rs.getBytes("USR_B_PSW"));
+	            	pwdEncr.setSalt(rs.getBytes("USR_B_SALT"));
+	            	return pwdEncr;
+	            }
+	        });
+		}
+		catch(IncorrectResultSizeDataAccessException e){
+			logger.info("IncorrectResultSizeDataAccessException:"+e.getMessage());
+			return ret;
+		}
+		
+		ret=CyBssPwdEncryption.authenticate(pwd, pwdEncr.getPwd(), pwdEncr.getSalt());
 		
 		logger.info("BssAuthMysql.logOn() <<<");
 		return ret;
 
 	}
 
-
+	
 	@Override
 	@Transactional
 	public void createSession(long userId, String securityToken) {

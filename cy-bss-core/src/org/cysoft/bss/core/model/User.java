@@ -52,6 +52,32 @@ public class User {
 		this.role = role;
 	}
 
+	private long personId;
+	public long getPersonId() {
+		return personId;
+	}
+	public void setPersonId(long personId) {
+		this.personId = personId;
+	}
+
+	
+	private String personFirstName="";
+	public String getPersonFirstName() {
+		return personFirstName;
+	}
+	public void setPersonFirstName(String personFirstName) {
+		this.personFirstName = personFirstName;
+	}
+
+	
+	private String personSecondName="";
+	public String getPersonSecondName() {
+		return personSecondName;
+	}
+	public void setPersonSecondName(String personSecondName) {
+		this.personSecondName = personSecondName;
+	}
+
 	private long languageId;
 	public long getLanguageId() {
 		return languageId;
@@ -79,13 +105,17 @@ public class User {
 	public boolean isActive(){
 		return this.flgActive.equals(ICyBssConst.YES)?true:false;
 	}
+	
 	@Override
 	public String toString() {
 		return "User [id=" + id + ", userId=" + userId + ", pwd=" + pwd
 				+ ", name=" + name + ", roleId=" + roleId + ", role=" + role
+				+ ", personId=" + personId + ", personFirstName="
+				+ personFirstName + ", personSecondName=" + personSecondName
 				+ ", languageId=" + languageId + ", languageCode="
 				+ languageCode + ", flgActive=" + flgActive + "]";
 	}
+	
 	
 	
 }

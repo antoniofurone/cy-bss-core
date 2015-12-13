@@ -35,7 +35,7 @@ public class CyBssAuthWs extends CyBssWebServiceAdapter
 	@RequestMapping(value = "/logOn",method = RequestMethod.POST)
 	public CyBssAuthLogOn logOn(
 			@RequestBody User pUser
-			){
+			) throws CyBssException{
 		
 		logger.info("CyBssAuthWs.logOn() >>>");
 		

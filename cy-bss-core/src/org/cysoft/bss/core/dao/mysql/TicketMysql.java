@@ -436,7 +436,7 @@ public class TicketMysql extends CyBssMysqlDao
 			logger.info(cmd+"["+id+"]");
 			try {
 				jdbcTemplate.update(cmd, new Object[]{
-						id
+						location.getId()
 					});
 			} catch (DataAccessException e) {
 				// TODO Auto-generated catch block

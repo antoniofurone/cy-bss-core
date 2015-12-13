@@ -297,6 +297,9 @@ public class TicketWs extends CyBssWebServiceAdapter
 		
 		location.setName("Ticket #"+id);
 		location.setLocationType(Ticket.ENTITY_NAME);
+		location.setUserId(response.getUserId());
+		location.setPersonId(ticket.getPersonId());
+		
 		ticket.setLocation(location);
 		
 		ticketDao.update(id, ticket,language.getId());

@@ -4,7 +4,10 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 
+import org.cysoft.bss.core.common.CyBssException;
+import org.cysoft.bss.core.common.CyBssPwdEncryption;
 import org.cysoft.bss.core.dao.UserDao;
+import org.cysoft.bss.core.model.PwdEncrypted;
 import org.cysoft.bss.core.model.User;
 import org.cysoft.bss.core.model.UserRole;
 import org.slf4j.Logger;
@@ -28,10 +31,11 @@ public class UserMysql extends CyBssMysqlDao
 		JdbcTemplate jdbcTemplate = new JdbcTemplate(ds);
 
 		String query="select  a.USR_N_USER_ID, a.USR_S_USER_ID, a.USR_S_NAME, a.URO_N_ROLE_ID, ";
-		query+="b.URO_S_NAME, a.LAN_N_LANG_ID, c.LAN_S_CODE, a.USR_C_ACTIVE ";
+		query+="b.URO_S_NAME, a.LAN_N_LANG_ID, c.LAN_S_CODE, a.USR_C_ACTIVE,a.PER_N_PERSON_ID,PER_S_FIRST_NAME, PER_S_SECOND_NAME ";
 		query+="from BSST_USR_USER a";
 		query+=" join BSST_URO_ROLE b on b.URO_N_ROLE_ID=a.URO_N_ROLE_ID";
 		query+=" join BSST_LAN_LANGUAGE c on c.LAN_N_LANG_ID=a.LAN_N_LANG_ID";
+		query+=" left join BSST_PER_PERSON d on d.PER_N_PERSON_ID=a.PER_N_PERSON_ID";
 		if (bUserId)
 			query+=" where USR_S_USER_ID=?";
 		else
@@ -55,6 +59,9 @@ public class UserMysql extends CyBssMysqlDao
 	                user.setLanguageId(rs.getLong("LAN_N_LANG_ID"));
 	                user.setLanguageCode(rs.getString("LAN_S_CODE"));
 	                user.setFlgActive(rs.getString("USR_C_ACTIVE"));
+	                user.setPersonId(rs.getLong("PER_N_PERSON_ID"));
+	                user.setPersonFirstName(rs.getString("PER_S_FIRST_NAME"));
+	                user.setPersonSecondName(rs.getString("PER_S_SECOND_NAME"));
 	                
 	                return user;
 	            }
@@ -121,17 +128,20 @@ public class UserMysql extends CyBssMysqlDao
 
 
 	@Override
-	public void add(User user) {
+	public void add(User user) throws CyBssException {
 		// TODO Auto-generated method stub
 		logger.info("UserMysql.add() >>>");
 		
-		String cmd="insert into BSST_USR_USER(USR_S_USER_ID,USR_S_PSW,USR_S_NAME,URO_N_ROLE_ID,LAN_N_LANG_ID) ";
-		cmd+=" values (?,?,?,?,?)";
+		String cmd="insert into BSST_USR_USER(USR_S_USER_ID,USR_B_PSW,USR_B_SALT,USR_S_NAME,URO_N_ROLE_ID,LAN_N_LANG_ID) ";
+		cmd+=" values (?,?,?,?,?,?)";
 		JdbcTemplate jdbcTemplate = new JdbcTemplate(ds);
 		logger.info(cmd+"["+user+"]");
 		
+		byte[] salt=CyBssPwdEncryption.generateSalt();
+		byte[] encPwd=CyBssPwdEncryption.encryptPwd(user.getPwd(), salt);
+		
 		jdbcTemplate.update(cmd, new Object[]{
-				user.getUserId(), user.getPwd(), user.getName(), user.getRoleId(),user.getLanguageId()		
+				user.getUserId(), encPwd, salt, user.getName(), user.getRoleId(),user.getLanguageId()		
 			});
 		
 		logger.info("UserMysql.add() <<<");
@@ -143,10 +153,11 @@ public class UserMysql extends CyBssMysqlDao
 		// TODO Auto-generated method stub
 		logger.info("UserMysql.find() >>> name="+name);
 		
-		String query="select a.USR_N_USER_ID, a.USR_S_USER_ID, a.USR_S_NAME, a.USR_C_ACTIVE, a.LAN_N_LANG_ID, c.LAN_S_CODE, a.URO_N_ROLE_ID, b.URO_S_NAME";
+		String query="select a.USR_N_USER_ID, a.USR_S_USER_ID, a.USR_S_NAME, a.USR_C_ACTIVE, a.LAN_N_LANG_ID, c.LAN_S_CODE, a.URO_N_ROLE_ID, b.URO_S_NAME, a.PER_N_PERSON_ID,PER_S_FIRST_NAME, PER_S_SECOND_NAME";
 		query+=" from BSST_USR_USER a";
 		query+=" join BSST_URO_ROLE b on b.URO_N_ROLE_ID=a.URO_N_ROLE_ID";
 		query+=" join BSST_LAN_LANGUAGE c on c.LAN_N_LANG_ID=a.LAN_N_LANG_ID";
+		query+=" left join BSST_PER_PERSON d on d.PER_N_PERSON_ID=a.PER_N_PERSON_ID";
 		if (!name.equals(""))
 			if (!name.contains("%"))
 				query+=" where a.USR_S_NAME=?";
@@ -171,7 +182,10 @@ public class UserMysql extends CyBssMysqlDao
                 user.setLanguageCode(rs.getString("LAN_S_CODE"));
             	user.setRoleId(rs.getLong("URO_N_ROLE_ID"));
             	user.setRole(rs.getString("URO_S_NAME"));
-            	
+            	user.setPersonId(rs.getLong("PER_N_PERSON_ID"));
+                user.setPersonFirstName(rs.getString("PER_S_FIRST_NAME"));
+                user.setPersonSecondName(rs.getString("PER_S_SECOND_NAME"));
+                
                 return user;
             }
 		};
@@ -247,17 +261,19 @@ public class UserMysql extends CyBssMysqlDao
 
 
 	@Override
-	public void changPwd(long id, String pwd) {
+	public void changPwd(long id, String pwd) throws CyBssException {
 		// TODO Auto-generated method stub
 		logger.info("UserMysql.changPwd() >>>");
+		byte[] salt=CyBssPwdEncryption.generateSalt();
+		byte[] encPwd=CyBssPwdEncryption.encryptPwd(pwd, salt);
 		
-		String cmd="update BSST_USR_USER set USR_S_PSW=? where USR_N_USER_ID=?";
+		String cmd="update BSST_USR_USER set USR_B_PSW=?,USR_B_SALT=? where USR_N_USER_ID=?";
 		
 		JdbcTemplate jdbcTemplate = new JdbcTemplate(ds);
 		logger.info(cmd+"[***,"+id+"]");
 		
 		jdbcTemplate.update(cmd, new Object[]{
-				pwd,id		
+				encPwd,salt,id		
 			});
 		
 		logger.info("UserMysql.changPwd() <<<");
@@ -266,26 +282,28 @@ public class UserMysql extends CyBssMysqlDao
 
 
 	@Override
-	public String getPwd(long id) {
+	public PwdEncrypted getPwd(long id) {
 		// TODO Auto-generated method stub
-		String ret=null;
+		PwdEncrypted ret=null;
 		logger.info("UserMysql.getPwd() >>>");
 		
 		// TODO Auto-generated method stub
 		JdbcTemplate jdbcTemplate = new JdbcTemplate(ds);
 
-		String query="select USR_S_PSW from BSST_USR_USER";
+		String query="select USR_B_PSW,USR_B_SALT from BSST_USR_USER";
 		query+=" where USR_N_USER_ID=?";
 				
 		logger.info(query+"["+id+"]");
 		
 		try {
 			ret=jdbcTemplate.queryForObject(query, new Object[] { id },
-			new RowMapper<String>() {
+			new RowMapper<PwdEncrypted>() {
 			            @Override
-			            public String mapRow(ResultSet rs, int rowNum) throws SQLException {
-			            	String ret=rs.getString("USR_S_PSW");
-			                return ret;
+			            public PwdEncrypted mapRow(ResultSet rs, int rowNum) throws SQLException {
+			            	PwdEncrypted ret=new PwdEncrypted();
+			            	ret.setPwd(rs.getBytes("USR_B_PSW"));
+			            	ret.setSalt(rs.getBytes("USR_B_SALT"));
+			            	return ret;
 			            }
 			        });
 			}
@@ -295,5 +313,24 @@ public class UserMysql extends CyBssMysqlDao
 		
 		logger.info("UserMysql.getPwd() <<<");
 		return ret;
+	}
+
+
+	@Override
+	public void updatePeson(long id,long personId) {
+		// TODO Auto-generated method stub
+		
+		String cmd="update BSST_USR_USER set PER_N_PERSON_ID=? where USR_N_USER_ID=?";
+		
+		JdbcTemplate jdbcTemplate = new JdbcTemplate(ds);
+		logger.info(cmd+"["+id+","+personId+"]");
+		
+		jdbcTemplate.update(cmd, new Object[]{
+				(personId==0)?null:personId,
+				id		
+			});
+		
+		logger.info("UserMysql.removePerson() <<<");
+
 	}	
 }
