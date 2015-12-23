@@ -74,6 +74,7 @@
 		</div>
 	</div>
 	
+	<button type="submit" class="btn btn-info" ng-show="operation" ng-click="onSubmit()">Submit</button>
 	
 	<div class="form-group" ng-show="errorMessage">
 	    <label class="col-sm-1 control-label">Error</label>
@@ -82,16 +83,13 @@
 	    </div>
 	</div>
 	
-	
-	<button type="submit" class="btn btn-info" ng-show="operation" ng-click="onSubmit()">Submit</button>
-	<!-- 
 	<div class="form-group" ng-show="operation.response">
 	    <label class="col-sm-1 control-label">Response</label>
 	    <div class="col-sm-9">
 	        <textarea class="form-control" rows="5" ng-model="operation.response" readonly></textarea>
 	    </div>
 	</div>
-	-->
+	<!--  
 	<div class="form-group" ng-show="operation.response">
 	    <label class="col-sm-1 control-label">Response</label>
   	    <div class="col-sm-9">
@@ -100,7 +98,7 @@
         	</div>
 		</div>
 	</div>
-	
+	-->
 	
 	</form> 
 </div>

@@ -17,6 +17,7 @@ import org.cysoft.bss.core.model.Location;
 import org.cysoft.bss.core.model.Ticket;
 import org.cysoft.bss.core.model.TicketCategory;
 import org.cysoft.bss.core.model.TicketStatus;
+import org.cysoft.bss.core.model.TicketStatusTrace;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -87,7 +88,7 @@ public class TicketMysql extends CyBssMysqlDao
 		JdbcTemplate jdbcTemplate = new JdbcTemplate(ds);
 		
 		
-		String query="select  ID,TEXT,CREATION_DATE,STATUS_ID,IFNULL(c.TSL_S_NAME,STATUS_NAME) AS STATUS_NAME,USER_ID,USER_NAME,CATEGORY_ID,IFNULL(b.TCL_S_NAME,CATEGORY_NAME) AS CATEGORY_NAME,";
+		String query="select  ID,TEXT,CREATION_DATE,UPDATE_DATE,STATUS_ID,IFNULL(c.TSL_S_NAME,STATUS_NAME) AS STATUS_NAME,USER_ID,USER_NAME,CATEGORY_ID,IFNULL(b.TCL_S_NAME,CATEGORY_NAME) AS CATEGORY_NAME,";
 		query+="PERSON_ID,PERSON_FIRST_NAME,PERSON_SECOND_NAME,LOCATION_ID";
 		query+=" from BSSV_TICKET a";
 		query+=" left join BSST_TCL_TICKET_CATEGORY_LANG b on a.CATEGORY_ID=b.TCA_N_CATEGORY_ID AND b.LAN_N_LANG_ID=?";
@@ -177,7 +178,7 @@ public class TicketMysql extends CyBssMysqlDao
 		JdbcTemplate jdbcTemplate = new JdbcTemplate(ds);
 				
 				
-		String query="select  ID,TEXT,CREATION_DATE,STATUS_ID,IFNULL(c.TSL_S_NAME,STATUS_NAME) AS STATUS_NAME,USER_ID,USER_NAME,CATEGORY_ID,IFNULL(b.TCL_S_NAME,CATEGORY_NAME) AS CATEGORY_NAME,";
+		String query="select  ID,TEXT,CREATION_DATE,UPDATE_DATE,STATUS_ID,IFNULL(c.TSL_S_NAME,STATUS_NAME) AS STATUS_NAME,USER_ID,USER_NAME,CATEGORY_ID,IFNULL(b.TCL_S_NAME,CATEGORY_NAME) AS CATEGORY_NAME,";
 		query+="PERSON_ID,PERSON_FIRST_NAME,PERSON_SECOND_NAME,LOCATION_ID";
 		query+=" from BSSV_TICKET a";
 		query+=" left join BSST_TCL_TICKET_CATEGORY_LANG b on a.CATEGORY_ID=b.TCA_N_CATEGORY_ID AND b.LAN_N_LANG_ID=?";
@@ -265,6 +266,7 @@ public class TicketMysql extends CyBssMysqlDao
 			ticket.setId(rs.getLong("ID"));
 			ticket.setText(rs.getString("TEXT"));
 			ticket.setCreationDate(rs.getString("CREATION_DATE"));
+			ticket.setUpdateDate(rs.getString("UPDATE_DATE"));
 			
 			ticket.setStatusId(rs.getLong("STATUS_ID"));
 			ticket.setStatusName(rs.getString("STATUS_NAME"));
@@ -361,7 +363,6 @@ public class TicketMysql extends CyBssMysqlDao
 		// TODO Auto-generated method stub
 		long oldStatus=ticket.getStatusId();
 		ticket.setStatusId(newStatus);
-		this.update(ticket.getId(), ticket, langId);
 		
 		String cmd="insert into BSST_TTR_TICKET_TRACE(TIC_N_TICKET_ID,TWF_N_START_STATUS_ID,TWF_N_END_STATUS_ID,TTR_D_TRANS_DATE,";
 		cmd+="USR_N_USER_ID,TTR_S_NOTE) values (?,?,?,now(),?,?)";
@@ -372,6 +373,20 @@ public class TicketMysql extends CyBssMysqlDao
 		try {
 			jdbcTemplate.update(cmd, new Object[]{
 					ticket.getId(),oldStatus,ticket.getStatusId(),userId,note  
+				});
+		} catch (DataAccessException e) {
+			// TODO Auto-generated catch block
+			logger.error(e.toString());
+			throw new CyBssException(e);
+		}
+		
+		
+		cmd="update BSST_TIC_TICKET set TST_N_STATUS_ID=?";
+		cmd+=" where TIC_N_TICKET_ID=?";
+		logger.info(cmd+"["+ticket.getStatusId()+","+ticket.getId()+"]");
+		try {
+			jdbcTemplate.update(cmd, new Object[]{
+					ticket.getStatusId(),ticket.getId()  
 				});
 		} catch (DataAccessException e) {
 			// TODO Auto-generated catch block
@@ -445,6 +460,76 @@ public class TicketMysql extends CyBssMysqlDao
 			}
 			
 		}
+		
+	}
+
+	@Override
+	public List<TicketStatus> getStatusAll(long langId) {
+		// TODO Auto-generated method stub
+		String query="select a.TST_N_STATUS_ID,IFNULL(b.TSL_S_NAME,a.TST_S_NAME) as TST_S_NAME,IFNULL(b.TSL_S_DESC,a.TST_S_DESC) as TST_S_DESC  from BSST_TST_TICKET_STATUS a";
+		query+=" left join BSST_TSL_TICKET_STATUS_LANG b on a.TST_N_STATUS_ID=b.TST_N_STATUS_ID AND b.LAN_N_LANG_ID=?";
+	 	
+		JdbcTemplate jdbcTemplate = new JdbcTemplate(ds);
+		logger.info(query+"["+langId+"]");
+		
+		List<TicketStatus> ret = jdbcTemplate.query(
+                query, 
+                new Object[] { langId },
+                new RowMapper<TicketStatus>() {
+                    @Override
+                    public TicketStatus mapRow(ResultSet rs, int rowNum) throws SQLException {
+                    	TicketStatus status=new TicketStatus();
+                        
+                    	status.setId(rs.getInt("TST_N_STATUS_ID"));
+                    	status.setName(rs.getString("TST_S_NAME"));
+                    	status.setDescription(rs.getString("TST_S_DESC"));
+                        
+                        return status;
+		            }
+                });
+		
+		return ret;
+	}
+
+	@Override
+	public List<TicketStatusTrace> getStatusTrace(long id, long langId) {
+		// TODO Auto-generated method stub
+		String query="select a.TIC_N_TICKET_ID,a.TWF_N_START_STATUS_ID,IFNULL(bb.TSL_S_NAME,b.TST_S_NAME) as START_STATUS_NAME,";
+		query+="a.TWF_N_END_STATUS_ID,IFNULL(cc.TSL_S_NAME,c.TST_S_NAME) as END_STATUS_NAME,a.TTR_D_TRANS_DATE,";
+		query+="a.USR_N_USER_ID,d.USR_S_NAME,a.TTR_S_NOTE from BSST_TTR_TICKET_TRACE a";
+		query+=" join BSST_TST_TICKET_STATUS b on a.TWF_N_START_STATUS_ID=b.TST_N_STATUS_ID";
+		query+=" join BSST_TST_TICKET_STATUS c on a.TWF_N_END_STATUS_ID=c.TST_N_STATUS_ID";
+		query+=" left join BSST_TSL_TICKET_STATUS_LANG bb on a.TWF_N_START_STATUS_ID=bb.TST_N_STATUS_ID and bb.LAN_N_LANG_ID=?";
+		query+=" left join BSST_TSL_TICKET_STATUS_LANG cc on a.TWF_N_END_STATUS_ID=cc.TST_N_STATUS_ID and cc.LAN_N_LANG_ID=?";
+		query+=" join BSST_USR_USER d on d.USR_N_USER_ID=a.USR_N_USER_ID";
+		query+=" where a.TIC_N_TICKET_ID=?";
+		
+		JdbcTemplate jdbcTemplate = new JdbcTemplate(ds);
+		logger.info(query+"["+id+","+langId+"]");
+		
+		List<TicketStatusTrace> ret = jdbcTemplate.query(
+                query, 
+                new Object[] { langId,langId,id },
+                new RowMapper<TicketStatusTrace>() {
+                    @Override
+                    public TicketStatusTrace mapRow(ResultSet rs, int rowNum) throws SQLException {
+                    	TicketStatusTrace trace=new TicketStatusTrace();
+                        
+                    	trace.setTicketId(rs.getLong("TIC_N_TICKET_ID"));
+                    	trace.setStartStatusId(rs.getLong("TWF_N_START_STATUS_ID"));
+                    	trace.setStartStatusName(rs.getString("START_STATUS_NAME"));
+                    	trace.setEndStatusId(rs.getLong("TWF_N_END_STATUS_ID"));
+                    	trace.setEndStatusName(rs.getString("END_STATUS_NAME"));
+                    	trace.setDateTrans(rs.getString("TTR_D_TRANS_DATE"));
+                    	trace.setUserId(rs.getLong("USR_N_USER_ID"));
+                    	trace.setUserName(rs.getString("USR_S_NAME"));
+                    	trace.setNote(rs.getString("TTR_S_NOTE"));
+                    	
+                        return trace;
+		            }
+                });
+		
+		return ret;
 		
 	}
 	

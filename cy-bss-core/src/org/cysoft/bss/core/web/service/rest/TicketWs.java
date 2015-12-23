@@ -185,6 +185,68 @@ public class TicketWs extends CyBssWebServiceAdapter
 		return response;
 	}
 	
+	
+	@RequestMapping(value = "/getStatusAll",method = RequestMethod.GET)
+	@CyBssOperation(name = "getStatusAll")
+	public TicketStatusListResponse getStatusAll(
+			@RequestHeader(value="Security-Token",required=false, defaultValue="") String securityToken,
+			@RequestHeader(value="Language",required=false, defaultValue="") String languageCode
+			) throws CyBssException{
+		
+		logger.info("TicketWs.getStatusAll() >>> ");
+		TicketStatusListResponse response=new TicketStatusListResponse();
+		
+		// checkGrant
+		//if (!checkGrant(response,securityToken,"getStatusAll",String.class,String.class))
+		//	return response;
+		// end checkGrant 
+		
+		Language language=null;
+		if (languageCode.equals(""))
+			language=languageDao.getLanguage(response.getLanguageCode());
+		else	
+			language=languageDao.getLanguage(languageCode);
+			
+		List<TicketStatus> states=ticketDao.getStatusAll(language.getId());
+		response.setTicketStates(states);
+		
+		logger.info("TicketWs.getStatusAll() <<< ");
+		
+		return response;
+	}
+	
+	@RequestMapping(value = "/{id}/getStatusTrace",method = RequestMethod.GET)
+	@CyBssOperation(name = "getStatusTrace")
+	public TicketResponse getStatusTrace(
+			@RequestHeader(value="Security-Token",required=true) String securityToken,
+			@RequestHeader(value="Language",required=false, defaultValue="") String languageCode,
+			@PathVariable("id") Long id
+			) throws CyBssException{
+		
+		logger.info("TicketWs.getStatusTrace() >>> id="+id);
+		TicketResponse response=new TicketResponse();
+		
+		// checkGrant
+		if (!checkGrant(response,securityToken,"getStatusTrace",String.class,String.class,Long.class))
+			return response;
+		// end checkGrant 
+		
+		Language language=null;
+		if (languageCode.equals(""))
+			language=languageDao.getLanguage(response.getLanguageCode());
+		else	
+			language=languageDao.getLanguage(languageCode);
+		
+		response.setStatusTraces(ticketDao.getStatusTrace(id,language.getId()));
+		
+		logger.info("TicketWs.getStatusTrace() <<< ");
+		
+		return response;
+	}
+	
+	
+	
+	
 	@RequestMapping(value = "/{statusId}/getNextStates",method = RequestMethod.GET)
 	@CyBssOperation(name = "getNextStates")
 	public TicketStatusListResponse getNextStates(

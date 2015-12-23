@@ -83,6 +83,7 @@ File to upload:<input type="file" name="file"><br>
 		
 	</form>
 	
+	<!-- 
 	<div class="form-group" ng-show="response">
 	    <label class="col-sm-1 control-label">Response</label>
   	    <div class="col-sm-9">
@@ -99,6 +100,21 @@ File to upload:<input type="file" name="file"><br>
           		{{ errorMessage }}
         	</div>
 		</div>
+	</div>
+	-->
+	
+	<div class="form-group" ng-show="errorMessage">
+	    <label class="col-sm-1 control-label">Error</label>
+	    <div class="col-sm-9">
+	        <textarea class="form-control" rows="5" ng-model="errorMessage" readonly></textarea>
+	    </div>
+	</div>
+	
+	<div class="form-group" ng-show="response">
+	    <label class="col-sm-1 control-label">Response</label>
+	    <div class="col-sm-9">
+	        <textarea class="form-control" rows="5" ng-model="response" readonly></textarea>
+	    </div>
 	</div>
 	
 	

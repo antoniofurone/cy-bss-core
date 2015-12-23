@@ -27,6 +27,14 @@ public class Ticket {
 		this.creationDate = creationDate;
 	}
 	
+	private String updateDate="";
+	public String getUpdateDate() {
+		return updateDate;
+	}
+	public void setUpdateDate(String updateDate) {
+		this.updateDate = updateDate;
+	}
+
 	private long statusId;
 	public long getStatusId() {
 		return statusId;
@@ -114,14 +122,15 @@ public class Ticket {
 	public void setLocation(Location location) {
 		this.location = location;
 	}
+	
 	@Override
 	public String toString() {
 		return "Ticket [id=" + id + ", text=" + text + ", creationDate="
-				+ creationDate + ", statusId=" + statusId + ", statusName="
-				+ statusName + ", userId=" + userId + ", userName=" + userName
-				+ ", categoryId=" + categoryId + ", categoryName="
-				+ categoryName + ", personId=" + personId
-				+ ", personFirstName=" + personFirstName
+				+ creationDate + ", updateDate=" + updateDate + ", statusId="
+				+ statusId + ", statusName=" + statusName + ", userId="
+				+ userId + ", userName=" + userName + ", categoryId="
+				+ categoryId + ", categoryName=" + categoryName + ", personId="
+				+ personId + ", personFirstName=" + personFirstName
 				+ ", personSecondName=" + personSecondName + ", locationId="
 				+ locationId + ", location=" + location + "]";
 	}
