@@ -176,7 +176,7 @@ implements PersonDao{
 			parms.add(code);
 		}
 		if (!firstName.equals("")){
-			if (!code.contains("%"))
+			if (!firstName.contains("%"))
 				query+=(insAnd?" AND":"")+" PER_S_FIRST_NAME=?";
 			else
 				query+=(insAnd?" AND":"")+" PER_S_FIRST_NAME like ?";

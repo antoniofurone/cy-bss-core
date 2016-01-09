@@ -2,10 +2,12 @@ package org.cysoft.bss.core.dao.mysql;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.cysoft.bss.core.common.CyBssException;
+import org.cysoft.bss.core.common.CyBssUtility;
 import org.cysoft.bss.core.dao.FileDao;
 import org.cysoft.bss.core.dao.LocationDao;
 import org.cysoft.bss.core.model.CyBssFile;
@@ -218,7 +220,8 @@ public class LocationMysql extends CyBssMysqlDao
 	}
 
 	@Override
-	public List<Location> find(String name,String locationType,long cityId,long personId,long langId) throws CyBssException {
+	public List<Location> find(String name,String locationType,long cityId,long personId,
+			String fromDate,String toDate,long langId) throws CyBssException {
 		// TODO Auto-generated method stub
 		JdbcTemplate jdbcTemplate = new JdbcTemplate(ds);
 		
@@ -230,7 +233,7 @@ public class LocationMysql extends CyBssMysqlDao
 		query+=" left join BSST_USR_USER c on c.USR_N_USER_ID=a.USR_N_USER_ID";
 		query+=" left join BSST_PER_PERSON d on d.PER_N_PERSON_ID=a.PER_N_PERSON_ID";
 		
-		if (!name.equals("") || cityId!=0 || personId!=0 || !locationType.equals(""))
+		if (!name.equals("") || cityId!=0 || personId!=0 || !locationType.equals("") || !fromDate.equals("") || !toDate.equals(""))
 			query+=" WHERE ";
 		
 		List<Object> parms=new ArrayList<Object>();
@@ -248,22 +251,45 @@ public class LocationMysql extends CyBssMysqlDao
 		}
 		
 		if (cityId!=0){
-			query+=(insAnd?" AND":"")+" CIT_N_CITY_ID=?";
+			query+=(insAnd?" AND":"")+" a.CIT_N_CITY_ID=?";
 			insAnd=true;
 			parms.add(cityId);
 		}
 		
 		if (personId!=0){
-			query+=(insAnd?" AND":"")+" PER_N_PERSON_ID=?";
+			query+=(insAnd?" AND":"")+" a.PER_N_PERSON_ID=?";
 			insAnd=true;
 			parms.add(personId);
 		}
 		
 		if (!locationType.equals("")){
-			query+=(insAnd?" AND":"")+" LOC_S_TYPE=?";
+			query+=(insAnd?" AND":"")+" a.LOC_S_TYPE=?";
 			insAnd=true;
 			parms.add(locationType);
 		}
+		
+		if (!fromDate.equals("")){
+			query+=(insAnd?" AND":"")+" a.LOC_D_CREATION_DATE>=?";
+			insAnd=true;
+			try {
+				parms.add(CyBssUtility.dateChangeFormat(fromDate, CyBssUtility.DATE_yyyy_MM_dd));
+			} catch (ParseException e) {
+				// TODO Auto-generated catch block
+				throw new CyBssException(e);
+			}
+		}
+
+		if (!toDate.equals("")){
+			query+=(insAnd?" AND":"")+" DATE_SUB(a.LOC_D_CREATION_DATE,INTERVAL 1 DAY)<=?";
+			insAnd=true;
+			try {
+				parms.add(CyBssUtility.dateChangeFormat(toDate, CyBssUtility.DATE_yyyy_MM_dd));
+			} catch (ParseException e) {
+				// TODO Auto-generated catch block
+				throw new CyBssException(e);
+			}
+		}
+		
 		
 		logger.info(query+"["+langId+","+name+"]");
 		

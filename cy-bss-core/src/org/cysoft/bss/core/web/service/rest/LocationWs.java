@@ -211,6 +211,8 @@ implements ICyBssWebService{
 			@RequestParam(value="locationType", required=false, defaultValue="") String locationType,
 			@RequestParam(value="cityId", required=false, defaultValue="0") Long cityId,
 			@RequestParam(value="personId", required=false, defaultValue="0") Long personId,
+			@RequestParam(value="fromDate", required=false, defaultValue="") String fromDate,
+			@RequestParam(value="toDate", required=false, defaultValue="") String toDate,
 			@RequestParam(value="offset", required=false, defaultValue="0") Integer offset,
 			@RequestParam(value="size", required=false, defaultValue="100") Integer size
 			) throws CyBssException{
@@ -225,7 +227,7 @@ implements ICyBssWebService{
 			language=languageDao.getLanguage(languageCode);
 		
 		
-		List<Location> locations=locationDao.find(name, locationType, cityId, personId, language.getId());
+		List<Location> locations=locationDao.find(name, locationType, cityId, personId, fromDate, toDate, language.getId());
 		int lsize=locations.size();
 		if (offset!=0)
 			response.setLocations(locations.subList(offset-1, (offset-1)+(size>lsize?lsize:size)));
