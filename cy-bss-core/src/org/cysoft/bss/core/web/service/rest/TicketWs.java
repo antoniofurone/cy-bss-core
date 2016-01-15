@@ -97,10 +97,6 @@ public class TicketWs extends CyBssWebServiceAdapter
 		logger.info("TicketWs.getFiles() >>> id="+id);
 		FileListResponse response=new FileListResponse();
 		
-		// checkGrant
-		//if (!checkGrant(response,securityToken,"getFiles",String.class,Long.class))
-		//	return response;
-		// end checkGrant 
 		Language language=languageDao.getLanguage(response.getLanguageCode());		
 		Ticket ticket=ticketDao.get(id,language.getId());
 		if (ticket!=null){
@@ -127,11 +123,6 @@ public class TicketWs extends CyBssWebServiceAdapter
 		
 		logger.info("TicketWs.get() >>> id="+id);
 		TicketResponse response=new TicketResponse();
-		
-		// checkGrant
-		// if (!checkGrant(response,securityToken,"get",String.class,String.class,Long.class))
-		//	return response;
-		// end checkGrant 
 		
 		Language language=null;
 		if (languageCode.equals(""))
@@ -166,10 +157,6 @@ public class TicketWs extends CyBssWebServiceAdapter
 		logger.info("TicketWs.getCategoryAll() >>> ");
 		TicketCategoryListResponse response=new TicketCategoryListResponse();
 		
-		// checkGrant
-		//if (!checkGrant(response,securityToken,"getCategoryAll",String.class,String.class))
-		//	return response;
-		// end checkGrant 
 		
 		Language language=null;
 		if (languageCode.equals(""))
@@ -196,10 +183,6 @@ public class TicketWs extends CyBssWebServiceAdapter
 		logger.info("TicketWs.getStatusAll() >>> ");
 		TicketStatusListResponse response=new TicketStatusListResponse();
 		
-		// checkGrant
-		//if (!checkGrant(response,securityToken,"getStatusAll",String.class,String.class))
-		//	return response;
-		// end checkGrant 
 		
 		Language language=null;
 		if (languageCode.equals(""))
@@ -457,15 +440,6 @@ public class TicketWs extends CyBssWebServiceAdapter
 		
 		logger.info("TicketWs.find() >>>" );
 		TicketListResponse response=new TicketListResponse();
-		
-		
-		// checkGrant
-		// if (!checkGrant(response,securityToken,"find",String.class,String.class,String.class,
-		//		Long.class,Long.class,Long.class,
-		//		String.class,String.class,
-		//		Integer.class,Integer.class))
-		//	return response;
-		// end checkGrant 
 		
 		Language language=null;
 		if (languageCode.equals(""))

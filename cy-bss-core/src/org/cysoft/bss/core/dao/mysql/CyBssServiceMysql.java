@@ -25,7 +25,7 @@ public class CyBssServiceMysql extends CyBssMysqlDao
 		// TODO Auto-generated method stub
 		logger.info("BssServiceMysql.getAll() >>>");
 		
-		String query="select BSV_N_SERVICE_ID,BSV_S_SERVICE_NAME,BSV_S_SERVICE_URL from BSST_BSV_SERVICE";
+		String query="select BSV_N_SERVICE_ID,BSV_S_SERVICE_NAME,BSV_S_SERVICE_URL from BSST_BSV_SERVICE order by BSV_S_SERVICE_NAME";
 		
 		JdbcTemplate jdbcTemplate = new JdbcTemplate(ds);
 		logger.info(query);
@@ -87,7 +87,7 @@ public class CyBssServiceMysql extends CyBssMysqlDao
 		logger.info("BssServiceMysql.getServOperations() >>>");
 		
 		String query="select BSO_N_OPERATION_ID,BSV_N_SERVICE_ID,BSO_S_NAME,BSO_S_METHOD,BSO_S_OPERATION_URL,BSO_S_DESCRIPTION";
-		query+=" from BSST_BSO_SERVICE_OPERATION where BSV_N_SERVICE_ID=?";
+		query+=" from BSST_BSO_SERVICE_OPERATION where BSV_N_SERVICE_ID=? order by BSO_S_NAME";
 		
 		JdbcTemplate jdbcTemplate = new JdbcTemplate(ds);
 		logger.info(query+"["+id+"]");

@@ -37,19 +37,11 @@ public class LanguageWs extends CyBssWebServiceAdapter
 	@RequestMapping(value = "/getLanguageAll",method = RequestMethod.GET)
 	@CyBssOperation(name = "getLanguageAll")
 	public LanguageListResponse getLanguageAll(
-			@RequestHeader("Security-Token") String securityToken
+			@RequestHeader(value="Security-Token",required=false, defaultValue="") String securityToken
 			) throws CyBssException{
 		
 		logger.info("CyBssListWs.getLanguageAll() >>>");
-		
-		
 		LanguageListResponse response=new LanguageListResponse(); 
-		
-		// checkGrant
-		if (!checkGrant(response,securityToken,"getLanguageAll",String.class))
-			return response;
-		// end checkGrant 
-		
 		response.setLanguages(listDao.getLanguageAll());
 		return response;
 	}
