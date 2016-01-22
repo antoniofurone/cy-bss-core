@@ -34,9 +34,9 @@ public class LocationMysql extends CyBssMysqlDao
 	@Override
 	public synchronized long add(Location location) throws CyBssException {
 		// TODO Auto-generated method stub
-		String cmd="insert into BSST_LOC_LOCATION(LOC_S_NAME,LOC_D_CREATION_DATE,LOC_S_DESC,LOC_S_TYPE,LOC_D_LAT,LOC_D_LNG,CIT_N_CITY_ID,USR_N_USER_ID,PER_N_PERSON_ID)";
+		String cmd="insert into BSST_LOC_LOCATION(LOC_S_NAME,LOC_D_CREATION_DATE,LOC_S_DESC,LOC_S_TYPE,LOC_D_LAT,LOC_D_LNG,LOC_S_ADDRESS,LOC_S_ZIP,CIT_N_CITY_ID,USR_N_USER_ID,PER_N_PERSON_ID)";
 		cmd+=" values ";
-		cmd+=" (?,now(),?,?,?,?,?,?,?)";
+		cmd+=" (?,now(),?,?,?,?,?,?,?,?,?)";
 	
 		JdbcTemplate jdbcTemplate = new JdbcTemplate(ds);
 		logger.info(cmd+"["+location+"]");
@@ -47,6 +47,8 @@ public class LocationMysql extends CyBssMysqlDao
 					location.getDescription()==null || location.getDescription().equals("") ?null:location.getDescription(),  
 					location.getLocationType()==null || location.getLocationType().equals("") ?null:location.getLocationType(),  
 					location.getLatitude(),location.getLongitude(),
+					location.getAddress()==null || location.getAddress().equals("") ?null:location.getAddress(),  
+					location.getZipCode()==null || location.getZipCode().equals("") ?null:location.getZipCode(),  
 					location.getCityId()==0?null:location.getCityId(),
 					location.getUserId(),
 					location.getPersonId()==0?null:location.getPersonId()
@@ -103,7 +105,7 @@ public class LocationMysql extends CyBssMysqlDao
 		
 		
 		String query="select  a.LOC_N_LOCATION_ID,IFNULL(b.LLA_S_NAME,a.LOC_S_NAME) as LOC_S_NAME,LOC_D_CREATION_DATE,IFNULL(b.LLA_S_DESC,a.LOC_S_DESC) as LOC_S_DESC,LOC_S_TYPE,LOC_D_LAT,LOC_D_LNG,";
-		query+="a.CIT_N_CITY_ID,a.PER_N_PERSON_ID,PER_S_FIRST_NAME, PER_S_SECOND_NAME,a.USR_N_USER_ID,USR_S_USER_ID";
+		query+="a.LOC_S_ADDRESS,a.LOC_S_ZIP,a.CIT_N_CITY_ID,a.PER_N_PERSON_ID,PER_S_FIRST_NAME, PER_S_SECOND_NAME,a.USR_N_USER_ID,USR_S_USER_ID";
 		query+=" from BSST_LOC_LOCATION a";
 		query+=" left join BSST_LLA_LOCATION_LANG b on b.LOC_N_LOCATION_ID=a.LOC_N_LOCATION_ID and b.LAN_N_LANG_ID=?";
 		query+=" left join BSST_USR_USER c on c.USR_N_USER_ID=a.USR_N_USER_ID";
@@ -143,6 +145,8 @@ public class LocationMysql extends CyBssMysqlDao
 			location.setLocationType(rs.getString("LOC_S_TYPE"));
 			location.setLatitude(rs.getDouble("LOC_D_LAT"));
 			location.setLongitude(rs.getDouble("LOC_D_LNG"));
+			location.setAddress(rs.getString("LOC_S_ADDRESS"));
+			location.setZipCode(rs.getString("LOC_S_ZIP"));
 			location.setCityId(rs.getLong("CIT_N_CITY_ID"));
 			location.setPersonId(rs.getLong("PER_N_PERSON_ID"));
 			location.setPersonFirstName(rs.getString("PER_S_FIRST_NAME"));
@@ -227,7 +231,7 @@ public class LocationMysql extends CyBssMysqlDao
 		
 		
 		String query="select  a.LOC_N_LOCATION_ID,IFNULL(b.LLA_S_NAME,a.LOC_S_NAME) as LOC_S_NAME,LOC_D_CREATION_DATE,IFNULL(b.LLA_S_DESC,a.LOC_S_DESC) as LOC_S_DESC,LOC_S_TYPE,LOC_D_LAT,LOC_D_LNG,";
-		query+="a.CIT_N_CITY_ID,a.PER_N_PERSON_ID,PER_S_FIRST_NAME, PER_S_SECOND_NAME,a.USR_N_USER_ID,USR_S_USER_ID";
+		query+="a.LOC_S_ADDRESS,a.LOC_S_ZIP,a.CIT_N_CITY_ID,a.PER_N_PERSON_ID,PER_S_FIRST_NAME, PER_S_SECOND_NAME,a.USR_N_USER_ID,USR_S_USER_ID";
 		query+=" from BSST_LOC_LOCATION a";
 		query+=" left join BSST_LLA_LOCATION_LANG b on b.LOC_N_LOCATION_ID=a.LOC_N_LOCATION_ID and b.LAN_N_LANG_ID=?";
 		query+=" left join BSST_USR_USER c on c.USR_N_USER_ID=a.USR_N_USER_ID";
@@ -291,7 +295,7 @@ public class LocationMysql extends CyBssMysqlDao
 		}
 		
 		
-		logger.info(query+"["+langId+","+name+"]");
+		logger.info(query+"[parms="+parms+"]");
 		
 		List<Location> ret=jdbcTemplate.query(query, parms.toArray(),new RowMapperLocation(langId));
 		

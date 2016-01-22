@@ -29,8 +29,8 @@ implements PersonDao{
 		// TODO Auto-generated method stub
 		logger.info("PersonMysql.add() >>>");
 		
-		String cmd="insert into BSST_PER_PERSON(PER_S_CODE,PER_S_FIRST_NAME,PER_S_SECOND_NAME,PER_C_GENDER,PER_S_ADDRESS,CIT_N_CITY_ID,PER_S_FISCAL_CODE,PER_D_BIRTH_DAY,CIT_N_BIRTH_CITY_ID) ";
-		cmd+=" values (?,?,?,?,?,?,?,?,?)";
+		String cmd="insert into BSST_PER_PERSON(PER_S_CODE,PER_S_FIRST_NAME,PER_S_SECOND_NAME,PER_C_GENDER,PER_S_ADDRESS,PER_S_ZIP,CIT_N_CITY_ID,PER_S_FISCAL_CODE,PER_D_BIRTH_DAY,CIT_N_BIRTH_CITY_ID) ";
+		cmd+=" values (?,?,?,?,?,?,?,?,?,?)";
 		JdbcTemplate jdbcTemplate = new JdbcTemplate(ds);
 		logger.info(cmd+"["+person+"]");
 		
@@ -39,6 +39,7 @@ implements PersonDao{
 					person.getCode(), person.getFirstName(), person.getSecondName(), 
 					(person.getGender()==null || person.getGender().equals(""))?null:person.getGender(),
 					(person.getAddress()==null || person.getAddress().equals(""))?null:person.getAddress(),
+					(person.getZipCode()==null || person.getZipCode().equals(""))?null:person.getZipCode(),
 					(person.getCityId()==0)?null:person.getCityId(),
 					(person.getFiscalCode()==null || person.getFiscalCode().equals(""))?null:person.getFiscalCode(),
 					(person.getBirtyDay()==null || person.getBirtyDay().equals(""))?null:CyBssUtility.tryStringToDate(person.getBirtyDay()),
@@ -70,7 +71,7 @@ implements PersonDao{
 		
 		
 		String query="select  PER_N_PERSON_ID, PER_S_CODE, PER_S_FIRST_NAME, PER_S_SECOND_NAME, PER_C_GENDER,";
-		query+="PER_S_ADDRESS, CIT_N_CITY_ID, PER_S_FISCAL_CODE, PER_D_BIRTH_DAY,CIT_N_BIRTH_CITY_ID ";
+		query+="PER_S_ADDRESS, PER_S_ZIP,CIT_N_CITY_ID, PER_S_FISCAL_CODE, PER_D_BIRTH_DAY,CIT_N_BIRTH_CITY_ID ";
 		query+="from BSST_PER_PERSON";
 		if (bCode)
 			query+=" where PER_S_CODE=?";
@@ -103,7 +104,7 @@ implements PersonDao{
 		logger.info("PersonMysql.update() >>>");
 		
 		String cmd="update BSST_PER_PERSON set PER_S_CODE=?,PER_S_FIRST_NAME=?,PER_S_SECOND_NAME=?,PER_C_GENDER=?,";
-		cmd+="PER_S_ADDRESS=?,CIT_N_CITY_ID=?,PER_S_FISCAL_CODE=?,PER_D_BIRTH_DAY=?,CIT_N_BIRTH_CITY_ID=?";
+		cmd+="PER_S_ADDRESS=?,PER_S_ZIP=?,CIT_N_CITY_ID=?,PER_S_FISCAL_CODE=?,PER_D_BIRTH_DAY=?,CIT_N_BIRTH_CITY_ID=?";
 		cmd+=" where PER_N_PERSON_ID=?";
 		
 		JdbcTemplate jdbcTemplate = new JdbcTemplate(ds);
@@ -114,6 +115,7 @@ implements PersonDao{
 					person.getCode(), person.getFirstName(), person.getSecondName(), 
 					(person.getGender()==null || person.getGender().equals(""))?null:person.getGender(),
 					(person.getAddress()==null || person.getAddress().equals(""))?null:person.getAddress(),
+					(person.getZipCode()==null || person.getZipCode().equals(""))?null:person.getZipCode(),
 					(person.getCityId()==0)?null:person.getCityId(),
 					(person.getFiscalCode()==null || person.getFiscalCode().equals(""))?null:person.getFiscalCode(),
 					(person.getBirtyDay()==null || person.getBirtyDay().equals(""))?null:CyBssUtility.tryStringToDate(person.getBirtyDay()),
@@ -159,7 +161,7 @@ implements PersonDao{
 		logger.info("PersonMysql.find() >>> code="+code+";firstName="+firstName+";secondName="+secondName);
 		
 		String query="select  PER_N_PERSON_ID, PER_S_CODE, PER_S_FIRST_NAME, PER_S_SECOND_NAME, PER_C_GENDER,";
-		query+="PER_S_ADDRESS, CIT_N_CITY_ID, PER_S_FISCAL_CODE, PER_D_BIRTH_DAY,CIT_N_BIRTH_CITY_ID ";
+		query+="PER_S_ADDRESS, PER_S_ZIP,CIT_N_CITY_ID, PER_S_FISCAL_CODE, PER_D_BIRTH_DAY,CIT_N_BIRTH_CITY_ID ";
 		query+="from BSST_PER_PERSON";
 		if (!code.equals("") || !firstName.equals("") || !secondName.equals(""))
 			query+=" WHERE ";
@@ -214,6 +216,7 @@ implements PersonDao{
             person.setSecondName(rs.getString("PER_S_SECOND_NAME"));
             person.setGender(rs.getString("PER_C_GENDER"));
             person.setAddress(rs.getString("PER_S_ADDRESS"));
+            person.setZipCode(rs.getString("PER_S_ZIP"));
             person.setCityId(rs.getLong("CIT_N_CITY_ID"));
             person.setFiscalCode(rs.getString("PER_S_FISCAL_CODE")); 
             person.setBirtyDay(rs.getString("PER_D_BIRTH_DAY")); 

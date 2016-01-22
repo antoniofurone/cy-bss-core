@@ -50,6 +50,14 @@ public class Person {
 		this.address = address;
 	}
 	
+	private String zipCode="";
+	public String getZipCode() {
+		return zipCode;
+	}
+	public void setZipCode(String zipCode) {
+		this.zipCode = zipCode;
+	}
+
 	private long cityId;
 	public long getCityId() {
 		return cityId;
@@ -83,12 +91,9 @@ public class Person {
 	}
 	@Override
 	public String toString() {
-		return "Person [id=" + id + ", code=" + code + ", firstName="
-				+ firstName + ", secondName=" + secondName + ", gender="
-				+ gender + ", address=" + address + ", cityId=" + cityId
-				+ ", fiscalCode=" + fiscalCode + ", birtyDay=" + birtyDay
-				+ ", birtyCityId=" + birtyCityId + "]";
+		return "Person [id=" + id + ", code=" + code + ", firstName=" + firstName + ", secondName=" + secondName
+				+ ", gender=" + gender + ", address=" + address + ", zipCode=" + zipCode + ", cityId=" + cityId
+				+ ", fiscalCode=" + fiscalCode + ", birtyDay=" + birtyDay + ", birtyCityId=" + birtyCityId + "]";
 	}
-	
 	
 }

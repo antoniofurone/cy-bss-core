@@ -73,6 +73,22 @@ public class Location {
 	public void setLongitude(double longitude) {
 		this.longitude = longitude;
 	}
+	
+	private String address="";
+	public String getAddress() {
+		return address;
+	}
+	public void setAddress(String address) {
+		this.address = address;
+	}
+
+	private String zipCode="";
+	public String getZipCode() {
+		return zipCode;
+	}
+	public void setZipCode(String zipCode) {
+		this.zipCode = zipCode;
+	}
 
 	private long cityId;
 	public long getCityId() {

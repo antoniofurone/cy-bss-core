@@ -89,7 +89,7 @@ public class TicketMysql extends CyBssMysqlDao
 		
 		
 		String query="select  ID,TEXT,CREATION_DATE,UPDATE_DATE,STATUS_ID,IFNULL(c.TSL_S_NAME,STATUS_NAME) AS STATUS_NAME,USER_ID,USER_NAME,CATEGORY_ID,IFNULL(b.TCL_S_NAME,CATEGORY_NAME) AS CATEGORY_NAME,";
-		query+="PERSON_ID,PERSON_FIRST_NAME,PERSON_SECOND_NAME,LOCATION_ID";
+		query+="PERSON_ID,PERSON_FIRST_NAME,PERSON_SECOND_NAME,LOCATION_ID,LOCATION_LATITUDE,LOCATION_LONGITUDE";
 		query+=" from BSSV_TICKET a";
 		query+=" left join BSST_TCL_TICKET_CATEGORY_LANG b on a.CATEGORY_ID=b.TCA_N_CATEGORY_ID AND b.LAN_N_LANG_ID=?";
 		query+=" left join BSST_TSL_TICKET_STATUS_LANG c on a.STATUS_ID=c.TST_N_STATUS_ID AND c.LAN_N_LANG_ID=?";
@@ -179,11 +179,11 @@ public class TicketMysql extends CyBssMysqlDao
 				
 				
 		String query="select  ID,TEXT,CREATION_DATE,UPDATE_DATE,STATUS_ID,IFNULL(c.TSL_S_NAME,STATUS_NAME) AS STATUS_NAME,USER_ID,USER_NAME,CATEGORY_ID,IFNULL(b.TCL_S_NAME,CATEGORY_NAME) AS CATEGORY_NAME,";
-		query+="PERSON_ID,PERSON_FIRST_NAME,PERSON_SECOND_NAME,LOCATION_ID";
+		query+="PERSON_ID,PERSON_FIRST_NAME,PERSON_SECOND_NAME,LOCATION_ID,LOCATION_LATITUDE,LOCATION_LONGITUDE";
 		query+=" from BSSV_TICKET a";
 		query+=" left join BSST_TCL_TICKET_CATEGORY_LANG b on a.CATEGORY_ID=b.TCA_N_CATEGORY_ID AND b.LAN_N_LANG_ID=?";
 		query+=" left join BSST_TSL_TICKET_STATUS_LANG c on a.STATUS_ID=c.TST_N_STATUS_ID AND c.LAN_N_LANG_ID=?";
-	 	
+		
 		
 		if (!text.equals("") || categoryId!=0 || statusId!=0 || personId!=0 || !fromDate.equals("") || !toDate.equals("") )
 			query+=" WHERE ";
@@ -282,6 +282,14 @@ public class TicketMysql extends CyBssMysqlDao
 			ticket.setPersonSecondName(rs.getString("PERSON_SECOND_NAME"));
 			
 			ticket.setLocationId(rs.getLong("LOCATION_ID"));
+			
+			if (ticket.getLocationId()!=0){
+				Location location=new Location();
+				location.setId(ticket.getLocationId());
+				location.setLatitude(rs.getDouble("LOCATION_LATITUDE"));
+				location.setLongitude(rs.getDouble("LOCATION_LONGITUDE"));
+				ticket.setLocation(location);
+			}
 			
             return ticket;
 		}
