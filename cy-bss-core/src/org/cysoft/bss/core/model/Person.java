@@ -66,6 +66,14 @@ public class Person {
 		this.cityId = cityId;
 	}
 	
+	private String city="";
+	public String getCity() {
+		return city;
+	}
+	public void setCity(String city) {
+		this.city = city;
+	}
+
 	private String fiscalCode="";
 	public String getFiscalCode() {
 		return fiscalCode;
@@ -89,11 +97,21 @@ public class Person {
 	public void setBirtyCityId(long birtyCityId) {
 		this.birtyCityId = birtyCityId;
 	}
+	
+	private String birtyCity="";
+	public String getBirtyCity() {
+		return birtyCity;
+	}
+	public void setBirtyCity(String birtyCity) {
+		this.birtyCity = birtyCity;
+	}
+	
 	@Override
 	public String toString() {
 		return "Person [id=" + id + ", code=" + code + ", firstName=" + firstName + ", secondName=" + secondName
 				+ ", gender=" + gender + ", address=" + address + ", zipCode=" + zipCode + ", cityId=" + cityId
-				+ ", fiscalCode=" + fiscalCode + ", birtyDay=" + birtyDay + ", birtyCityId=" + birtyCityId + "]";
+				+ ", city=" + city + ", fiscalCode=" + fiscalCode + ", birtyDay=" + birtyDay + ", birtyCityId="
+				+ birtyCityId + ", birtyCity=" + birtyCity + "]";
 	}
 	
 }

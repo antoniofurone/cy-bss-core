@@ -70,13 +70,13 @@ implements PersonDao{
 		JdbcTemplate jdbcTemplate = new JdbcTemplate(ds);
 		
 		
-		String query="select  PER_N_PERSON_ID, PER_S_CODE, PER_S_FIRST_NAME, PER_S_SECOND_NAME, PER_C_GENDER,";
-		query+="PER_S_ADDRESS, PER_S_ZIP,CIT_N_CITY_ID, PER_S_FISCAL_CODE, PER_D_BIRTH_DAY,CIT_N_BIRTH_CITY_ID ";
-		query+="from BSST_PER_PERSON";
+		String query="select  ID,CODE,FIRST_NAME,SECOND_NAME,GENDER,ADDRESS,ZIP,";
+		query+="CITY_ID,CITY,FISCAL_CODE,BIRTH_DAY,BIRTH_CITY_ID,BIRTH_CITY ";
+		query+="from BSSV_PERSON";
 		if (bCode)
-			query+=" where PER_S_CODE=?";
+			query+=" where CODE=?";
 		else
-			query+=" where PER_N_PERSON_ID=?";
+			query+=" where ID=?";
 		
 		logger.info(query+"["+id+",****]");
 		Person ret=null;
@@ -84,7 +84,7 @@ implements PersonDao{
 			ret=jdbcTemplate.queryForObject(query, new Object[] { bCode?id:Long.parseLong(id) },new RowMapperPerson());
 		}
 		catch(IncorrectResultSizeDataAccessException e){
-			logger.info("UserMysql.IncorrectResultSizeDataAccessException:"+e.getMessage());
+			logger.info("PersonMysql.IncorrectResultSizeDataAccessException:"+e.getMessage());
 		
 		}
 		logger.info("PersonMysql.getBy() <<<");
@@ -160,9 +160,9 @@ implements PersonDao{
 		// TODO Auto-generated method stub
 		logger.info("PersonMysql.find() >>> code="+code+";firstName="+firstName+";secondName="+secondName);
 		
-		String query="select  PER_N_PERSON_ID, PER_S_CODE, PER_S_FIRST_NAME, PER_S_SECOND_NAME, PER_C_GENDER,";
-		query+="PER_S_ADDRESS, PER_S_ZIP,CIT_N_CITY_ID, PER_S_FISCAL_CODE, PER_D_BIRTH_DAY,CIT_N_BIRTH_CITY_ID ";
-		query+="from BSST_PER_PERSON";
+		String query="select  ID,CODE,FIRST_NAME,SECOND_NAME,GENDER,ADDRESS,ZIP,";
+		query+="CITY_ID,CITY,FISCAL_CODE,BIRTH_DAY,BIRTH_CITY_ID,BIRTH_CITY ";
+		query+="from BSSV_PERSON";
 		if (!code.equals("") || !firstName.equals("") || !secondName.equals(""))
 			query+=" WHERE ";
 		boolean insAnd=false;
@@ -171,25 +171,25 @@ implements PersonDao{
 		
 		if (!code.equals("")){
 			if (!code.contains("%"))
-				query+=" PER_S_CODE=?";
+				query+=" CODE=?";
 			else
-				query+=" PER_S_CODE like ?";
+				query+=" CODE like ?";
 			insAnd=true;
 			parms.add(code);
 		}
 		if (!firstName.equals("")){
 			if (!firstName.contains("%"))
-				query+=(insAnd?" AND":"")+" PER_S_FIRST_NAME=?";
+				query+=(insAnd?" AND":"")+" FIRST_NAME=?";
 			else
-				query+=(insAnd?" AND":"")+" PER_S_FIRST_NAME like ?";
+				query+=(insAnd?" AND":"")+" FIRST_NAME like ?";
 			insAnd=true;
 			parms.add(firstName);
 		}
 		if (!secondName.equals("")){
 			if (!secondName.contains("%"))
-				query+=(insAnd?" AND":"")+" PER_S_SECOND_NAME=?";
+				query+=(insAnd?" AND":"")+" SECOND_NAME=?";
 			else
-				query+=(insAnd?" AND":"")+" PER_S_SECOND_NAME like ?";
+				query+=(insAnd?" AND":"")+" SECOND_NAME like ?";
 			parms.add(secondName);
 		}
 		
@@ -210,17 +210,20 @@ implements PersonDao{
 			// TODO Auto-generated method stub
 			Person person=new Person();
             
-            person.setId(rs.getLong("PER_N_PERSON_ID"));
-            person.setCode(rs.getString("PER_S_CODE"));
-            person.setFirstName(rs.getString("PER_S_FIRST_NAME"));
-            person.setSecondName(rs.getString("PER_S_SECOND_NAME"));
-            person.setGender(rs.getString("PER_C_GENDER"));
-            person.setAddress(rs.getString("PER_S_ADDRESS"));
-            person.setZipCode(rs.getString("PER_S_ZIP"));
-            person.setCityId(rs.getLong("CIT_N_CITY_ID"));
-            person.setFiscalCode(rs.getString("PER_S_FISCAL_CODE")); 
-            person.setBirtyDay(rs.getString("PER_D_BIRTH_DAY")); 
-            person.setBirtyCityId(rs.getLong("CIT_N_BIRTH_CITY_ID"));
+			
+            person.setId(rs.getLong("ID"));
+            person.setCode(rs.getString("CODE"));
+            person.setFirstName(rs.getString("FIRST_NAME"));
+            person.setSecondName(rs.getString("SECOND_NAME"));
+            person.setGender(rs.getString("GENDER"));
+            person.setAddress(rs.getString("ADDRESS"));
+            person.setZipCode(rs.getString("ZIP"));
+            person.setCityId(rs.getLong("CITY_ID"));
+            person.setCity(rs.getString("CITY"));
+            person.setFiscalCode(rs.getString("FISCAL_CODE")); 
+            person.setBirtyDay(rs.getString("BIRTH_DAY")); 
+            person.setBirtyCityId(rs.getLong("BIRTH_CITY_ID"));
+            person.setBirtyCity(rs.getString("BIRTH_CITY"));
             
             return person;
 		}

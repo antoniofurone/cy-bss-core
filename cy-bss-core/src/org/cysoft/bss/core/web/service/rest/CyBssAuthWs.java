@@ -1,9 +1,5 @@
 package org.cysoft.bss.core.web.service.rest;
 
-
-
-
-
 import org.cysoft.bss.core.common.CyBssException;
 import org.cysoft.bss.core.common.CyBssUtility;
 import org.cysoft.bss.core.model.User;

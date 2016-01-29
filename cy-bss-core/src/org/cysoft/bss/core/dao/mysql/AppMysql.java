@@ -13,7 +13,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
-import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.TransactionCallbackWithoutResult;
+import org.springframework.transaction.support.TransactionTemplate;
 
 public class AppMysql extends CyBssMysqlDao
 	implements AppDao{
@@ -116,27 +118,36 @@ public class AppMysql extends CyBssMysqlDao
 	}
 
 	@Override
-	@Transactional
-	public void putVariable(long appId, String name, String value, String type) {
+	public void putVariable(final long appId, final String name, final String value, final String type) {
 		// TODO Auto-generated method stub
 		
 		logger.info("AppMysql.putVariable() >>>");
 		
-		String cmd="";
-		if (getVariable(appId,name)==null){
-			cmd+="insert into BSST_AVA_APP_VAR(ARV_S_VALUE,ARV_C_TYPE,APP_N_APP_ID,ARV_S_NAME) ";
-			cmd+=" values (?,?,?,?)";
-		}
-		else 
-			cmd+="update BSST_AVA_APP_VAR set ARV_S_VALUE=?,ARV_C_TYPE=? where APP_N_APP_ID=? and ARV_S_NAME=?";
+		TransactionTemplate txTemplate=new TransactionTemplate(tx);
+		txTemplate.execute(new TransactionCallbackWithoutResult(){
+
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus txStatus) {
+				// TODO Auto-generated method stub
+				String cmd="";
+				if (getVariable(appId,name)==null){
+					cmd+="insert into BSST_AVA_APP_VAR(ARV_S_VALUE,ARV_C_TYPE,APP_N_APP_ID,ARV_S_NAME) ";
+					cmd+=" values (?,?,?,?)";
+				}
+				else 
+					cmd+="update BSST_AVA_APP_VAR set ARV_S_VALUE=?,ARV_C_TYPE=? where APP_N_APP_ID=? and ARV_S_NAME=?";
+				
+				JdbcTemplate jdbcTemplate = new JdbcTemplate(tx.getDataSource());
+				logger.info(cmd+"["+value+","+type+","+appId+","+name+"]");
+				
+				jdbcTemplate.update(cmd, new Object[]{
+						value, type, appId, name		
+					});
+
+			}
+		});
 		
-		JdbcTemplate jdbcTemplate = new JdbcTemplate(ds);
-		logger.info(cmd+"["+value+","+type+","+appId+","+name+"]");
-		
-		jdbcTemplate.update(cmd, new Object[]{
-				value, type, appId, name		
-			});
-		
+				
 		logger.info("AppMysql.putVariable() <<<");
 		
 	}

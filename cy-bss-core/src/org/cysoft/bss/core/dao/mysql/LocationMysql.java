@@ -32,7 +32,7 @@ public class LocationMysql extends CyBssMysqlDao
 	}
 	
 	@Override
-	public synchronized long add(Location location) throws CyBssException {
+	public long add(Location location) throws CyBssException {
 		// TODO Auto-generated method stub
 		String cmd="insert into BSST_LOC_LOCATION(LOC_S_NAME,LOC_D_CREATION_DATE,LOC_S_DESC,LOC_S_TYPE,LOC_D_LAT,LOC_D_LNG,LOC_S_ADDRESS,LOC_S_ZIP,CIT_N_CITY_ID,USR_N_USER_ID,PER_N_PERSON_ID)";
 		cmd+=" values ";
@@ -59,16 +59,7 @@ public class LocationMysql extends CyBssMysqlDao
 			throw new CyBssException(e);
 		}
 		
-		String query="SELECT LAST_INSERT_ID()";
-		Long ret=jdbcTemplate.queryForObject(query, new Object[] { },new RowMapper<Long>() {
-            @Override
-            public Long mapRow(ResultSet rs, int rowNum) throws SQLException {
-            	return rs.getLong(1);
-            }
-        });
-		
-		return ret;
-
+		return getLastInsertId(jdbcTemplate);
 	}
 
 	@Override

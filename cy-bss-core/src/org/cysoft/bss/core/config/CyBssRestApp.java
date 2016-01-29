@@ -3,6 +3,7 @@ package org.cysoft.bss.core.config;
 
 import org.cysoft.bss.core.common.CyBssDataSource;
 import org.cysoft.bss.core.dao.AppDao;
+import org.cysoft.bss.core.dao.CompanyDao;
 import org.cysoft.bss.core.dao.CyBssAuthDao;
 import org.cysoft.bss.core.dao.FileDao;
 import org.cysoft.bss.core.dao.LanguageDao;
@@ -12,6 +13,7 @@ import org.cysoft.bss.core.dao.PersonDao;
 import org.cysoft.bss.core.dao.TicketDao;
 import org.cysoft.bss.core.dao.UserDao;
 import org.cysoft.bss.core.dao.mysql.AppMysql;
+import org.cysoft.bss.core.dao.mysql.CompanyMysql;
 import org.cysoft.bss.core.dao.mysql.CyBssAuthMysql;
 import org.cysoft.bss.core.dao.mysql.FileMysql;
 import org.cysoft.bss.core.dao.mysql.LanguageMysql;
@@ -25,15 +27,14 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.context.MessageSource;
-//import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Description;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.support.ReloadableResourceBundleMessageSource;
-//import org.springframework.context.support.ReloadableResourceBundleMessageSource;
 import org.springframework.core.env.Environment;
+import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -45,17 +46,15 @@ import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 @EnableWebMvc
 @EnableAsync
 @EnableScheduling
-
 public class CyBssRestApp {
 	private static final Logger logger = LoggerFactory.getLogger(CyBssRestApp.class);
 	
 	
-	@Autowired
-	Environment environment;
+	 @Autowired
+	 Environment environment;
 	
-	@Autowired
-	CyBssAuthDao authDao;
-	
+	 @Autowired
+	 CyBssAuthDao authDao;
 	
 	 @Bean
 	 @Description("Message Source Rest")
@@ -117,6 +116,14 @@ public class CyBssRestApp {
 	 
 	
 	 @Bean
+	 @Description("Company Dao Rest")
+	 public CompanyDao companyDao(){
+		 	CompanyDao companyDao=new CompanyMysql();
+			return companyDao;
+		 }
+	
+	 
+	 @Bean
 	 @Description("Location Dao Rest")
 	 public LocationDao locationDao(){
 		 	LocationDao locationDao=new LocationMysql();
@@ -131,14 +138,13 @@ public class CyBssRestApp {
 			return ticketDao;
 		 }
 	
-	 
 	 @Bean
 	 @Description("MySql Data Source Rest ")
 	 public CyBssDataSource mySqlDS() {
 		 
 		 logger.info("CyBssRestApp.mySqlDS() >>>");
 		
-		 CyBssDataSource mySql = new CyBssDataSource();
+		 CyBssDataSource mySqlDs = new CyBssDataSource();
 		 String driver=environment.getProperty("mysql.driver");
 		 logger.info("mysql.driver="+driver);
 		 String url=environment.getProperty("mysql.url");
@@ -147,18 +153,26 @@ public class CyBssRestApp {
 		 logger.info("mysql.user="+user);
 		 String psw=environment.getProperty("mysql.psw");
 		 
-		 mySql.setDriverClassName(driver);
-	     mySql.setUrl(url);
-	     mySql.setUsername(user);
-         mySql.setPassword(psw);
-        
-         logger.info("CyBssRestApp.mySqlDS() <<<");
- 		
-         
-		 return mySql;
+		 mySqlDs.setDriverClassName(driver);
+	     mySqlDs.setUrl(url);
+	     mySqlDs.setUsername(user);
+         mySqlDs.setPassword(psw);
+	     
+		 logger.info("CyBssRestApp.mySqlDS() <<<");
+ 	     
+		 return mySqlDs;
 	 }
 	
-	
+	 @Bean
+	 @Description("Transaction Manager Rest ")
+	 public DataSourceTransactionManager transactionManager() {
+		 logger.info("CyBssRestApp.transactionManager() >>>");
+		 DataSourceTransactionManager transactionManager=new DataSourceTransactionManager(mySqlDS());
+		 logger.info("CyBssRestApp.transactionManager() <<<");
+ 		 return transactionManager;
+	 }
+	  
+	 
 	 @Scheduled(fixedDelay=180000)
 	 public void discardSessions() {
 	     // something that should execute periodically

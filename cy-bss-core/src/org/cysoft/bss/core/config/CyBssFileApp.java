@@ -26,6 +26,7 @@ import org.springframework.context.annotation.Description;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.support.ReloadableResourceBundleMessageSource;
 import org.springframework.core.env.Environment;
+import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
@@ -115,7 +116,14 @@ private static final Logger logger = LoggerFactory.getLogger(CyBssFileApp.class)
 	 }
 	
 	 
-	 
+	 @Bean
+	 @Description("Transaction Manager File ")
+	 public DataSourceTransactionManager transactionManager() {
+		 logger.info("CyBssRestApp.transactionManager() >>>");
+		 DataSourceTransactionManager transactionManager=new DataSourceTransactionManager(mySqlDS());
+		 logger.info("CyBssRestApp.transactionManager() <<<");
+ 		 return transactionManager;
+	 }
 	 
 	@Bean
 	@Description("Multipart Resover")

@@ -12,7 +12,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
-import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.TransactionCallbackWithoutResult;
+import org.springframework.transaction.support.TransactionTemplate;
 
 public class CyBssAuthMysql extends CyBssMysqlDao 
 	implements CyBssAuthDao{
@@ -60,29 +62,37 @@ public class CyBssAuthMysql extends CyBssMysqlDao
 
 	
 	@Override
-	@Transactional
-	public void createSession(long userId, String securityToken) {
+	public void createSession(final long userId, final String securityToken) {
 		// TODO Auto-generated method stub
 		logger.info("BssAuthMysql.createSession() >>>");
 	
-		String cmd = "DELETE FROM BSST_USE_USER_SESSION WHERE USR_N_USER_ID=?";
-		JdbcTemplate jdbcTemplate = new JdbcTemplate(ds);
-		logger.info(cmd+"["+userId+"]");
+		TransactionTemplate txTemplate=new TransactionTemplate(tx);
+		txTemplate.execute(new TransactionCallbackWithoutResult(){
+
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus txStatus) {
+				// TODO Auto-generated method stub
+				
+				String cmd = "DELETE FROM BSST_USE_USER_SESSION WHERE USR_N_USER_ID=?";
+				JdbcTemplate jdbcTemplate = new JdbcTemplate(ds);
+				logger.info(cmd+"["+userId+"]");
+				
+				
+				jdbcTemplate.update(cmd, new Object[]{
+						userId		
+					});
+				
+				cmd = "insert into BSST_USE_USER_SESSION (USR_N_USER_ID,USE_S_TOKEN,USE_T_CREATE_TIME,USE_T_UPDATE_TIME)";
+				cmd+=" values";
+				cmd+=" (?,?,now(),now())";
+				logger.info(cmd+"["+userId+","+securityToken+"]");
+				
+				jdbcTemplate.update(cmd, new Object[]{
+						userId,securityToken		
+					});
+			}
 		
-		
-		jdbcTemplate.update(cmd, new Object[]{
-				userId		
-			});
-		
-		cmd = "insert into BSST_USE_USER_SESSION (USR_N_USER_ID,USE_S_TOKEN,USE_T_CREATE_TIME,USE_T_UPDATE_TIME)";
-		cmd+=" values";
-		cmd+=" (?,?,now(),now())";
-		logger.info(cmd+"["+userId+","+securityToken+"]");
-		
-		jdbcTemplate.update(cmd, new Object[]{
-				userId,securityToken		
-			});
-			
+		});
 		
 		logger.info("BssAuthMysql.createSession() <<<");
 		
@@ -96,7 +106,7 @@ public class CyBssAuthMysql extends CyBssMysqlDao
 		
 		int sessionTimeOut=Integer.parseInt(env.getProperty("user.session.timeOut"));
 		
-		String cmd = "DELETE FROM BSST_USE_USER_SESSION WHERE (now()-USE_T_UPDATE_TIME)>?";
+		String cmd = "DELETE FROM BSST_USE_USER_SESSION WHERE TIME_TO_SEC(TIMEDIFF(now(),USE_T_UPDATE_TIME))>?";
 		logger.info(cmd+"["+sessionTimeOut+"]");
 		
 		JdbcTemplate jdbcTemplate = new JdbcTemplate(ds);

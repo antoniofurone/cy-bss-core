@@ -12,6 +12,7 @@ public interface ICyBssResultConst {
 	public final static String RESULT_FILE_EMPTY="07";
 	public final static String RESULT_PERSCODE_USED="08";
 	public final static String RESULT_STATUS_CANNOT="09";
+	public final static String RESULT_COMPANYCODE_USED="10";
 	
 	public final static String RESULT_D_OK= "result.ok";
 	public final static String RESULT_D_LOGON_NOK= "result.logon.nok";
@@ -23,5 +24,6 @@ public interface ICyBssResultConst {
 	public final static String RESULT_D_FILE_EMPTY="result.file.empty";
 	public final static String RESULT_D_PERSCODE_USED="result.perscode.used";
 	public final static String RESULT_D_STATUS_CANNOT="result.status.cannot";
+	public final static String RESULT_D_COMPANYCODE_USED="result.companycode.used";
 	
 }
