@@ -3,6 +3,8 @@ package org.cysoft.bss.core.dao.mysql;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.cysoft.bss.core.common.CyBssException;
 import org.cysoft.bss.core.dao.CompanyDao;
@@ -10,11 +12,13 @@ import org.cysoft.bss.core.model.Company;
 import org.cysoft.bss.core.model.CompanyDept;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.dao.DataAccessException;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
+import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import org.springframework.transaction.support.TransactionTemplate;
 
 public class CompanyMysql extends CyBssMysqlDao
@@ -164,6 +168,179 @@ implements CompanyDao{
             return company;
 		}
 		
+	}
+
+
+	@Override
+	public void update(final long id, final Company company) throws CyBssException {
+		// TODO Auto-generated method stub
+		logger.info("CompanyMysql.update() >>>");
+		
+		TransactionTemplate txTemplate=new TransactionTemplate(tx);
+		txTemplate.execute(new TransactionCallbackWithoutResult(){
+
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus arg0) {
+				// TODO Auto-generated method stub
+				String cmd="update BSST_COM_COMPANY set COM_S_CODE=?,COM_S_NAME=?,COM_S_ADDRESS=?,";
+				cmd+="COM_S_ZIP=?,CIT_N_CITY_ID=?,COM_S_FISCAL_CODE=?,COM_S_VAT_CODE=?";
+				cmd+=" where COM_N_COMPANY_ID=?";
+				
+				JdbcTemplate jdbcTemplate = new JdbcTemplate(tx.getDataSource());
+				logger.info(cmd+"["+id+","+company+"]");
+				
+				try {
+					jdbcTemplate.update(cmd, new Object[]{
+							company.getCode(), company.getName(),  
+							(company.getAddress()==null || company.getAddress().equals(""))?null:company.getAddress(),
+							(company.getZipCode()==null || company.getZipCode().equals(""))?null:company.getZipCode(),
+							(company.getCityId()==0)?null:company.getCityId(),
+							(company.getFiscalCode()==null || company.getFiscalCode().equals(""))?null:company.getFiscalCode(),
+							(company.getVatCode()==null || company.getVatCode().equals(""))?null:company.getVatCode(),
+							id		
+						});
+				} catch (DataAccessException e) {
+					// TODO Auto-generated catch block
+					logger.error(e.toString());
+					throw new RuntimeException(e);
+				}
+				
+				Company company=get(id);
+				
+				CompanyDept dept=new CompanyDept();
+				dept.setCompanyId(id);
+				dept.setName(company.getName());
+				dept.setAddress(company.getAddress());
+				dept.setZipCode(company.getZipCode());
+				dept.setCityId(company.getCityId());
+				dept.setParentId(0);
+				dept.setId(company.getCityId());
+				
+				try {
+					updateDept(dept);
+				} catch (CyBssException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+					throw new RuntimeException(e);
+				}
+				
+			}
+			
+		});
+
+		
+		logger.info("CompanyMysql.update() <<<");
+
+	}
+
+	@Override
+	public void updateDept(CompanyDept dept) throws CyBssException {
+		// TODO Auto-generated method stub
+		
+		String cmd="update BSST_CDE_COMPANY_DEPT set COM_N_COMPANY_ID=?,CDE_S_NAME=?,CDE_S_ADDRESS=?,";
+		cmd+="CDE_S_ZIP=?,CIT_N_CITY_ID=?,CDE_N_PARENT_DEPT_ID=?";
+		cmd+=" where CDE_N_DEPT_ID=?";
+		
+		JdbcTemplate jdbcTemplate = new JdbcTemplate(tx.getDataSource());
+		logger.info(cmd+"["+dept+"]");
+		
+		try {
+			jdbcTemplate.update(cmd, new Object[]{
+					dept.getCompanyId(), dept.getName(),  
+					(dept.getAddress()==null || dept.getAddress().equals(""))?null:dept.getAddress(),
+					(dept.getZipCode()==null || dept.getZipCode().equals(""))?null:dept.getZipCode(),
+					(dept.getCityId()==0)?null:dept.getCityId(),
+					(dept.getParentId()==0)?null:dept.getParentId(),		
+					dept.getId()		
+				});
+		} catch (DataAccessException e) {
+			// TODO Auto-generated catch block
+			logger.error(e.toString());
+			throw new RuntimeException(e);
+		}
+		
+	}
+
+	@Override
+	public void remove(final long id) throws CyBssException {
+		// TODO Auto-generated method stub
+		logger.info("CompanyMysql.update() >>>");
+		
+		TransactionTemplate txTemplate=new TransactionTemplate(tx);
+		txTemplate.execute(new TransactionCallbackWithoutResult(){
+
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus arg0) {
+				// TODO Auto-generated method stub
+				String cmd="delete from BSST_CDE_COMPANY_DEPT where COM_N_COMPANY_ID=?";
+				JdbcTemplate jdbcTemplate = new JdbcTemplate(tx.getDataSource());
+				logger.info(cmd+"["+id+"]");
+				
+				try {
+					jdbcTemplate.update(cmd, new Object[]{
+							id
+						});
+				} catch (DataAccessException e) {
+					// TODO Auto-generated catch block
+					logger.error(e.toString());
+					throw new RuntimeException(e);
+				}
+				
+				cmd="delete from BSST_COM_COMPANY where COM_N_COMPANY_ID=?";
+				logger.info(cmd+"["+id+"]");
+				
+				try {
+					jdbcTemplate.update(cmd, new Object[]{
+							id
+						});
+				} catch (DataAccessException e) {
+					// TODO Auto-generated catch block
+					logger.error(e.toString());
+					throw new RuntimeException(e);
+				}
+				
+			}
+		});	
+	}
+
+	@Override
+	public List<Company> find(String code, String name) {
+		// TODO Auto-generated method stub
+		logger.info("CompanyMysql.find() >>> code="+code+";name="+name);
+		
+		String query="select  ID,CODE,NAME,ADDRESS,ZIP,CITY_ID,CITY,FISCAL_CODE,VAT_CODE,HEAD_DEPT_ID";
+		query+=" from BSSV_COMPANY";
+		if (!code.equals("") || !name.equals(""))
+			query+=" WHERE ";
+		boolean insAnd=false;
+		
+		List<Object> parms=new ArrayList<Object>();
+		
+		if (!code.equals("")){
+			if (!code.contains("%"))
+				query+=" CODE=?";
+			else
+				query+=" CODE like ?";
+			insAnd=true;
+			parms.add(code);
+		}
+		if (!name.equals("")){
+			if (!name.contains("%"))
+				query+=(insAnd?" AND":"")+" NAME=?";
+			else
+				query+=(insAnd?" AND":"")+" NAME like ?";
+			insAnd=true;
+			parms.add(name);
+		}
+		
+		
+		JdbcTemplate jdbcTemplate = new JdbcTemplate(ds);
+		logger.info(query+"[code="+code+";name="+name+"]");
+		
+		List<Company> ret=jdbcTemplate.query(query, parms.toArray(),new RowMapperCompany());
+			
+		logger.info("CompanyMysql.find() <<<");
+		return ret;
 	}
 	
 	
