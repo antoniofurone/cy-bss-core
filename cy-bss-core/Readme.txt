@@ -3,11 +3,11 @@ The services are provided via rest web services.
 Cy-bss-core is based on a set of open source products: Spring, LogBack, AngularJs, Bootstrap.
 Pruduct requires JRE 1.7 or above, servlet container (has been tested using Tomcat 7), and MySql 5.7 or above.
 Althought the project is at initial phase and only a small set of services and operations are implemented, its are already
-useful to develope various types of app. Urbanbot (....) is an example of this app.
+useful to develope various types of app. Urbanbot (https://github.com/antoniofurone/cy-urbanbot.git) is an example of this app.
 
 Installation
 ------------ 
-1) Download zip from ... (or import project in Eclipse);
+1) Download zip from https://github.com/antoniofurone/cy-bss-core.git (or import project in Eclipse);
 2) After MySql installation, create db and related objects running (in sequence) the following script: 
 	- DataBase/MySql -> create_db.sql with root user;
 	- access using cybss user (for example: mysql -u cybss -p), select database cybss (digit: use cybss;), and run script under
