@@ -5,7 +5,6 @@ import java.util.List;
 import org.cysoft.bss.core.common.CyBssException;
 import org.cysoft.bss.core.model.Company;
 import org.cysoft.bss.core.model.CompanyDept;
-import org.cysoft.bss.core.model.Person;
 
 public interface CompanyDao {
 	public long add(Company company) throws CyBssException;

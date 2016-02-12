@@ -64,6 +64,14 @@
 			</div>	
 	   	</div>
 
+		<div class="form-group">
+			<label class="col-sm-1 control-label">Visibility:</label>
+			<div class="col-sm-5">
+				<input class="form-control" type="text" ng-model="visibility"/>
+			</div>	
+	   	</div>
+		
+		
 		<button class="btn btn-info" ng-click="uploadFile()">Upload</button>
 		<hr>
 		<div class="form-group">
@@ -73,6 +81,8 @@
 			</div>
 		</div>
 		<button class="btn btn-info" ng-click="removeFile()">Remove</button>
+		<button class="btn btn-info" ng-click="makePublic()">Make Public</button>
+		<button class="btn btn-info" ng-click="makeReserved()">Make Reserved</button>
 	</form>
 	<hr>
 	<div class="form-group" ng-show="errorMessage">
@@ -126,6 +136,8 @@ app.service('fileUpload', ['$http', function ($http) {
         console.log('entity id = '+entityId);
         var note = $scope.note;
         console.log('note = '+note);
+        var visibility = $scope.visibility;
+        console.log('visibility = '+visibility);
         
     	
     	var fd = new FormData();
@@ -139,6 +151,9 @@ app.service('fileUpload', ['$http', function ($http) {
         fd.append('entityId', entityId);
         if (note!=undefined)
         	fd.append('note', note);
+        if (visibility!=undefined)
+        	fd.append('visibility', visibility);
+        
         
         $http.post(uploadUrl, fd, {
             transformRequest: angular.identity,
@@ -152,7 +167,7 @@ app.service('fileUpload', ['$http', function ($http) {
         });
     }
     
-    this.removeFile = function(removeUrl,$scope){
+    this.makeOperation = function(removeUrl,$scope){
     	var request = '{"method": "GET","url": "'+removeUrl+'", "headers": {"Security-Token": "'+$scope.securityToken+'"}}';
 		$http(JSON.parse(request)).then(
     			function(response){
@@ -162,9 +177,6 @@ app.service('fileUpload', ['$http', function ($http) {
     				$scope.errorMessage=status+" "+data;
     	});
     }
-    
-    
-    
     
 }]);
 
@@ -186,10 +198,27 @@ app.controller('uploadCtrl', ['$scope', 'fileUpload', function($scope, fileUploa
        	$scope.result='';
        	
        	var removeUrl = "/cy-bss-core/fileservice/file/"+$scope.id+"/remove";
-		fileUpload.removeFile(removeUrl,$scope);
+		fileUpload.makeOperation(removeUrl,$scope);
        	
     };
     
+    $scope.makePublic = function(){
+       	$scope.errorMessage='';
+       	$scope.result='';
+       	
+       	var removeUrl = "/cy-bss-core/fileservice/file/"+$scope.id+"/makePublic";
+		fileUpload.makeOperation(removeUrl,$scope);
+       	
+    };
+    
+    $scope.makeReserved = function(){
+       	$scope.errorMessage='';
+       	$scope.result='';
+       	
+       	var removeUrl = "/cy-bss-core/fileservice/file/"+$scope.id+"/makeReserved";
+		fileUpload.makeOperation(removeUrl,$scope);
+       	
+    };
     
 }]);
 

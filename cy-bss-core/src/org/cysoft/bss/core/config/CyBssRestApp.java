@@ -3,6 +3,7 @@ package org.cysoft.bss.core.config;
 
 import org.cysoft.bss.core.common.CyBssDataSource;
 import org.cysoft.bss.core.dao.AppDao;
+import org.cysoft.bss.core.dao.CityDao;
 import org.cysoft.bss.core.dao.CompanyDao;
 import org.cysoft.bss.core.dao.CyBssAuthDao;
 import org.cysoft.bss.core.dao.FileDao;
@@ -13,6 +14,7 @@ import org.cysoft.bss.core.dao.PersonDao;
 import org.cysoft.bss.core.dao.TicketDao;
 import org.cysoft.bss.core.dao.UserDao;
 import org.cysoft.bss.core.dao.mysql.AppMysql;
+import org.cysoft.bss.core.dao.mysql.CityMysql;
 import org.cysoft.bss.core.dao.mysql.CompanyMysql;
 import org.cysoft.bss.core.dao.mysql.CyBssAuthMysql;
 import org.cysoft.bss.core.dao.mysql.FileMysql;
@@ -92,6 +94,15 @@ public class CyBssRestApp {
 		 	LanguageDao langDao=new LanguageMysql();
 			return langDao;
 		 }
+	 
+	
+	 @Bean
+	 @Description("City Dao Rest")
+	 public CityDao cityDao(){
+		 	CityDao cityDao=new CityMysql();
+			return cityDao;
+		 }
+	
 	 
 	 @Bean
 	 @Description("App Dao Rest")

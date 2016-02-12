@@ -34,7 +34,7 @@ implements ICyBssWebService{
 	
 	protected CompanyDao companyDao=null;
 	@Autowired
-	public void setPersonDao(CompanyDao companyDao){
+	public void setCompanyDao(CompanyDao companyDao){
 			this.companyDao=companyDao;
 	}
 	
