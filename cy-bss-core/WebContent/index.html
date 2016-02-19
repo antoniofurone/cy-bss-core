@@ -118,10 +118,11 @@
         		  $scope.errorMessage=undefined;
         		  return;
         	  }	
-        		  
+        	  $scope.selectedOp=undefined;		  
+        	  
 	       	  $http.get("/cy-bss-core/rest/cybss-service/"+$scope.selectedService+"/get")
 	             .success(function(response) {
-	             	$scope.url+=response.url;
+	             	$scope.url=response.url;
 	             	$scope.service=response;
 	             	// end succes
 	             	})

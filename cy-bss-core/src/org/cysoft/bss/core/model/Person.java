@@ -82,36 +82,36 @@ public class Person {
 		this.fiscalCode = fiscalCode;
 	}
 	
-	private String birtyDay="";
-	public String getBirtyDay() {
-		return birtyDay;
+	private String birthDay="";
+	public String getBirthDay() {
+		return birthDay;
 	}
-	public void setBirtyDay(String birtyDay) {
-		this.birtyDay = birtyDay;
-	}
-	
-	private long birtyCityId;
-	public long getBirtyCityId() {
-		return birtyCityId;
-	}
-	public void setBirtyCityId(long birtyCityId) {
-		this.birtyCityId = birtyCityId;
+	public void setBirthDay(String birthDay) {
+		this.birthDay = birthDay;
 	}
 	
-	private String birtyCity="";
-	public String getBirtyCity() {
-		return birtyCity;
+	private long birthCityId;
+	public long getBirthCityId() {
+		return birthCityId;
 	}
-	public void setBirtyCity(String birtyCity) {
-		this.birtyCity = birtyCity;
+	public void setBirthCityId(long birtyCityId) {
+		this.birthCityId = birtyCityId;
+	}
+	
+	private String birthCity="";
+	public String getBirthCity() {
+		return birthCity;
+	}
+	public void setBirthCity(String birthCity) {
+		this.birthCity = birthCity;
 	}
 	
 	@Override
 	public String toString() {
 		return "Person [id=" + id + ", code=" + code + ", firstName=" + firstName + ", secondName=" + secondName
 				+ ", gender=" + gender + ", address=" + address + ", zipCode=" + zipCode + ", cityId=" + cityId
-				+ ", city=" + city + ", fiscalCode=" + fiscalCode + ", birtyDay=" + birtyDay + ", birtyCityId="
-				+ birtyCityId + ", birtyCity=" + birtyCity + "]";
+				+ ", city=" + city + ", fiscalCode=" + fiscalCode + ", birtyDay=" + birthDay + ", birtyCityId="
+				+ birthCityId + ", birtyCity=" + birthCity + "]";
 	}
 	
 }

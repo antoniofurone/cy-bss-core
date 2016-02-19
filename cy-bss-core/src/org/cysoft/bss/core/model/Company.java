@@ -59,6 +59,14 @@ public class Company {
 		this.zipCode = zipCode;
 	}
 	
+	private String country="";
+	public String getCountry() {
+		return country;
+	}
+	public void setCountry(String country) {
+		this.country = country;
+	}
+
 	private String fiscalCode="";
 	public String getFiscalCode() {
 		return fiscalCode;
@@ -85,10 +93,8 @@ public class Company {
 	@Override
 	public String toString() {
 		return "Company [id=" + id + ", code=" + code + ", name=" + name + ", address=" + address + ", cityId=" + cityId
-				+ ", city=" + city + ", zipCode=" + zipCode + ", fiscalCode=" + fiscalCode + ", vatCode=" + vatCode
-				+ ", headDeptId=" + headDeptId + "]";
+				+ ", city=" + city + ", zipCode=" + zipCode + ", country=" + country + ", fiscalCode=" + fiscalCode
+				+ ", vatCode=" + vatCode + ", headDeptId=" + headDeptId + "]";
 	}
-	
-	
 	
 }

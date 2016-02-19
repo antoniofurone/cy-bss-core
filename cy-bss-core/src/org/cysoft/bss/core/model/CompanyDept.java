@@ -66,6 +66,14 @@ public class CompanyDept {
 		this.zipCode = zipCode;
 	}
 	
+	private String country="";
+	public String getCountry() {
+		return country;
+	}
+	public void setCountry(String country) {
+		this.country = country;
+	}
+
 	private long parentId=0;
 	public long getParentId() {
 		return parentId;
@@ -81,7 +89,5 @@ public class CompanyDept {
 				+ address + ", cityId=" + cityId + ", city=" + city + ", zipCode=" + zipCode + ", parentId=" + parentId
 				+ "]";
 	}
-	
-	
 
 }

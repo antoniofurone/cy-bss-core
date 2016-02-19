@@ -10,6 +10,7 @@ import org.cysoft.bss.core.common.CyBssException;
 import org.cysoft.bss.core.dao.CompanyDao;
 import org.cysoft.bss.core.model.Company;
 import org.cysoft.bss.core.model.CompanyDept;
+import org.cysoft.bss.core.model.PersonRole;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.dao.DataAccessException;
@@ -54,6 +55,7 @@ implements CompanyDao{
 				Long id=getLastInsertId(jdbcTemplate);
 				
 				CompanyDept companyDept=new CompanyDept();
+				companyDept.setCode(company.getCode());
 				companyDept.setCompanyId(id);
 				companyDept.setName(company.getName());
 				companyDept.setAddress(company.getAddress());
@@ -87,12 +89,12 @@ implements CompanyDao{
 		JdbcTemplate jdbcTemplate = new JdbcTemplate(tx.getDataSource());
 		
 		
-		String cmd="insert into BSST_CDE_COMPANY_DEPT(COM_N_COMPANY_ID,CDE_S_NAME,CDE_S_ADDRESS,CDE_S_ZIP,CIT_N_CITY_ID,CDE_N_PARENT_DEPT_ID) ";
-		cmd+=" values (?,?,?,?,?,?)";
+		String cmd="insert into BSST_CDE_COMPANY_DEPT(COM_N_COMPANY_ID,CDE_S_NAME,CDE_S_CODE,CDE_S_ADDRESS,CDE_S_ZIP,CIT_N_CITY_ID,CDE_N_PARENT_DEPT_ID) ";
+		cmd+=" values (?,?,?,?,?,?,?)";
 		logger.info(cmd+"["+dept+"]");
 		
 		jdbcTemplate.update(cmd, new Object[]{
-					dept.getCompanyId(), dept.getName(), 
+					dept.getCompanyId(), dept.getName(), dept.getCode(), 
 					(dept.getAddress()==null || dept.getAddress().equals(""))?null:dept.getAddress(),
 					(dept.getZipCode()==null || dept.getZipCode().equals(""))?null:dept.getZipCode(),
 					(dept.getCityId()==0)?null:dept.getCityId(),
@@ -125,7 +127,7 @@ implements CompanyDao{
 		JdbcTemplate jdbcTemplate = new JdbcTemplate(ds);
 		
 		
-		String query="select ID,CODE,NAME,ADDRESS,ZIP,CITY_ID,CITY,FISCAL_CODE,VAT_CODE,HEAD_DEPT_ID ";
+		String query="select ID,CODE,NAME,ADDRESS,ZIP,CITY_ID,CITY,COUNTRY,FISCAL_CODE,VAT_CODE,HEAD_DEPT_ID ";
 		query+="from BSSV_COMPANY";
 		if (bCode)
 			query+=" where CODE=?";
@@ -161,6 +163,7 @@ implements CompanyDao{
             company.setZipCode(rs.getString("ZIP"));
             company.setCityId(rs.getLong("CITY_ID"));
             company.setCity(rs.getString("CITY"));
+            company.setCountry(rs.getString("COUNTRY"));
             company.setFiscalCode(rs.getString("FISCAL_CODE"));
             company.setVatCode(rs.getString("VAT_CODE"));
             company.setHeadDeptId(rs.getLong("HEAD_DEPT_ID"));
@@ -208,13 +211,14 @@ implements CompanyDao{
 				Company company=get(id);
 				
 				CompanyDept dept=new CompanyDept();
+				dept.setCode(company.getCode());
 				dept.setCompanyId(id);
 				dept.setName(company.getName());
 				dept.setAddress(company.getAddress());
 				dept.setZipCode(company.getZipCode());
 				dept.setCityId(company.getCityId());
 				dept.setParentId(0);
-				dept.setId(company.getCityId());
+				dept.setId(company.getHeadDeptId());
 				
 				try {
 					updateDept(dept);
@@ -237,7 +241,7 @@ implements CompanyDao{
 	public void updateDept(CompanyDept dept) throws CyBssException {
 		// TODO Auto-generated method stub
 		
-		String cmd="update BSST_CDE_COMPANY_DEPT set COM_N_COMPANY_ID=?,CDE_S_NAME=?,CDE_S_ADDRESS=?,";
+		String cmd="update BSST_CDE_COMPANY_DEPT set COM_N_COMPANY_ID=?,CDE_S_NAME=?,CDE_S_CODE=?,CDE_S_ADDRESS=?,";
 		cmd+="CDE_S_ZIP=?,CIT_N_CITY_ID=?,CDE_N_PARENT_DEPT_ID=?";
 		cmd+=" where CDE_N_DEPT_ID=?";
 		
@@ -246,7 +250,7 @@ implements CompanyDao{
 		
 		try {
 			jdbcTemplate.update(cmd, new Object[]{
-					dept.getCompanyId(), dept.getName(),  
+					dept.getCompanyId(), dept.getName(), dept.getCode(),  
 					(dept.getAddress()==null || dept.getAddress().equals(""))?null:dept.getAddress(),
 					(dept.getZipCode()==null || dept.getZipCode().equals(""))?null:dept.getZipCode(),
 					(dept.getCityId()==0)?null:dept.getCityId(),
@@ -308,7 +312,7 @@ implements CompanyDao{
 		// TODO Auto-generated method stub
 		logger.info("CompanyMysql.find() >>> code="+code+";name="+name);
 		
-		String query="select  ID,CODE,NAME,ADDRESS,ZIP,CITY_ID,CITY,FISCAL_CODE,VAT_CODE,HEAD_DEPT_ID";
+		String query="select  ID,CODE,NAME,ADDRESS,ZIP,CITY_ID,CITY,COUNTRY,FISCAL_CODE,VAT_CODE,HEAD_DEPT_ID";
 		query+=" from BSSV_COMPANY";
 		if (!code.equals("") || !name.equals(""))
 			query+=" WHERE ";
@@ -340,6 +344,117 @@ implements CompanyDao{
 		List<Company> ret=jdbcTemplate.query(query, parms.toArray(),new RowMapperCompany());
 			
 		logger.info("CompanyMysql.find() <<<");
+		return ret;
+	}
+
+	@Override
+	public List<PersonRole> getPersonRoleAll(long langId) {
+		// TODO Auto-generated method stub
+		String query="select  a.CRO_N_ROLE_ID,IFNULL(b.CRL_S_NAME,a.CRO_S_NAME) as CRO_S_NAME,IFNULL(b.CRL_S_DESC,a.CRO_S_DESC) as CRO_S_DESC  from BSST_CRO_COMPANY_PERS_ROLE a";
+		query+=" left join BSST_CRL_COMPANY_PERS_ROLE_LANG b on a.CRO_N_ROLE_ID=b.CRO_N_ROLE_ID AND b.LAN_N_LANG_ID=?";
+		
+		JdbcTemplate jdbcTemplate = new JdbcTemplate(ds);
+		logger.info(query+"["+langId+"]");
+		
+		List<PersonRole> ret = jdbcTemplate.query(
+                query, 
+                new Object[] { langId },
+                new RowMapper<PersonRole>() {
+                    @Override
+                    public PersonRole mapRow(ResultSet rs, int rowNum) throws SQLException {
+                    	PersonRole companyRole=new PersonRole();
+                        
+                        companyRole.setId(rs.getLong("CRO_N_ROLE_ID"));
+                        companyRole.setName(rs.getString("CRO_S_NAME"));
+                        companyRole.setDescription(rs.getString("CRO_S_DESC"));
+                        
+                        return companyRole;
+		            }
+                });
+		
+		
+		return ret;
+	}
+
+	@Override
+	public List<CompanyDept> getDeptAll(long companyId) {
+		// TODO Auto-generated method stub
+		String query="select ID,CODE,NAME,ADDRESS,ZIP,CITY_ID,CITY,COUNTRY,";
+		query+="PARENT_DEPT_ID,PARENT_DEPT_CODE,PARENT_DEPT,COMPANY_ID,COMPANY_CODE,COMPANY ";
+		query+="from BSSV_COMPANY_DEPT where COMPANY_ID=?";
+		
+		JdbcTemplate jdbcTemplate = new JdbcTemplate(ds);
+		logger.info(query+"[companyId="+companyId);
+		
+		List<CompanyDept> ret=jdbcTemplate.query(query, new Object[] {companyId},new RowMapperCompanyDept());
+		
+		return ret;
+	}
+
+	private class RowMapperCompanyDept implements RowMapper<CompanyDept>{
+
+		@Override
+		public CompanyDept mapRow(ResultSet rs, int rownum) throws SQLException {
+			// TODO Auto-generated method stub
+			CompanyDept dept=new CompanyDept();
+       	
+            dept.setId(rs.getLong("ID"));
+            dept.setCode(rs.getString("CODE"));
+            dept.setName(rs.getString("NAME"));
+            dept.setAddress(rs.getString("ADDRESS"));
+            dept.setZipCode(rs.getString("ZIP"));
+            dept.setCityId(rs.getLong("CITY_ID"));
+            dept.setCity(rs.getString("CITY"));
+            dept.setCountry(rs.getString("COUNTRY"));
+            dept.setParentId(rs.getLong("PARENT_DEPT_ID"));
+            dept.setCompanyId(rs.getLong("COMPANY_ID"));
+            
+            return dept;
+		}
+		
+	}
+
+	
+	@Override
+	public List<CompanyDept> getDeptChild(long deptId) {
+		// TODO Auto-generated method stub
+		String query="select ID,CODE,NAME,ADDRESS,ZIP,CITY_ID,CITY,COUNTRY,";
+		query+="PARENT_DEPT_ID,PARENT_DEPT_CODE,PARENT_DEPT,COMPANY_ID,COMPANY_CODE,COMPANY ";
+		query+="from BSSV_COMPANY_DEPT where PARENT_DEPT_ID=?";
+		
+		JdbcTemplate jdbcTemplate = new JdbcTemplate(ds);
+		logger.info(query+"[deptId="+deptId);
+		
+		List<CompanyDept> ret=jdbcTemplate.query(query, new Object[] {deptId},new RowMapperCompanyDept());
+		
+		return ret;
+	}
+
+	@Override
+	public void removeDept(long id) throws CyBssException {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public CompanyDept getDept(long deptId) {
+		// TODO Auto-generated method stub
+		String query="select ID,CODE,NAME,ADDRESS,ZIP,CITY_ID,CITY,COUNTRY,";
+		query+="PARENT_DEPT_ID,PARENT_DEPT_CODE,PARENT_DEPT,COMPANY_ID,COMPANY_CODE,COMPANY ";
+		query+="from BSSV_COMPANY_DEPT where ID=?";
+		
+		JdbcTemplate jdbcTemplate = new JdbcTemplate(ds);
+		logger.info(query+"[deptId="+deptId);
+		
+		CompanyDept ret=null;
+		try {
+			ret=jdbcTemplate.queryForObject(query, new Object[] { deptId },
+					new RowMapperCompanyDept());
+		}
+		catch(IncorrectResultSizeDataAccessException e){
+			logger.info("CompanyMysql.IncorrectResultSizeDataAccessException:"+e.getMessage());
+		
+		}
 		return ret;
 	}
 	

@@ -6,11 +6,16 @@ import java.util.List;
 import org.cysoft.bss.core.common.CyBssException;
 import org.cysoft.bss.core.dao.CompanyDao;
 import org.cysoft.bss.core.model.Company;
+import org.cysoft.bss.core.model.CompanyDept;
+import org.cysoft.bss.core.model.Language;
 import org.cysoft.bss.core.web.annotation.CyBssOperation;
 import org.cysoft.bss.core.web.annotation.CyBssService;
 import org.cysoft.bss.core.web.response.ICyBssResultConst;
+import org.cysoft.bss.core.web.response.rest.CompanyDeptListResponse;
+import org.cysoft.bss.core.web.response.rest.CompanyDeptResponse;
 import org.cysoft.bss.core.web.response.rest.CompanyListResponse;
 import org.cysoft.bss.core.web.response.rest.CompanyResponse;
+import org.cysoft.bss.core.web.response.rest.PersonRoleListResponse;
 import org.cysoft.bss.core.web.service.CyBssWebServiceAdapter;
 import org.cysoft.bss.core.web.service.ICyBssWebService;
 import org.slf4j.Logger;
@@ -41,7 +46,6 @@ implements ICyBssWebService{
 	
 	@RequestMapping(value = "/add",method = RequestMethod.POST)
 	@CyBssOperation(name = "add")
-
 	public CompanyResponse add(
 			@RequestHeader("Security-Token") String securityToken,
 			@RequestBody Company company
@@ -72,6 +76,43 @@ implements ICyBssWebService{
 		
 		return response;
 	}
+	
+	@RequestMapping(value = "/addDept",method = RequestMethod.POST)
+	@CyBssOperation(name = "addDept")
+	public CompanyDeptResponse addDept(
+			@RequestHeader("Security-Token") String securityToken,
+			@RequestBody CompanyDept dept
+			) throws CyBssException
+	{
+		CompanyDeptResponse response=new CompanyDeptResponse();
+		
+		logger.info("CompanyWs.addDept() >>>");
+		
+		// checkGrant
+		if (!checkGrant(response,securityToken,"addDept",String.class,CompanyDept.class))
+			return response;
+		// end checkGrant 
+				
+		//logger.info(company.toString());
+		
+		CompanyDept parentDept=companyDao.getDept(dept.getParentId());
+		if (parentDept==null){
+			setResult(response, ICyBssResultConst.RESULT_NOT_FOUND, 
+					ICyBssResultConst.RESULT_D_NOT_FOUND,response.getLanguageCode());
+			return response;
+		}
+		
+		dept.setCompanyId(parentDept.getCompanyId());
+		long id=companyDao.addDept(dept);
+		dept.setId(id);
+		response.setCompanyDept(dept);
+		
+		logger.info("CompanyWs.addDept() <<<");
+		
+		return response;
+	}
+	
+	
 	
 	@RequestMapping(value = "/{id}/get",method = RequestMethod.GET)
 	@CyBssOperation(name = "get")
@@ -127,6 +168,64 @@ implements ICyBssWebService{
 		return response;
 	}
 	
+	@RequestMapping(value = "/{id}/getDeptAll",method = RequestMethod.GET)
+	@CyBssOperation(name = "getDeptAll")
+	public CompanyDeptListResponse getDeptAll(
+			@RequestHeader("Security-Token") String securityToken,
+			@PathVariable("id") Long id
+			) throws CyBssException{
+		
+		logger.info("CompanyWs.getDeptAll() >>> id="+id);
+		CompanyDeptListResponse response=new CompanyDeptListResponse();
+		/*
+		// checkGrant
+		if (!checkGrant(response,securityToken,"get",String.class,Long.class))
+			return response;
+		// end checkGrant 
+				
+		Company company=companyDao.get(id);
+		if (company!=null)
+			response.setCompany(company);
+		else
+			setResult(response, ICyBssResultConst.RESULT_NOT_FOUND, 
+					ICyBssResultConst.RESULT_D_NOT_FOUND,response.getLanguageCode());
+		*/
+		logger.info("CompanyWs.getDeptAll() <<< ");
+		
+		return response;
+	}
+	
+	@RequestMapping(value = "/{deptId}/getDeptChild",method = RequestMethod.GET)
+	@CyBssOperation(name = "getDeptChild")
+	public CompanyDeptListResponse getDeptChild(
+			@RequestHeader("Security-Token") String securityToken,
+			@PathVariable("deptId") Long deptId
+			) throws CyBssException{
+		
+		logger.info("CompanyWs.getDeptChild() >>> deptId="+deptId);
+		CompanyDeptListResponse response=new CompanyDeptListResponse();
+		/*
+		// checkGrant
+		if (!checkGrant(response,securityToken,"get",String.class,Long.class))
+			return response;
+		// end checkGrant 
+				
+		Company company=companyDao.get(id);
+		if (company!=null)
+			response.setCompany(company);
+		else
+			setResult(response, ICyBssResultConst.RESULT_NOT_FOUND, 
+					ICyBssResultConst.RESULT_D_NOT_FOUND,response.getLanguageCode());
+		*/
+		logger.info("CompanyWs.getDeptChild() <<< ");
+		
+		return response;
+	}
+	
+	
+	
+	
+	
 	@RequestMapping(value = "/{id}/update",method = RequestMethod.POST)
 	@CyBssOperation(name = "update")
 	public CompanyResponse update(
@@ -158,7 +257,41 @@ implements ICyBssWebService{
 		
 		return response;
 	}
+	
+	@RequestMapping(value = "/{id}/updateDept",method = RequestMethod.POST)
+	@CyBssOperation(name = "updateDept")
+	public CompanyDeptResponse updateDept(
+			@RequestHeader("Security-Token") String securityToken,
+			@PathVariable("id") Long deptId,
+			@RequestBody CompanyDept companyDept
+			) throws CyBssException
+	{
+		CompanyDeptResponse response=new CompanyDeptResponse();
 		
+		logger.info("CompanyWs.updateDept() >>> deptId="+deptId);
+		
+		/*
+		// checkGrant
+		if (!checkGrant(response,securityToken,"update",String.class,Long.class,Company.class))
+			return response;
+		// end checkGrant 
+		
+		if (companyDao.get(id)==null){
+			setResult(response, ICyBssResultConst.RESULT_NOT_FOUND, 
+					ICyBssResultConst.RESULT_D_NOT_FOUND,response.getLanguageCode());
+			return response;
+			}
+		
+		
+		companyDao.update(id, company);
+		response.setCompany(companyDao.get(id));
+		*/
+		logger.info("CompanyWs.updateDept() <<<");
+		
+		return response;
+	}
+	
+	
 	@RequestMapping(value = "/{id}/remove",method = RequestMethod.GET)
 	@CyBssOperation(name = "remove")
 	public CompanyResponse remove(
@@ -176,6 +309,28 @@ implements ICyBssWebService{
 		companyDao.remove(id);
 		
 		logger.info("CompanyWs.remove() <<< ");
+		return response;
+	}
+	
+	
+	@RequestMapping(value = "/{deptId}/removeDept",method = RequestMethod.GET)
+	@CyBssOperation(name = "removeDept")
+	public CompanyDeptResponse removeDept(
+			@RequestHeader("Security-Token") String securityToken,
+			@PathVariable("deptId") Long deptId
+			) throws CyBssException{
+		
+		logger.info("CompanyWs.removeDept() >>> deptId="+deptId);
+		CompanyDeptResponse response=new CompanyDeptResponse();
+		
+		/*
+		// checkGrant
+		if (!checkGrant(response,securityToken,"remove",String.class,Long.class))
+			return response;
+		// end checkGrant 
+		companyDao.remove(id);
+		*/
+		logger.info("CompanyWs.removeDept() <<< ");
 		return response;
 	}
 	
@@ -212,5 +367,29 @@ implements ICyBssWebService{
 		return response;
 	}
 
+	@RequestMapping(value = "/getPersonRoleAll",method = RequestMethod.GET)
+	@CyBssOperation(name = "getPersonRoleAll")
+	public PersonRoleListResponse getPersonRoleAll(
+			@RequestHeader("Security-Token") String securityToken,
+			@RequestHeader(value="Language",required=false, defaultValue="") String languageCode
+			) throws CyBssException{
+		
+		logger.info("CompanyWs.getPersonRoleAll() >>>");
+		PersonRoleListResponse response=new PersonRoleListResponse(); 
+		
+		// checkGrant
+		if (!checkGrant(response,securityToken,"getPersonRoleAll",String.class,String.class))
+			return response;
+		// end checkGrant 
+		
+		Language language=null;
+		if (languageCode.equals(""))
+			language=languageDao.getLanguage(response.getLanguageCode());
+		else	
+			language=languageDao.getLanguage(languageCode);
+		
+		response.setPersonRoles(companyDao.getPersonRoleAll(language.getId()));
+		return response;
+	}
 
 }

@@ -42,8 +42,8 @@ implements PersonDao{
 					(person.getZipCode()==null || person.getZipCode().equals(""))?null:person.getZipCode(),
 					(person.getCityId()==0)?null:person.getCityId(),
 					(person.getFiscalCode()==null || person.getFiscalCode().equals(""))?null:person.getFiscalCode(),
-					(person.getBirtyDay()==null || person.getBirtyDay().equals(""))?null:CyBssUtility.tryStringToDate(person.getBirtyDay()),
-					(person.getBirtyCityId()==0)?null:person.getBirtyCityId()
+					(person.getBirthDay()==null || person.getBirthDay().equals(""))?null:CyBssUtility.tryStringToDate(person.getBirthDay()),
+					(person.getBirthCityId()==0)?null:person.getBirthCityId()
 				});
 		} catch (DataAccessException | ParseException e) {
 			// TODO Auto-generated catch block
@@ -118,8 +118,8 @@ implements PersonDao{
 					(person.getZipCode()==null || person.getZipCode().equals(""))?null:person.getZipCode(),
 					(person.getCityId()==0)?null:person.getCityId(),
 					(person.getFiscalCode()==null || person.getFiscalCode().equals(""))?null:person.getFiscalCode(),
-					(person.getBirtyDay()==null || person.getBirtyDay().equals(""))?null:CyBssUtility.tryStringToDate(person.getBirtyDay()),
-					(person.getBirtyCityId()==0)?null:person.getBirtyCityId(),
+					(person.getBirthDay()==null || person.getBirthDay().equals(""))?null:CyBssUtility.tryStringToDate(person.getBirthDay()),
+					(person.getBirthCityId()==0)?null:person.getBirthCityId(),
 					id		
 				});
 		} catch (DataAccessException | ParseException e) {
@@ -221,9 +221,9 @@ implements PersonDao{
             person.setCityId(rs.getLong("CITY_ID"));
             person.setCity(rs.getString("CITY"));
             person.setFiscalCode(rs.getString("FISCAL_CODE")); 
-            person.setBirtyDay(rs.getString("BIRTH_DAY")); 
-            person.setBirtyCityId(rs.getLong("BIRTH_CITY_ID"));
-            person.setBirtyCity(rs.getString("BIRTH_CITY"));
+            person.setBirthDay(rs.getString("BIRTH_DAY")); 
+            person.setBirthCityId(rs.getLong("BIRTH_CITY_ID"));
+            person.setBirthCity(rs.getString("BIRTH_CITY"));
             
             return person;
 		}
