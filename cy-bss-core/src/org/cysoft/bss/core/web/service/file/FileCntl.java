@@ -130,8 +130,8 @@ implements ICyBssWebService{
 			fileLen=file.getContent().available();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
-			logger.error(e.toString());
-			throw new CyBssException(e);
+			logger.error("getContent().available() - "+e.toString());
+			throw new CyBssException("getContent().available() - "+e);
 		}
 		response.setContentLength(fileLen);
 		response.setHeader("Content-Disposition", 
@@ -152,8 +152,8 @@ implements ICyBssWebService{
 			outStream.close();
         } catch (IOException e) {
 			// TODO Auto-generated catch block
-    		logger.error(e.toString());
-			throw new CyBssException(e);
+    		logger.error("read - "+e.toString());
+			throw new CyBssException("read -"+e);
 		}
         
 	}

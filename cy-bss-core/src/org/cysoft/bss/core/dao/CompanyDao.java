@@ -10,6 +10,7 @@ import org.cysoft.bss.core.model.PersonRole;
 public interface CompanyDao {
 	public long add(Company company) throws CyBssException;
 	public long addDept(CompanyDept dept) throws CyBssException;
+	public void addPerson(long personId,long deptId, long roleId); 
 	
 	public void update(long id,Company company) throws CyBssException;
 	public void updateDept(CompanyDept dept) throws CyBssException;
@@ -21,10 +22,13 @@ public interface CompanyDao {
 	
 	public void remove(long id) throws CyBssException;
 	public void removeDept(long deptId) throws CyBssException;
+	public void removePerson(long personId,long deptId);
 		
 	public Company getByCode(String code);
 	public Company get(long id);
 	public CompanyDept getDept(long deptId);
 	
 	public List<PersonRole> getPersonRoleAll(long langId);
+	public PersonRole getPersonRole(long roleId,long langId);
+	
 }

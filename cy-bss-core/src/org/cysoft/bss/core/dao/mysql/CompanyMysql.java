@@ -231,10 +231,7 @@ implements CompanyDao{
 			}
 			
 		});
-
-		
 		logger.info("CompanyMysql.update() <<<");
-
 	}
 
 	@Override
@@ -433,7 +430,18 @@ implements CompanyDao{
 	@Override
 	public void removeDept(long id) throws CyBssException {
 		// TODO Auto-generated method stub
+		logger.info("CompanyMysql.removeDept() >>>");
+		String cmd="delete from BSST_CDE_COMPANY_DEPT ";
+		cmd+=" where CDE_N_DEPT_ID=?";
 		
+		logger.info(cmd+"["+id+"]");
+		JdbcTemplate jdbcTemplate = new JdbcTemplate(ds);
+		
+		jdbcTemplate.update(cmd, new Object[]{
+				id
+				});
+		
+		logger.info("CompanyMysql.removeDept() <<<");
 	}
 
 	@Override
@@ -456,6 +464,75 @@ implements CompanyDao{
 		
 		}
 		return ret;
+	}
+
+	@Override
+	public void addPerson(long personId, long deptId, long roleId) {
+		// TODO Auto-generated method stub
+		logger.info("CompanyMysql.addPerson() >>>");
+		String cmd="insert into BSST_CPE_COMPANY_PERS(PER_N_PERSON_ID,CRO_N_ROLE_ID,CDE_N_DEPT_ID) ";
+		cmd+=" values (?,?,?)";
+		logger.info(cmd+"["+personId+","+deptId+","+roleId+"]");
+		
+		JdbcTemplate jdbcTemplate = new JdbcTemplate(ds);
+		jdbcTemplate.update(cmd, new Object[]{
+				personId,deptId,roleId
+				});
+		
+		
+		logger.info("CompanyMysql.addPerson() <<<");
+	}
+
+	@Override
+	public void removePerson(long personId, long deptId) {
+		// TODO Auto-generated method stub
+		logger.info("CompanyMysql.removePerson() >>>");
+		
+		String cmd="delete from BSST_CPE_COMPANY_PERS ";
+		cmd+=" where PER_N_PERSON_ID=? and CDE_N_DEPT_ID=?";
+		
+		logger.info(cmd+"["+personId+","+deptId+"]");
+		JdbcTemplate jdbcTemplate = new JdbcTemplate(ds);
+		
+		jdbcTemplate.update(cmd, new Object[]{
+				personId,deptId
+				});
+		
+		logger.info("CompanyMysql.removePerson() <<<");
+	}
+
+	@Override
+	public PersonRole getPersonRole(long roleId,long langId) {
+		// TODO Auto-generated method stub
+		String query="select  a.CRO_N_ROLE_ID,IFNULL(b.CRL_S_NAME,a.CRO_S_NAME) as CRO_S_NAME,IFNULL(b.CRL_S_DESC,a.CRO_S_DESC) as CRO_S_DESC  from BSST_CRO_COMPANY_PERS_ROLE a";
+		query+=" left join BSST_CRL_COMPANY_PERS_ROLE_LANG b on a.CRO_N_ROLE_ID=b.CRO_N_ROLE_ID AND b.LAN_N_LANG_ID=?";
+		query+=" where a.CRO_N_ROLE_ID=?";
+		logger.info(query+"["+langId+","+roleId+"]");
+
+		JdbcTemplate jdbcTemplate = new JdbcTemplate(ds);
+
+		PersonRole ret=null;
+		try {
+			ret=jdbcTemplate.queryForObject(query, new Object[] {langId,roleId},
+				new RowMapper<PersonRole>() {
+                @Override
+                public PersonRole mapRow(ResultSet rs, int rowNum) throws SQLException {
+                	PersonRole companyRole=new PersonRole();
+                    
+                    companyRole.setId(rs.getLong("CRO_N_ROLE_ID"));
+                    companyRole.setName(rs.getString("CRO_S_NAME"));
+                    companyRole.setDescription(rs.getString("CRO_S_DESC"));
+                    
+                    return companyRole;
+	            }
+            });
+		}
+		catch(IncorrectResultSizeDataAccessException e){
+			logger.info("CompanyMysql.IncorrectResultSizeDataAccessException:"+e.getMessage());
+		
+		}
+		return ret;
+
 	}
 	
 	

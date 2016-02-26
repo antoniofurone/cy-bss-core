@@ -72,10 +72,9 @@ implements ICyBssWebService{
 		return response;
 	}
 
-
-	@RequestMapping(value = "/{id}/addLang",method = RequestMethod.POST)
-	@CyBssOperation(name = "addLang")
-	public LocationResponse addLang(
+	@RequestMapping(value = "/{id}/update",method = RequestMethod.POST)
+	@CyBssOperation(name = "update")
+	public LocationResponse update(
 			@RequestHeader("Security-Token") String securityToken,
 			@PathVariable("id") Long id,
 			@RequestBody Location location
@@ -83,10 +82,43 @@ implements ICyBssWebService{
 	{
 		LocationResponse response=new LocationResponse();
 		
-		logger.info("LocationWs.addLang() >>>");
+		logger.info("LocationWs.update() >>> id="+id);
 		
 		// checkGrant
-		if (!checkGrant(response,securityToken,"addLang",String.class,Long.class,Location.class))
+		if (!checkGrant(response,securityToken,"update",String.class,Long.class,Location.class))
+			return response;
+		// end checkGrant 
+		
+		if (locationDao.get(id,0)==null){
+			setResult(response, ICyBssResultConst.RESULT_NOT_FOUND, 
+					ICyBssResultConst.RESULT_D_NOT_FOUND,response.getLanguageCode());
+			return response;
+			}
+		
+		
+		locationDao.update(id, location);
+		response.setLocation(locationDao.get(id,0));
+		
+		logger.info("LocationWs.update() <<<");
+		
+		return response;
+	}
+	
+	
+	@RequestMapping(value = "/{id}/addUpdLang",method = RequestMethod.POST)
+	@CyBssOperation(name = "addUpdLang")
+	public LocationResponse addUpdLang(
+			@RequestHeader("Security-Token") String securityToken,
+			@PathVariable("id") Long id,
+			@RequestBody Location location
+			) throws CyBssException
+	{
+		LocationResponse response=new LocationResponse();
+		
+		logger.info("LocationWs.addUpdLang() >>>");
+		
+		// checkGrant
+		if (!checkGrant(response,securityToken,"addUpdLang",String.class,Long.class,Location.class))
 				return response;
 		// end checkGrant 
 		
@@ -96,10 +128,9 @@ implements ICyBssWebService{
 					ICyBssResultConst.RESULT_D_NOT_FOUND,response.getLanguageCode());
 			return response;
 		}
-		locationDao.removeLang(id, location.getLangId());
-		locationDao.addLang(location);
+		locationDao.addUpdLang(location);
 		
-		logger.info("LocationWs.addLang() <<<");
+		logger.info("LocationWs.addUpdLang() <<<");
 		
 		return response;
 	}
