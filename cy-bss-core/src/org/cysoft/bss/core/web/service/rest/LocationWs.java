@@ -128,6 +128,7 @@ implements ICyBssWebService{
 					ICyBssResultConst.RESULT_D_NOT_FOUND,response.getLanguageCode());
 			return response;
 		}
+		location.setId(loc0.getId());
 		locationDao.addUpdLang(location);
 		
 		logger.info("LocationWs.addUpdLang() <<<");
@@ -239,6 +240,7 @@ implements ICyBssWebService{
 			@RequestHeader(value="Security-Token",required=false, defaultValue="") String securityToken,
 			@RequestHeader(value="Language",required=false, defaultValue="") String languageCode,
 			@RequestParam(value="name", required=false, defaultValue="") String name,
+			@RequestParam(value="description", required=false, defaultValue="") String description,
 			@RequestParam(value="locationType", required=false, defaultValue="") String locationType,
 			@RequestParam(value="cityId", required=false, defaultValue="0") Long cityId,
 			@RequestParam(value="personId", required=false, defaultValue="0") Long personId,
@@ -258,7 +260,7 @@ implements ICyBssWebService{
 			language=languageDao.getLanguage(languageCode);
 		
 		
-		List<Location> locations=locationDao.find(name, locationType, cityId, personId, fromDate, toDate, language.getId());
+		List<Location> locations=locationDao.find(name, description,locationType, cityId, personId, fromDate, toDate, language.getId());
 		int lsize=locations.size();
 		if (offset!=0)
 			response.setLocations(locations.subList(offset-1, (offset-1)+(size>lsize?lsize:size)));

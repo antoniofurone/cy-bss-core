@@ -192,7 +192,7 @@ implements PersonDao{
 				query+=(insAnd?" AND":"")+" SECOND_NAME like ?";
 			parms.add(secondName);
 		}
-		
+		query+=" order by ID";
 		
 		JdbcTemplate jdbcTemplate = new JdbcTemplate(ds);
 		logger.info(query+"[code="+code+";firstName="+firstName+";secondName="+secondName+"]");

@@ -163,7 +163,8 @@ public class UserMysql extends CyBssMysqlDao
 				query+=" where a.USR_S_NAME=?";
 			else
 				query+=" where a.USR_S_NAME like ?";
-			
+		query+=" order by a.USR_N_USER_ID";
+		
 		JdbcTemplate jdbcTemplate = new JdbcTemplate(ds);
 		logger.info(query+"[name="+name+"]");
 		

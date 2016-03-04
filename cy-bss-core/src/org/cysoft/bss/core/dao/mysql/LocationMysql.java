@@ -75,11 +75,11 @@ public class LocationMysql extends CyBssMysqlDao
 			@Override
 			protected void doInTransactionWithoutResult(TransactionStatus arg0) {
 				// TODO Auto-generated method stub
-				Location loc=get(location.getId(),location.getLangId()); 
-				if (loc==null)
+				Location loc0=get(location.getId(),location.getLangId()); 
+				if (loc0==null)
 					throw new RuntimeException("Loc<"+location.getId()+"> not found !");
 			
-				if (loc.getLangId()!=location.getLangId()){
+				if (loc0.getLangId()!=location.getLangId()){
 					String cmd="insert into BSST_LLA_LOCATION_LANG(LOC_N_LOCATION_ID,LAN_N_LANG_ID,LLA_S_NAME,LLA_S_DESC)";
 					cmd+=" values ";
 					cmd+=" (?,?,?,?)";
@@ -259,11 +259,10 @@ public class LocationMysql extends CyBssMysqlDao
 	}
 
 	@Override
-	public List<Location> find(String name,String locationType,long cityId,long personId,
+	public List<Location> find(String name,String description,String locationType,long cityId,long personId,
 			String fromDate,String toDate,long langId) throws CyBssException {
 		// TODO Auto-generated method stub
 		JdbcTemplate jdbcTemplate = new JdbcTemplate(ds);
-		
 		
 		String query="select  a.LOC_N_LOCATION_ID,IFNULL(b.LLA_S_NAME,a.LOC_S_NAME) as LOC_S_NAME,LOC_D_CREATION_DATE,IFNULL(b.LLA_S_DESC,a.LOC_S_DESC) as LOC_S_DESC,LOC_S_TYPE,LOC_D_LAT,LOC_D_LNG,";
 		query+="a.LOC_S_ADDRESS,a.LOC_S_ZIP,a.CIT_N_CITY_ID,a.PER_N_PERSON_ID,PER_S_FIRST_NAME, PER_S_SECOND_NAME,a.USR_N_USER_ID,USR_S_USER_ID,IFNULL(b.LAN_N_LANG_ID,0) as LANG_ID";
@@ -272,7 +271,7 @@ public class LocationMysql extends CyBssMysqlDao
 		query+=" left join BSST_USR_USER c on c.USR_N_USER_ID=a.USR_N_USER_ID";
 		query+=" left join BSST_PER_PERSON d on d.PER_N_PERSON_ID=a.PER_N_PERSON_ID";
 		
-		if (!name.equals("") || cityId!=0 || personId!=0 || !locationType.equals("") || !fromDate.equals("") || !toDate.equals(""))
+		if (!name.equals("") || !description.equals("") || cityId!=0 || personId!=0 || !locationType.equals("") || !fromDate.equals("") || !toDate.equals(""))
 			query+=" WHERE ";
 		
 		List<Object> parms=new ArrayList<Object>();
@@ -282,12 +281,22 @@ public class LocationMysql extends CyBssMysqlDao
 		
 		if (!name.equals("")){
 			if (!name.contains("%"))
-				query+=" a.LOC_S_NAME=?";
+				query+=" IFNULL(b.LLA_S_NAME,a.LOC_S_NAME)=?";
 			else
-				query+=" a.LOC_S_NAME like ?";
+				query+=" IFNULL(b.LLA_S_NAME,a.LOC_S_NAME) like ?";
 			parms.add(name);
 			insAnd=true;
 		}
+		
+		if (!description.equals("")){
+			if (!description.contains("%"))
+				query+=(insAnd?" AND":"")+" IFNULL(b.LLA_S_DESC,a.LOC_S_DESC)=?";
+			else
+				query+=(insAnd?" AND":"")+" IFNULL(b.LLA_S_DESC,a.LOC_S_DESC) like ?";
+			parms.add(description);
+			insAnd=true;
+		}
+		
 		
 		if (cityId!=0){
 			query+=(insAnd?" AND":"")+" a.CIT_N_CITY_ID=?";
@@ -328,7 +337,7 @@ public class LocationMysql extends CyBssMysqlDao
 				throw new CyBssException(e);
 			}
 		}
-		
+		query+=" order by LOC_D_CREATION_DATE desc";
 		
 		logger.info(query+"[parms="+parms+"]");
 		

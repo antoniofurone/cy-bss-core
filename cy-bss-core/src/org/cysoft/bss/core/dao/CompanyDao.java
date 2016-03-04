@@ -5,6 +5,7 @@ import java.util.List;
 import org.cysoft.bss.core.common.CyBssException;
 import org.cysoft.bss.core.model.Company;
 import org.cysoft.bss.core.model.CompanyDept;
+import org.cysoft.bss.core.model.CompanyPerson;
 import org.cysoft.bss.core.model.PersonRole;
 
 public interface CompanyDao {
@@ -16,7 +17,8 @@ public interface CompanyDao {
 	public void updateDept(CompanyDept dept) throws CyBssException;
 	
 	public List<CompanyDept> getDeptAll(long companyId);
-	public List<CompanyDept> getDeptChild(long deptId);
+	public List<CompanyDept> getSubDept(long deptId);
+	public List<CompanyPerson> getPersonAll(long companyId,long langId);
 	
 	public List<Company> find(String code,String name);
 	

@@ -16,6 +16,7 @@ import org.cysoft.bss.core.web.response.ICyBssResultConst;
 import org.cysoft.bss.core.web.response.rest.CompanyDeptListResponse;
 import org.cysoft.bss.core.web.response.rest.CompanyDeptResponse;
 import org.cysoft.bss.core.web.response.rest.CompanyListResponse;
+import org.cysoft.bss.core.web.response.rest.CompanyPersonListResponse;
 import org.cysoft.bss.core.web.response.rest.CompanyPersonResponse;
 import org.cysoft.bss.core.web.response.rest.CompanyResponse;
 import org.cysoft.bss.core.web.response.rest.PersonRoleListResponse;
@@ -199,25 +200,56 @@ implements ICyBssWebService{
 		return response;
 	}
 	
-	@RequestMapping(value = "/{deptId}/getDeptChild",method = RequestMethod.GET)
-	@CyBssOperation(name = "getDeptChild")
-	public CompanyDeptListResponse getDeptChild(
+	@RequestMapping(value = "/{id}/getPersonAll",method = RequestMethod.GET)
+	@CyBssOperation(name = "getPersonAll")
+	public CompanyPersonListResponse getPersonAll(
+			@RequestHeader("Security-Token") String securityToken,
+			@RequestHeader(value="Language",required=false, defaultValue="") String languageCode,
+			@PathVariable("id") Long id
+			) throws CyBssException{
+		
+		logger.info("CompanyWs.getPersonAll() >>> id="+id);
+		CompanyPersonListResponse response=new CompanyPersonListResponse();
+	
+		// checkGrant
+		if (!checkGrant(response,securityToken,"getPersonAll",String.class,String.class,Long.class))
+			return response;
+		// end checkGrant 
+		
+		Language language=null;
+		if (languageCode.equals(""))
+			language=languageDao.getLanguage(response.getLanguageCode());
+		else	
+			language=languageDao.getLanguage(languageCode);
+	
+		List<CompanyPerson> companyPersons=companyDao.getPersonAll(id, language.getId());
+		response.setCompanyPersons(companyPersons);
+		
+		logger.info("CompanyWs.getPersonAll() <<< ");
+		
+		return response;
+	}
+	
+	
+	@RequestMapping(value = "/{deptId}/getSubDept",method = RequestMethod.GET)
+	@CyBssOperation(name = "getSubDept")
+	public CompanyDeptListResponse getSubDept(
 			@RequestHeader("Security-Token") String securityToken,
 			@PathVariable("deptId") Long deptId
 			) throws CyBssException{
 		
-		logger.info("CompanyWs.getDeptChild() >>> deptId="+deptId);
+		logger.info("CompanyWs.getSubDept() >>> deptId="+deptId);
 		CompanyDeptListResponse response=new CompanyDeptListResponse();
 	
 		// checkGrant
-		if (!checkGrant(response,securityToken,"getDeptChild",String.class,Long.class))
+		if (!checkGrant(response,securityToken,"getSubDept",String.class,Long.class))
 			return response;
 		// end checkGrant 
 		
-		List<CompanyDept> depts=companyDao.getDeptChild(deptId);
+		List<CompanyDept> depts=companyDao.getSubDept(deptId);
 		response.setCompanyDepts(depts);
 		
-		logger.info("CompanyWs.getDeptChild() <<< ");
+		logger.info("CompanyWs.getSubDept() <<< ");
 		
 		return response;
 	}
@@ -341,8 +373,6 @@ implements ICyBssWebService{
 		
 		return response;
 	}
-	
-	
 	
 	
 	@RequestMapping(value = "/{id}/remove",method = RequestMethod.GET)

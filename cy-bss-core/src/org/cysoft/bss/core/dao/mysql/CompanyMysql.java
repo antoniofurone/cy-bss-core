@@ -10,6 +10,7 @@ import org.cysoft.bss.core.common.CyBssException;
 import org.cysoft.bss.core.dao.CompanyDao;
 import org.cysoft.bss.core.model.Company;
 import org.cysoft.bss.core.model.CompanyDept;
+import org.cysoft.bss.core.model.CompanyPerson;
 import org.cysoft.bss.core.model.PersonRole;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -333,7 +334,7 @@ implements CompanyDao{
 			insAnd=true;
 			parms.add(name);
 		}
-		
+		query+=" order by ID";
 		
 		JdbcTemplate jdbcTemplate = new JdbcTemplate(ds);
 		logger.info(query+"[code="+code+";name="+name+"]");
@@ -413,7 +414,7 @@ implements CompanyDao{
 
 	
 	@Override
-	public List<CompanyDept> getDeptChild(long deptId) {
+	public List<CompanyDept> getSubDept(long deptId) {
 		// TODO Auto-generated method stub
 		String query="select ID,CODE,NAME,ADDRESS,ZIP,CITY_ID,CITY,COUNTRY,";
 		query+="PARENT_DEPT_ID,PARENT_DEPT_CODE,PARENT_DEPT,COMPANY_ID,COMPANY_CODE,COMPANY ";
@@ -476,7 +477,7 @@ implements CompanyDao{
 		
 		JdbcTemplate jdbcTemplate = new JdbcTemplate(ds);
 		jdbcTemplate.update(cmd, new Object[]{
-				personId,deptId,roleId
+				personId,roleId,deptId
 				});
 		
 		
@@ -534,6 +535,46 @@ implements CompanyDao{
 		return ret;
 
 	}
+
+	@Override
+	public List<CompanyPerson> getPersonAll(long companyId,long langId) {
+		// TODO Auto-generated method stub
+		String query="select a.PERSON_ID,a.PERSON_FIRST_NAME,a.PERSON_SECOND_NAME,IFNULL(b.CRL_S_NAME,a.ROLE_ID) as ROLE_ID,a.ROLE_NAME,a.DEPT_ID,";
+		query+="a.DEPT_CODE,a.DEPT_NAME,a.COMPANY_ID,a.COMPANY_CODE,a.COMPANY_NAME ";
+		query+="from BSSV_COMPANY_PERSON a ";
+		query+="left join BSST_CRL_COMPANY_PERS_ROLE_LANG b on a.ROLE_ID=b.CRO_N_ROLE_ID AND b.LAN_N_LANG_ID=? ";
+		query+="where COMPANY_ID=?";
+		
+		JdbcTemplate jdbcTemplate = new JdbcTemplate(ds);
+		logger.info(query+"[companyId="+companyId+","+langId+"]");
+		
+		List<CompanyPerson> ret=jdbcTemplate.query(query, new Object[] {langId,companyId},new RowMapperCompanyPerson());
+		
+		return ret;
+	} 
 	
-	
+	private class RowMapperCompanyPerson implements RowMapper<CompanyPerson>{
+
+		@Override
+		public CompanyPerson mapRow(ResultSet rs, int rownum) throws SQLException {
+			// TODO Auto-generated method stub
+			CompanyPerson pers=new CompanyPerson();
+       	
+            pers.setPersonId(rs.getLong("PERSON_ID"));
+            pers.setPersonFirstName(rs.getString("PERSON_FIRST_NAME"));
+            pers.setPersonSecondName(rs.getString("PERSON_SECOND_NAME"));
+            pers.setRoleId(rs.getLong("ROLE_ID"));
+            pers.setRoleName(rs.getString("ROLE_NAME"));
+            pers.setDeptId(rs.getLong("DEPT_ID"));
+            pers.setDeptCode(rs.getString("DEPT_CODE"));
+            pers.setDeptName(rs.getString("DEPT_NAME"));
+            pers.setCompanyId(rs.getLong("COMPANY_ID"));
+            pers.setCompanyCode(rs.getString("COMPANY_CODE"));
+            pers.setCompanyName(rs.getString("COMPANY_NAME"));
+            
+            return pers;
+		}
+		
+	}
+
 }

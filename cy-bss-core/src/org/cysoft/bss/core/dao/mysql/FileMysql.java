@@ -238,6 +238,7 @@ public class FileMysql extends CyBssMysqlDao
 			insAnd=true;
 			parms.add(visibility);
 		}
+		query+=" order by FILE_N_FILE_ID";
 		
 		JdbcTemplate jdbcTemplate = new JdbcTemplate(ds);
 		logger.info(query+"[name="+name+";type="+type+";entityName="+entityName+";visibility="+visibility+"]");

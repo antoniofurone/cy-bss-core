@@ -49,25 +49,53 @@ public class CompanyPerson {
 	public void setDeptId(long deptId) {
 		this.deptId = deptId;
 	}
-	private String code="";
-	public String getCode() {
-		return code;
+	
+	private String deptCode="";
+	public String getDeptCode() {
+		return deptCode;
 	}
-	public void setCode(String code) {
-		this.code = code;
+	public void setDeptCode(String deptCode) {
+		this.deptCode = deptCode;
 	}
-	private String name="";
-	public String getName() {
-		return name;
+	
+	private String deptName="";
+	public String getDeptName() {
+		return deptName;
 	}
-	public void setName(String name) {
-		this.name = name;
+	public void setDeptName(String deptName) {
+		this.deptName = deptName;
 	}
+
+	private long companyId;
+	public long getCompanyId() {
+		return companyId;
+	}
+	public void setCompanyId(long companyId) {
+		this.companyId = companyId;
+	}
+	
+	private String companyCode="";
+	public String getCompanyCode() {
+		return companyCode;
+	}
+	public void setCompanyCode(String companyCode) {
+		this.companyCode = companyCode;
+	}
+	
+	private String companyName="";
+	public String getCompanyName() {
+		return companyName;
+	}
+	public void setCompanyName(String companyName) {
+		this.companyName = companyName;
+	}
+	
 	@Override
 	public String toString() {
 		return "CompanyPerson [roleId=" + roleId + ", roleName=" + roleName + ", personId=" + personId
 				+ ", personFirstName=" + personFirstName + ", personSecondName=" + personSecondName + ", deptId="
-				+ deptId + ", code=" + code + ", name=" + name + "]";
+				+ deptId + ", deptCode=" + deptCode + ", deptName=" + deptName + ", companyId=" + companyId
+				+ ", companyCode=" + companyCode + ", companyName=" + companyName + "]";
 	}
 	
 	

@@ -15,6 +15,6 @@ public interface LocationDao {
 	public Location get(long id,long langId);
 	public void remove(long id) throws CyBssException;
 	public void removeLang(long id,long langId) throws CyBssException;
-	public List<Location> find(String name,String locationType,long cityId,long personId,
+	public List<Location> find(String name,String description,String locationType,long cityId,long personId,
 			String fromDate,String toDate,long langId) throws CyBssException;
 }

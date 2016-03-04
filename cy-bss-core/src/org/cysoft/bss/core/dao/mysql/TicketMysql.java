@@ -256,7 +256,10 @@ public class TicketMysql extends CyBssMysqlDao
 				throw new CyBssException(e);
 			}
 		}
-			
+		
+		query+=" order by CREATION_DATE desc";
+		
+		
 		logger.info(query+"[text="+text+";categoryId="+categoryId+";statusId="+statusId
 				+";personId="+personId+";fromDate="+fromDate+";toDate="+toDate
 				+"]");
