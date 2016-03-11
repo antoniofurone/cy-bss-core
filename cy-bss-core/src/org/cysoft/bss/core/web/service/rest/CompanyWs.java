@@ -71,6 +71,18 @@ implements ICyBssWebService{
 				
 		//logger.info(company.toString());
 		
+		if (company.getCode().equals("")){
+			company.setCode(generateCode(company));
+			logger.info("candidate code="+company.getCode());
+			
+			int suffix=0; 
+			while (companyDao.getByCode(company.getCode())!=null){
+				suffix++;
+				company.setCode(company.getCode()+suffix);
+			}
+			logger.info("code="+company.getCode());
+		}
+		
 		if (companyDao.getByCode(company.getCode())!=null){
 			setResult(response, ICyBssResultConst.RESULT_COMPANYCODE_USED, 
 					ICyBssResultConst.RESULT_D_COMPANYCODE_USED,response.getLanguageCode());
@@ -84,6 +96,12 @@ implements ICyBssWebService{
 		logger.info("CompanyWs.add() <<<");
 		
 		return response;
+	}
+	
+	private String generateCode(Company company){
+		String name=company.getName().replaceAll(" ", "").toUpperCase();
+		return 
+				(name.length()>=3?name.substring(0,3):name);
 	}
 	
 	@RequestMapping(value = "/addDept",method = RequestMethod.POST)
@@ -121,7 +139,68 @@ implements ICyBssWebService{
 		return response;
 	}
 	
+	@RequestMapping(value = "/{id}/addSubs/{subsId}",method = RequestMethod.GET)
+	@CyBssOperation(name = "addSubs")
+	public CompanyResponse addSubs(
+			@RequestHeader("Security-Token") String securityToken,
+			@PathVariable("id") Long id,
+			@PathVariable("subsId") Long subsId
+			) throws CyBssException
+	{
+		CompanyResponse response=new CompanyResponse();
+		
+		logger.info("CompanyWs.addSubs() >>>");
+		
+		// checkGrant
+		if (!checkGrant(response,securityToken,"addSubs",String.class,Long.class,Long.class))
+			return response;
+		// end checkGrant 
+				
+		//logger.info(company.toString());
+		
+		Company company=companyDao.get(id);
+		if (company==null){
+			setResult(response, ICyBssResultConst.RESULT_NOT_FOUND, 
+					ICyBssResultConst.RESULT_D_NOT_FOUND,response.getLanguageCode());
+			return response;
+		}
+		company=companyDao.get(subsId);
+		if (company==null){
+			setResult(response, ICyBssResultConst.RESULT_NOT_FOUND, 
+					ICyBssResultConst.RESULT_D_NOT_FOUND,response.getLanguageCode());
+			return response;
+		}
+		
+		companyDao.addSubs(id, subsId);
+		
+		logger.info("CompanyWs.addSubs() <<<");
+		return response;
+	}
 	
+	@RequestMapping(value = "/{id}/removeSubs/{subsId}",method = RequestMethod.GET)
+	@CyBssOperation(name = "removeSubs")
+	public CompanyResponse removeSubs(
+			@RequestHeader("Security-Token") String securityToken,
+			@PathVariable("id") Long id,
+			@PathVariable("subsId") Long subsId
+			) throws CyBssException
+	{
+		CompanyResponse response=new CompanyResponse();
+		
+		logger.info("CompanyWs.removeSubs() >>>");
+		
+		// checkGrant
+		if (!checkGrant(response,securityToken,"removeSubs",String.class,Long.class,Long.class))
+			return response;
+		// end checkGrant 
+				
+		//logger.info(company.toString());
+		companyDao.removeSubs(id, subsId);
+		
+		logger.info("CompanyWs.removeSubs() <<<");
+		return response;
+	}
+
 	
 	@RequestMapping(value = "/{id}/get",method = RequestMethod.GET)
 	@CyBssOperation(name = "get")

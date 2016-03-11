@@ -90,11 +90,56 @@ public class Company {
 	public void setHeadDeptId(long headDeptId) {
 		this.headDeptId = headDeptId;
 	}
+	
+	private String headDeptCode="";
+	public String getHeadDeptCode() {
+		return headDeptCode;
+	}
+	public void setHeadDeptCode(String headDeptCode) {
+		this.headDeptCode = headDeptCode;
+	}
+	
+	private String headDeptName="";
+	public String getHeadDeptName() {
+		return headDeptName;
+	}
+	public void setHeadDeptName(String headDeptName) {
+		this.headDeptName = headDeptName;
+	}
+	
+	private long groupId;
+	public long getGroupId() {
+		return groupId;
+	}
+	public void setGroupId(long groupId) {
+		this.groupId = groupId;
+	}
+	
+	private String groupCode="";
+	public String getGroupCode() {
+		return groupCode;
+	}
+	public void setGroupCode(String groupCode) {
+		this.groupCode = groupCode;
+	}
+	
+	private String groupName="";
+	public String getGroupName() {
+		return groupName;
+	}
+	public void setGroupName(String groupName) {
+		this.groupName = groupName;
+	}
+	
 	@Override
 	public String toString() {
 		return "Company [id=" + id + ", code=" + code + ", name=" + name + ", address=" + address + ", cityId=" + cityId
 				+ ", city=" + city + ", zipCode=" + zipCode + ", country=" + country + ", fiscalCode=" + fiscalCode
-				+ ", vatCode=" + vatCode + ", headDeptId=" + headDeptId + "]";
+				+ ", vatCode=" + vatCode + ", headDeptId=" + headDeptId + ", headDeptCode=" + headDeptCode
+				+ ", headDeptName=" + headDeptName + ", groupId=" + groupId + ", groupCode=" + groupCode
+				+ ", groupName=" + groupName + "]";
 	}
+	
+	
 	
 }

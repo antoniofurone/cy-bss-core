@@ -128,7 +128,8 @@ implements CompanyDao{
 		JdbcTemplate jdbcTemplate = new JdbcTemplate(ds);
 		
 		
-		String query="select ID,CODE,NAME,ADDRESS,ZIP,CITY_ID,CITY,COUNTRY,FISCAL_CODE,VAT_CODE,HEAD_DEPT_ID ";
+		String query="select ID,CODE,NAME,ADDRESS,ZIP,CITY_ID,CITY,COUNTRY,FISCAL_CODE,VAT_CODE,HEAD_DEPT_ID,";
+		query+="HEAD_DEPT_CODE,HEAD_DEPT_NAME,GROUP_ID,GROUP_CODE,GROUP_NAME ";
 		query+="from BSSV_COMPANY";
 		if (bCode)
 			query+=" where CODE=?";
@@ -168,6 +169,12 @@ implements CompanyDao{
             company.setFiscalCode(rs.getString("FISCAL_CODE"));
             company.setVatCode(rs.getString("VAT_CODE"));
             company.setHeadDeptId(rs.getLong("HEAD_DEPT_ID"));
+            company.setHeadDeptCode(rs.getString("HEAD_DEPT_CODE"));
+            company.setHeadDeptName(rs.getString("HEAD_DEPT_NAME"));
+            company.setGroupId(rs.getLong("GROUP_ID"));
+            company.setGroupCode(rs.getString("GROUP_CODE"));
+            company.setGroupName(rs.getString("GROUP_NAME"));
+            
             
             return company;
 		}
@@ -310,7 +317,8 @@ implements CompanyDao{
 		// TODO Auto-generated method stub
 		logger.info("CompanyMysql.find() >>> code="+code+";name="+name);
 		
-		String query="select  ID,CODE,NAME,ADDRESS,ZIP,CITY_ID,CITY,COUNTRY,FISCAL_CODE,VAT_CODE,HEAD_DEPT_ID";
+		String query="select  ID,CODE,NAME,ADDRESS,ZIP,CITY_ID,CITY,COUNTRY,FISCAL_CODE,VAT_CODE,HEAD_DEPT_ID,";
+		query+="HEAD_DEPT_CODE,HEAD_DEPT_NAME,GROUP_ID,GROUP_CODE,GROUP_NAME";
 		query+=" from BSSV_COMPANY";
 		if (!code.equals("") || !name.equals(""))
 			query+=" WHERE ";
@@ -575,6 +583,40 @@ implements CompanyDao{
             return pers;
 		}
 		
+	}
+
+
+	@Override
+	public void addSubs(long id, long subsId) {
+		// TODO Auto-generated method stub
+		logger.info("CompanyMysql.addSubs() >>>");
+		String cmd="insert into BSST_CGR_COMPANY_GROUP(CGR_N_GROUP_ID,CGR_N_COMPANY_ID) ";
+		cmd+=" values (?,?)";
+		logger.info(cmd+"["+id+","+subsId+"]");
+		
+		JdbcTemplate jdbcTemplate = new JdbcTemplate(ds);
+		jdbcTemplate.update(cmd, new Object[]{
+				id,subsId
+				});
+		
+		
+		logger.info("CompanyMysql.addSubs() <<<");
+	}
+
+	@Override
+	public void removeSubs(long id, long subsId) {
+		// TODO Auto-generated method stub
+		logger.info("CompanyMysql.removeSubs() >>>");
+		String cmd="delete from BSST_CGR_COMPANY_GROUP where CGR_N_GROUP_ID=? and CGR_N_COMPANY_ID=? ";
+		logger.info(cmd+"["+id+","+subsId+"]");
+		
+		JdbcTemplate jdbcTemplate = new JdbcTemplate(ds);
+		jdbcTemplate.update(cmd, new Object[]{
+				id,subsId
+				});
+		
+		
+		logger.info("CompanyMysql.removeSubs() <<<");
 	}
 
 }
