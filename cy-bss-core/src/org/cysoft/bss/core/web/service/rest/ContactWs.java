@@ -5,6 +5,7 @@ import org.cysoft.bss.core.dao.ContactDao;
 import org.cysoft.bss.core.model.ContactType;
 import org.cysoft.bss.core.web.annotation.CyBssOperation;
 import org.cysoft.bss.core.web.annotation.CyBssService;
+import org.cysoft.bss.core.web.response.ICyBssResultConst;
 import org.cysoft.bss.core.web.response.rest.ContactTypeListResponse;
 import org.cysoft.bss.core.web.response.rest.ContactTypeResponse;
 import org.cysoft.bss.core.web.service.CyBssWebServiceAdapter;
@@ -60,7 +61,6 @@ implements ICyBssWebService{
 		if (!checkGrant(response,securityToken,"add",String.class,ContactType.class))
 			return response;
 		// end checkGrant 
-		
 				
 		//logger.info(company.toString());
 		long id=contactDao.add(contactType);
@@ -88,17 +88,16 @@ implements ICyBssWebService{
 		if (!checkGrant(response,securityToken,"update",String.class,Long.class,ContactType.class))
 			return response;
 		// end checkGrant 
-		/*
-		if (companyDao.get(id)==null){
+		
+		if (contactDao.get(id)==null){
 			setResult(response, ICyBssResultConst.RESULT_NOT_FOUND, 
 					ICyBssResultConst.RESULT_D_NOT_FOUND,response.getLanguageCode());
 			return response;
 			}
 		
-		
-		companyDao.update(id, company);
-		response.setCompany(companyDao.get(id));
-		*/
+		contactDao.update(id, contactType);
+		response.setContanctType(contactType);
+	
 		logger.info("CompanyWs.update() <<<");
 		
 		return response;
@@ -118,14 +117,14 @@ implements ICyBssWebService{
 		if (!checkGrant(response,securityToken,"get",String.class,Long.class))
 			return response;
 		// end checkGrant 
-		/*		
-		Company company=companyDao.get(id);
-		if (company!=null)
-			response.setCompany(company);
+				
+		ContactType contactType=contactDao.get(id);
+		if (contactType!=null)
+			response.setContanctType(contactType);
 		else
 			setResult(response, ICyBssResultConst.RESULT_NOT_FOUND, 
 					ICyBssResultConst.RESULT_D_NOT_FOUND,response.getLanguageCode());
-		*/
+		
 		logger.info("ContactWs.get() <<< ");
 		
 		return response;
@@ -147,7 +146,7 @@ implements ICyBssWebService{
 			return response;
 		// end checkGrant 
 		
-		//companyDao.remove(id);
+		contactDao.remove(id);
 		
 		logger.info("ContactWs.remove() <<< ");
 		return response;

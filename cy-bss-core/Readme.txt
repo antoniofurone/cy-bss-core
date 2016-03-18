@@ -2,7 +2,7 @@ Cy-bss-core is a core business service system that provides a set of common serv
 The services are provided via rest web services. 
 Cy-bss-core is based on a set of open source products: Spring, LogBack, AngularJs, Bootstrap.
 Pruduct requires JRE 1.7 or above, servlet container (has been tested using Tomcat 7), and MySql 5.7 or above.
-Althought the project is at initial phase and only a small set of services and operations are implemented, its are already useful to develope various types of app. Urbanbot (https://github.com/antoniofurone/cy-urbanbot.git) is an example of this app.
+Althought the project is at initial phase and only a small set of services and operations are implemented, it is already useful to develope various types of app. Urbanbot (https://github.com/antoniofurone/cy-urbanbot.git) is an example of this app.
 
 Installation
 ------------ 

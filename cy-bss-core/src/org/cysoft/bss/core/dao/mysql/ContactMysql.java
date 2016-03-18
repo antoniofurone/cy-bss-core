@@ -10,6 +10,7 @@ import org.cysoft.bss.core.model.ContactType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.dao.DataAccessException;
+import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 
@@ -48,7 +49,6 @@ implements ContactDao{
 		
 	}
 
-
 	@Override
 	public long add(ContactType contactType) throws CyBssException {
 		// TODO Auto-generated method stub
@@ -79,24 +79,78 @@ implements ContactDao{
 	@Override
 	public void update(long id, ContactType contactType) throws CyBssException {
 		// TODO Auto-generated method stub
+
+		logger.info("ContactMysql.update() >>>");
 		
+		String cmd="update BSST_CTY_CONTACT_TYPE set CTY_S_NAME=?,CTY_S_DESC=?,CTY_S_TYPE=?";
+		cmd+=" where CTY_N_TYPE_ID=?";
+		
+		JdbcTemplate jdbcTemplate = new JdbcTemplate(ds);
+		logger.info(cmd+"["+id+","+contactType+"]");
+		
+		try {
+			jdbcTemplate.update(cmd, new Object[]{
+					contactType.getName(),  
+					(contactType.getDescription()==null || contactType.getDescription().equals(""))?null:contactType.getDescription(),
+					(contactType.getType()==null || contactType.getType().equals(""))?null:contactType.getType(),		
+					id		
+				});
+		} catch (DataAccessException e) {
+			// TODO Auto-generated catch block
+			logger.error(e.toString());
+			throw new CyBssException(e);
+		}
+		
+		logger.info("ContactMysql.update() <<<");
 	}
 
 
 	@Override
 	public void remove(long id) throws CyBssException {
 		// TODO Auto-generated method stub
+		logger.info("ContactMysql.remove() >>>");
 		
+		String cmd="delete from BSST_CTY_CONTACT_TYPE where CTY_N_TYPE_ID=?";
+		JdbcTemplate jdbcTemplate = new JdbcTemplate(ds);
+		logger.info(cmd+"["+id+"]");
+		
+		try {
+			jdbcTemplate.update(cmd, new Object[]{
+					id
+				});
+		} catch (DataAccessException e) {
+			// TODO Auto-generated catch block
+			logger.error(e.toString());
+			throw new CyBssException(e);
+		} 
+		
+		logger.info("ContactMysql.remove() <<<");
 	}
 
 
 	@Override
 	public ContactType get(long id) {
 		// TODO Auto-generated method stub
-		return null;
+		logger.info("ContactMysql.getBy() >>>");
+		
+		// TODO Auto-generated method stub
+		JdbcTemplate jdbcTemplate = new JdbcTemplate(ds);
+		
+		String query="select CTY_N_TYPE_ID,CTY_S_NAME,CTY_S_DESC,CTY_S_TYPE";
+		query+=" from BSST_CTY_CONTACT_TYPE";
+		query+=" where CTY_N_TYPE_ID=?";
+		
+		logger.info(query+"["+id+",****]");
+		ContactType ret=null;
+		try {
+			ret=jdbcTemplate.queryForObject(query, new Object[] { id },
+					new RowMapperContactType());
+		}
+		catch(IncorrectResultSizeDataAccessException e){
+			logger.info("ContactMysql.IncorrectResultSizeDataAccessException:"+e.getMessage());
+		
+		}
+		logger.info("ContactMysql.getBy() <<<");
+		return ret;
 	}
-
-	
-	
-
 }
