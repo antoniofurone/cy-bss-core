@@ -1,14 +1,18 @@
 package org.cysoft.bss.core.web.service.rest;
 
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.cysoft.bss.core.common.CyBssException;
+import org.cysoft.bss.core.dao.ContactDao;
 import org.cysoft.bss.core.dao.PersonDao;
+import org.cysoft.bss.core.model.Contact;
 import org.cysoft.bss.core.model.Person;
 import org.cysoft.bss.core.web.annotation.CyBssOperation;
 import org.cysoft.bss.core.web.annotation.CyBssService;
 import org.cysoft.bss.core.web.response.ICyBssResultConst;
+import org.cysoft.bss.core.web.response.rest.ContactListResponse;
 import org.cysoft.bss.core.web.response.rest.PersonListResponse;
 import org.cysoft.bss.core.web.response.rest.PersonResponse;
 import org.cysoft.bss.core.web.service.CyBssWebServiceAdapter;
@@ -37,6 +41,12 @@ public class PersonWs extends CyBssWebServiceAdapter
 	@Autowired
 	public void setPersonDao(PersonDao personDao){
 			this.personDao=personDao;
+	}
+	
+	protected ContactDao contactDao=null;
+	@Autowired
+	public void setContactDao(ContactDao contactDao){
+			this.contactDao=contactDao;
 	}
 	
 	private String generateCode(Person p){
@@ -203,6 +213,29 @@ public class PersonWs extends CyBssWebServiceAdapter
 		return response;
 	}
 	
+	@RequestMapping(value = "/{id}/getContactAll",method = RequestMethod.GET)
+	@CyBssOperation(name = "getContactAll")
+	public ContactListResponse getContactAll(
+			@RequestHeader("Security-Token") String securityToken,
+			@PathVariable("id") Long id
+			) throws CyBssException{
+		
+		logger.info("PersonWs.getContactAll() >>> id="+id);
+		ContactListResponse response=new ContactListResponse();
+	
+		// checkGrant
+		if (!checkGrant(response,securityToken,"getContactAll",String.class,Long.class))
+			return response;
+		// end checkGrant 
+				
+		List<Contact> contacts=contactDao.getByEntity(id, Person.ENTITY_NAME);
+		response.setContacts(contacts);
+		
+		logger.info("PersonWs.getContactAll() <<< ");
+		
+		return response;
+	}
+	
 	
 	@RequestMapping(value = "/find",method = RequestMethod.GET)
 	@CyBssOperation(name = "find")
@@ -227,11 +260,16 @@ public class PersonWs extends CyBssWebServiceAdapter
 		
 		List<Person> persons=personDao.find(code,firstName,secondName);
 		int lsize=persons.size();
-		if (offset!=0)
-			response.setPersons(persons.subList(offset-1, (offset-1)+(size>lsize?lsize:size)));
+		
+		if (offset!=0){
+			if (offset<=lsize)
+				response.setPersons(persons.subList(offset-1, ((offset-1)+size)>lsize?lsize:(offset-1)+size));
+			else
+				response.setPersons(new ArrayList<Person>());
+			}
 		else
 			response.setPersons(persons);
-
+		
 		logger.info("PersonWs.find() <<< ");
 		
 		return response;

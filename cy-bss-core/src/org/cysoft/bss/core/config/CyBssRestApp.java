@@ -177,6 +177,9 @@ public class CyBssRestApp {
 	     mySqlDs.setUrl(url);
 	     mySqlDs.setUsername(user);
          mySqlDs.setPassword(psw);
+         
+         mySqlDs.setTestOnBorrow(true);
+         mySqlDs.setValidationQuery("select 1");
 	     
          
 		 logger.info("CyBssRestApp.mySqlDS() <<<");

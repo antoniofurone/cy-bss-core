@@ -281,8 +281,23 @@ implements CompanyDao{
 			@Override
 			protected void doInTransactionWithoutResult(TransactionStatus arg0) {
 				// TODO Auto-generated method stub
-				String cmd="delete from BSST_CDE_COMPANY_DEPT where COM_N_COMPANY_ID=?";
+				
+				String cmd="delete from BSST_CPE_COMPANY_PERS where CDE_N_DEPT_ID in ";
+				cmd+="(select CDE_N_DEPT_ID from BSST_CDE_COMPANY_DEPT where COM_N_COMPANY_ID=?)";
 				JdbcTemplate jdbcTemplate = new JdbcTemplate(tx.getDataSource());
+				logger.info(cmd+"["+id+"]");
+				
+				try {
+					jdbcTemplate.update(cmd, new Object[]{
+							id
+						});
+				} catch (DataAccessException e) {
+					// TODO Auto-generated catch block
+					logger.error(e.toString());
+					throw new RuntimeException(e);
+				}
+				
+				cmd="delete from BSST_CDE_COMPANY_DEPT where COM_N_COMPANY_ID=?";
 				logger.info(cmd+"["+id+"]");
 				
 				try {
@@ -547,7 +562,7 @@ implements CompanyDao{
 	@Override
 	public List<CompanyPerson> getPersonAll(long companyId,long langId) {
 		// TODO Auto-generated method stub
-		String query="select a.PERSON_ID,a.PERSON_FIRST_NAME,a.PERSON_SECOND_NAME,IFNULL(b.CRL_S_NAME,a.ROLE_ID) as ROLE_ID,a.ROLE_NAME,a.DEPT_ID,";
+		String query="select a.PERSON_ID,a.PERSON_FIRST_NAME,a.PERSON_SECOND_NAME,a.ROLE_ID,IFNULL(b.CRL_S_NAME,a.ROLE_NAME) as ROLE_NAME,a.DEPT_ID,";
 		query+="a.DEPT_CODE,a.DEPT_NAME,a.COMPANY_ID,a.COMPANY_CODE,a.COMPANY_NAME ";
 		query+="from BSSV_COMPANY_PERSON a ";
 		query+="left join BSST_CRL_COMPANY_PERS_ROLE_LANG b on a.ROLE_ID=b.CRO_N_ROLE_ID AND b.LAN_N_LANG_ID=? ";

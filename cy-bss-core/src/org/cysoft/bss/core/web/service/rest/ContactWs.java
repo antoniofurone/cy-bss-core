@@ -2,10 +2,12 @@ package org.cysoft.bss.core.web.service.rest;
 
 import org.cysoft.bss.core.common.CyBssException;
 import org.cysoft.bss.core.dao.ContactDao;
+import org.cysoft.bss.core.model.Contact;
 import org.cysoft.bss.core.model.ContactType;
 import org.cysoft.bss.core.web.annotation.CyBssOperation;
 import org.cysoft.bss.core.web.annotation.CyBssService;
 import org.cysoft.bss.core.web.response.ICyBssResultConst;
+import org.cysoft.bss.core.web.response.rest.ContactResponse;
 import org.cysoft.bss.core.web.response.rest.ContactTypeListResponse;
 import org.cysoft.bss.core.web.response.rest.ContactTypeResponse;
 import org.cysoft.bss.core.web.service.CyBssWebServiceAdapter;
@@ -46,35 +48,35 @@ implements ICyBssWebService{
 		return response;
 	}
 	
-	@RequestMapping(value = "/add",method = RequestMethod.POST)
-	@CyBssOperation(name = "add")
-	public ContactTypeResponse add(
+	@RequestMapping(value = "/addType",method = RequestMethod.POST)
+	@CyBssOperation(name = "addType")
+	public ContactTypeResponse addType(
 			@RequestHeader("Security-Token") String securityToken,
 			@RequestBody ContactType contactType
 			) throws CyBssException
 	{
 		ContactTypeResponse response=new ContactTypeResponse();
 		
-		logger.info("ContactWs.add() >>>");
+		logger.info("ContactWs.addType() >>>");
 		
 		// checkGrant
-		if (!checkGrant(response,securityToken,"add",String.class,ContactType.class))
+		if (!checkGrant(response,securityToken,"addType",String.class,ContactType.class))
 			return response;
 		// end checkGrant 
 				
 		//logger.info(company.toString());
-		long id=contactDao.add(contactType);
+		long id=contactDao.addType(contactType);
 		contactType.setId(id);
 		response.setContanctType(contactType);
 		
-		logger.info("Contact.add() <<<");
+		logger.info("Contact.addType() <<<");
 		
 		return response;
 	}
 
-	@RequestMapping(value = "/{id}/update",method = RequestMethod.POST)
-	@CyBssOperation(name = "update")
-	public ContactTypeResponse update(
+	@RequestMapping(value = "/{id}/updateType",method = RequestMethod.POST)
+	@CyBssOperation(name = "updateType")
+	public ContactTypeResponse updateType(
 			@RequestHeader("Security-Token") String securityToken,
 			@PathVariable("id") Long id,
 			@RequestBody ContactType contactType
@@ -82,63 +84,63 @@ implements ICyBssWebService{
 	{
 		ContactTypeResponse response=new ContactTypeResponse();
 		
-		logger.info("ContactWs.update() >>> id="+id);
+		logger.info("ContactWs.updateType() >>> id="+id);
 		
 		// checkGrant
-		if (!checkGrant(response,securityToken,"update",String.class,Long.class,ContactType.class))
+		if (!checkGrant(response,securityToken,"updateType",String.class,Long.class,ContactType.class))
 			return response;
 		// end checkGrant 
 		
-		if (contactDao.get(id)==null){
+		if (contactDao.getType(id)==null){
 			setResult(response, ICyBssResultConst.RESULT_NOT_FOUND, 
 					ICyBssResultConst.RESULT_D_NOT_FOUND,response.getLanguageCode());
 			return response;
 			}
 		
-		contactDao.update(id, contactType);
+		contactDao.updateType(id, contactType);
 		response.setContanctType(contactType);
 	
-		logger.info("CompanyWs.update() <<<");
+		logger.info("CompanyWs.updateType() <<<");
 		
 		return response;
 	}
 	
-	@RequestMapping(value = "/{id}/get",method = RequestMethod.GET)
-	@CyBssOperation(name = "get")
+	@RequestMapping(value = "/{id}/getType",method = RequestMethod.GET)
+	@CyBssOperation(name = "getType")
 	public ContactTypeResponse get(
 			@RequestHeader("Security-Token") String securityToken,
 			@PathVariable("id") Long id
 			) throws CyBssException{
 		
-		logger.info("ContactWs.get() >>> id="+id);
+		logger.info("ContactWs.getType() >>> id="+id);
 		ContactTypeResponse response=new ContactTypeResponse();
 		
 		// checkGrant
-		if (!checkGrant(response,securityToken,"get",String.class,Long.class))
+		if (!checkGrant(response,securityToken,"getType",String.class,Long.class))
 			return response;
 		// end checkGrant 
 				
-		ContactType contactType=contactDao.get(id);
+		ContactType contactType=contactDao.getType(id);
 		if (contactType!=null)
 			response.setContanctType(contactType);
 		else
 			setResult(response, ICyBssResultConst.RESULT_NOT_FOUND, 
 					ICyBssResultConst.RESULT_D_NOT_FOUND,response.getLanguageCode());
 		
-		logger.info("ContactWs.get() <<< ");
+		logger.info("ContactWs.getType() <<< ");
 		
 		return response;
 	}
 	
 
-	@RequestMapping(value = "/{id}/remove",method = RequestMethod.GET)
-	@CyBssOperation(name = "remove")
-	public ContactTypeResponse remove(
+	@RequestMapping(value = "/{id}/removeType",method = RequestMethod.GET)
+	@CyBssOperation(name = "removeType")
+	public ContactTypeResponse removeType(
 			@RequestHeader("Security-Token") String securityToken,
 			@PathVariable("id") Long id
 			) throws CyBssException{
 		
-		logger.info("ContactWs.remove() >>> id="+id);
+		logger.info("ContactWs.removeType() >>> id="+id);
 		ContactTypeResponse response=new ContactTypeResponse();
 		
 		// checkGrant
@@ -146,9 +148,101 @@ implements ICyBssWebService{
 			return response;
 		// end checkGrant 
 		
-		contactDao.remove(id);
+		contactDao.removeType(id);
 		
+		logger.info("ContactWs.removeType() <<< ");
+		return response;
+	}
+	
+	
+	@RequestMapping(value = "add",method = RequestMethod.POST)
+	@CyBssOperation(name = "add")
+	public ContactResponse add(
+			@RequestHeader("Security-Token") String securityToken,
+			@RequestBody Contact contact
+			) throws CyBssException
+	{
+		ContactResponse response=new ContactResponse();
+		
+		logger.info("ContactWs.add() >>>");
+		
+		
+		// checkGrant
+		if (!checkGrant(response,securityToken,"add",String.class,Contact.class))
+			return response;
+		// end checkGrant 
+		
+		if (contactDao.getType(contact.getContactTypeId())==null){
+			setResult(response, ICyBssResultConst.RESULT_NOT_FOUND, 
+					ICyBssResultConst.RESULT_D_NOT_FOUND,response.getLanguageCode());
+			return response;
+			}
+		
+		long contactId=contactDao.add(contact);
+		contact.setId(contactId);
+		
+		response.setContanct(contact);
+		
+		logger.info("ContactWs.add() <<<");
+		return response;
+	}
+	
+	@RequestMapping(value = "/{id}/update",method = RequestMethod.POST)
+	@CyBssOperation(name = "update")
+	public ContactResponse update(
+			@RequestHeader("Security-Token") String securityToken,
+			@PathVariable("id") Long id,
+			@RequestBody Contact contact
+			) throws CyBssException
+	{
+		ContactResponse response=new ContactResponse();
+		
+		logger.info("ContactWs.update() >>> id="+id);
+		
+		
+		// checkGrant
+		if (!checkGrant(response,securityToken,"update",String.class,Long.class,Contact.class))
+			return response;
+		// end checkGrant 
+		
+		if (contactDao.getType(contact.getContactTypeId())==null){
+			setResult(response, ICyBssResultConst.RESULT_NOT_FOUND, 
+					ICyBssResultConst.RESULT_D_NOT_FOUND,response.getLanguageCode());
+			return response;
+			}
+		
+		if (contactDao.get(id)==null){
+			setResult(response, ICyBssResultConst.RESULT_NOT_FOUND, 
+					ICyBssResultConst.RESULT_D_NOT_FOUND,response.getLanguageCode());
+			return response;
+			}
+		
+		contactDao.update(id, contact);
+		
+		logger.info("CompanyWs.update() <<<");
+		
+		return response;
+	}
+	
+	@RequestMapping(value = "/{id}/remove",method = RequestMethod.GET)
+	@CyBssOperation(name = "remove")
+	public ContactResponse remove(
+			@RequestHeader("Security-Token") String securityToken,
+			@PathVariable("id") Long id
+			) throws CyBssException{
+		
+		logger.info("ContactWs.remove() >>> id="+id);
+		ContactResponse response=new ContactResponse();
+		
+		// checkGrant
+		if (!checkGrant(response,securityToken,"remove",String.class,Long.class))
+			return response;
+		// end checkGrant 
+		
+		contactDao.remove(id);
+	
 		logger.info("ContactWs.remove() <<< ");
+	
 		return response;
 	}
 	

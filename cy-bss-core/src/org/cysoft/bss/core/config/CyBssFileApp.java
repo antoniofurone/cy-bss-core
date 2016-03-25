@@ -108,6 +108,9 @@ private static final Logger logger = LoggerFactory.getLogger(CyBssFileApp.class)
 	     mySql.setUrl(url);
 	     mySql.setUsername(user);
          mySql.setPassword(psw);
+         
+         mySql.setTestOnBorrow(true);
+         mySql.setValidationQuery("select 1");
         
          logger.info("CyBssFileApp.mySqlDS() <<<");
  		

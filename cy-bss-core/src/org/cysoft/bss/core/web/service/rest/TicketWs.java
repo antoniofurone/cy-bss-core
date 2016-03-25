@@ -1,5 +1,6 @@
 package org.cysoft.bss.core.web.service.rest;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.cysoft.bss.core.common.CyBssException;
@@ -450,8 +451,13 @@ public class TicketWs extends CyBssWebServiceAdapter
 		
 		List<Ticket> tickets=ticketDao.find(text, categoryId, statusId, personId, fromDate, toDate,language.getId());
 		int lsize=tickets.size();
-		if (offset!=0)
-			response.setTickets(tickets.subList(offset-1, (offset-1)+(size>lsize?lsize:size)));
+		
+		if (offset!=0){
+			if (offset<=lsize)
+				response.setTickets(tickets.subList(offset-1, ((offset-1)+size)>lsize?lsize:(offset-1)+size));
+			else
+				response.setTickets(new ArrayList<Ticket>());
+			}
 		else
 			response.setTickets(tickets);
 		

@@ -1,5 +1,6 @@
 package org.cysoft.bss.core.web.service.rest;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.cysoft.bss.core.common.CyBssException;
@@ -262,8 +263,13 @@ implements ICyBssWebService{
 		
 		List<Location> locations=locationDao.find(name, description,locationType, cityId, personId, fromDate, toDate, language.getId());
 		int lsize=locations.size();
-		if (offset!=0)
-			response.setLocations(locations.subList(offset-1, (offset-1)+(size>lsize?lsize:size)));
+		
+		if (offset!=0){
+			if (offset<=lsize)
+				response.setLocations(locations.subList(offset-1, ((offset-1)+size)>lsize?lsize:(offset-1)+size));
+			else
+				response.setLocations(new ArrayList<Location>());
+			}
 		else
 			response.setLocations(locations);
 		

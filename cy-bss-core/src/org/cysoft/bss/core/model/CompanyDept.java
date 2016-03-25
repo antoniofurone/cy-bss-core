@@ -2,6 +2,8 @@ package org.cysoft.bss.core.model;
 
 public class CompanyDept {
 	
+	public static final String ENTITY_NAME="CompanyDept";
+	
 	private long id;
 	public long getId() {
 		return id;

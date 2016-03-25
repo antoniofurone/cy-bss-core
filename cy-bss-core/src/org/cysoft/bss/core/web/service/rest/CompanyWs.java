@@ -1,14 +1,17 @@
 package org.cysoft.bss.core.web.service.rest;
 
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.cysoft.bss.core.common.CyBssException;
 import org.cysoft.bss.core.dao.CompanyDao;
+import org.cysoft.bss.core.dao.ContactDao;
 import org.cysoft.bss.core.dao.PersonDao;
 import org.cysoft.bss.core.model.Company;
 import org.cysoft.bss.core.model.CompanyDept;
 import org.cysoft.bss.core.model.CompanyPerson;
+import org.cysoft.bss.core.model.Contact;
 import org.cysoft.bss.core.model.Language;
 import org.cysoft.bss.core.web.annotation.CyBssOperation;
 import org.cysoft.bss.core.web.annotation.CyBssService;
@@ -19,6 +22,7 @@ import org.cysoft.bss.core.web.response.rest.CompanyListResponse;
 import org.cysoft.bss.core.web.response.rest.CompanyPersonListResponse;
 import org.cysoft.bss.core.web.response.rest.CompanyPersonResponse;
 import org.cysoft.bss.core.web.response.rest.CompanyResponse;
+import org.cysoft.bss.core.web.response.rest.ContactListResponse;
 import org.cysoft.bss.core.web.response.rest.PersonRoleListResponse;
 import org.cysoft.bss.core.web.service.CyBssWebServiceAdapter;
 import org.cysoft.bss.core.web.service.ICyBssWebService;
@@ -51,6 +55,12 @@ implements ICyBssWebService{
 	@Autowired
 	public void setPersonDao(PersonDao personDao){
 			this.personDao=personDao;
+	}
+	
+	protected ContactDao contactDao=null;
+	@Autowired
+	public void setContactDao(ContactDao contactDao){
+			this.contactDao=contactDao;
 	}
 	
 	@RequestMapping(value = "/add",method = RequestMethod.POST)
@@ -278,6 +288,54 @@ implements ICyBssWebService{
 		
 		return response;
 	}
+	
+	@RequestMapping(value = "/{deptId}/getDeptContactAll",method = RequestMethod.GET)
+	@CyBssOperation(name = "getDeptContactAll")
+	public ContactListResponse getDeptContactAll(
+			@RequestHeader("Security-Token") String securityToken,
+			@PathVariable("deptId") Long deptId
+			) throws CyBssException{
+		
+		logger.info("CompanyWs.getDeptContactAll() >>> deptId="+deptId);
+		ContactListResponse response=new ContactListResponse();
+	
+		// checkGrant
+		if (!checkGrant(response,securityToken,"getDeptContactAll",String.class,Long.class))
+			return response;
+		// end checkGrant 
+				
+		List<Contact> contacts=contactDao.getByEntity(deptId, CompanyDept.ENTITY_NAME);
+		response.setContacts(contacts);
+		
+		logger.info("CompanyWs.getDeptContactAll() <<< ");
+		
+		return response;
+	}
+	
+	
+	@RequestMapping(value = "/{id}/getContactAll",method = RequestMethod.GET)
+	@CyBssOperation(name = "getContactAll")
+	public ContactListResponse getContactAll(
+			@RequestHeader("Security-Token") String securityToken,
+			@PathVariable("id") Long id
+			) throws CyBssException{
+		
+		logger.info("CompanyWs.getContactAll() >>> id="+id);
+		ContactListResponse response=new ContactListResponse();
+	
+		// checkGrant
+		if (!checkGrant(response,securityToken,"getContactAll",String.class,Long.class))
+			return response;
+		// end checkGrant 
+				
+		List<Contact> contacts=contactDao.getByEntity(id, Company.ENTITY_NAME);
+		response.setContacts(contacts);
+		
+		logger.info("CompanyWs.getContactAll() <<< ");
+		
+		return response;
+	}
+	
 	
 	@RequestMapping(value = "/{id}/getPersonAll",method = RequestMethod.GET)
 	@CyBssOperation(name = "getPersonAll")
@@ -542,8 +600,12 @@ implements ICyBssWebService{
 		
 		List<Company> companies=companyDao.find(code,name);
 		int lsize=companies.size();
-		if (offset!=0)
-			response.setCompanies(companies.subList(offset-1, (offset-1)+(size>lsize?lsize:size)));
+		if (offset!=0){
+			if (offset<=lsize)
+				response.setCompanies(companies.subList(offset-1, ((offset-1)+size)>lsize?lsize:(offset-1)+size));
+			else
+				response.setCompanies(new ArrayList<Company>());
+			}
 		else
 			response.setCompanies(companies);
 		
@@ -577,4 +639,6 @@ implements ICyBssWebService{
 		return response;
 	}
 
+	
+		
 }

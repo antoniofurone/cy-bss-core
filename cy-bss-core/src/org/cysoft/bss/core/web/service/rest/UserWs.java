@@ -1,5 +1,6 @@
 package org.cysoft.bss.core.web.service.rest;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.cysoft.bss.core.common.CyBssException;
@@ -348,8 +349,13 @@ public class UserWs extends CyBssWebServiceAdapter
 		
 		List<User> users=userDao.find(name);
 		int lsize=users.size();
-		if (offset!=0)
-			response.setUsers(users.subList(offset-1, (offset-1)+(size>lsize?lsize:size)));
+		
+		if (offset!=0){
+			if (offset<=lsize)
+				response.setUsers(users.subList(offset-1, ((offset-1)+size)>lsize?lsize:(offset-1)+size));
+			else
+				response.setUsers(new ArrayList<User>());
+			}
 		else
 			response.setUsers(users);
 		
