@@ -9,11 +9,11 @@ implements ICyBssResponse{
 	
 	private ContactType contactType=null;
 
-	public ContactType getContanctType() {
+	public ContactType getContactType() {
 		return contactType;
 	}
 
-	public void setContanctType(ContactType contactType) {
+	public void setContactType(ContactType contactType) {
 		this.contactType = contactType;
 	}
 	

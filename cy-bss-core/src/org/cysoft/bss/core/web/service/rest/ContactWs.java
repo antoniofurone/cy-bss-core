@@ -67,7 +67,7 @@ implements ICyBssWebService{
 		//logger.info(company.toString());
 		long id=contactDao.addType(contactType);
 		contactType.setId(id);
-		response.setContanctType(contactType);
+		response.setContactType(contactType);
 		
 		logger.info("Contact.addType() <<<");
 		
@@ -98,7 +98,7 @@ implements ICyBssWebService{
 			}
 		
 		contactDao.updateType(id, contactType);
-		response.setContanctType(contactType);
+		response.setContactType(contactType);
 	
 		logger.info("CompanyWs.updateType() <<<");
 		
@@ -107,22 +107,17 @@ implements ICyBssWebService{
 	
 	@RequestMapping(value = "/{id}/getType",method = RequestMethod.GET)
 	@CyBssOperation(name = "getType")
-	public ContactTypeResponse get(
-			@RequestHeader("Security-Token") String securityToken,
+	public ContactTypeResponse getType(
+			@RequestHeader(value="Security-Token",required=false, defaultValue="") String securityToken,
 			@PathVariable("id") Long id
 			) throws CyBssException{
 		
 		logger.info("ContactWs.getType() >>> id="+id);
 		ContactTypeResponse response=new ContactTypeResponse();
 		
-		// checkGrant
-		if (!checkGrant(response,securityToken,"getType",String.class,Long.class))
-			return response;
-		// end checkGrant 
-				
 		ContactType contactType=contactDao.getType(id);
 		if (contactType!=null)
-			response.setContanctType(contactType);
+			response.setContactType(contactType);
 		else
 			setResult(response, ICyBssResultConst.RESULT_NOT_FOUND, 
 					ICyBssResultConst.RESULT_D_NOT_FOUND,response.getLanguageCode());

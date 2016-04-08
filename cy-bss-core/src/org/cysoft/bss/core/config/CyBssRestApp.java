@@ -6,6 +6,7 @@ import org.cysoft.bss.core.dao.AppDao;
 import org.cysoft.bss.core.dao.CityDao;
 import org.cysoft.bss.core.dao.CompanyDao;
 import org.cysoft.bss.core.dao.ContactDao;
+import org.cysoft.bss.core.dao.CountryDao;
 import org.cysoft.bss.core.dao.CyBssAuthDao;
 import org.cysoft.bss.core.dao.FileDao;
 import org.cysoft.bss.core.dao.LanguageDao;
@@ -18,6 +19,7 @@ import org.cysoft.bss.core.dao.mysql.AppMysql;
 import org.cysoft.bss.core.dao.mysql.CityMysql;
 import org.cysoft.bss.core.dao.mysql.CompanyMysql;
 import org.cysoft.bss.core.dao.mysql.ContactMysql;
+import org.cysoft.bss.core.dao.mysql.CountryMysql;
 import org.cysoft.bss.core.dao.mysql.CyBssAuthMysql;
 import org.cysoft.bss.core.dao.mysql.FileMysql;
 import org.cysoft.bss.core.dao.mysql.LanguageMysql;
@@ -98,6 +100,14 @@ public class CyBssRestApp {
 		 }
 	 
 	
+	 @Bean
+	 @Description("Country Dao Rest")
+	 public CountryDao countryDao(){
+		 	CountryDao countryDao=new CountryMysql();
+			return countryDao;
+		 }
+	
+	 
 	 @Bean
 	 @Description("City Dao Rest")
 	 public CityDao cityDao(){
