@@ -12,6 +12,7 @@ import org.cysoft.bss.core.dao.FileDao;
 import org.cysoft.bss.core.dao.LanguageDao;
 import org.cysoft.bss.core.dao.CyBssServiceDao;
 import org.cysoft.bss.core.dao.LocationDao;
+import org.cysoft.bss.core.dao.ObjectDao;
 import org.cysoft.bss.core.dao.PersonDao;
 import org.cysoft.bss.core.dao.TicketDao;
 import org.cysoft.bss.core.dao.UserDao;
@@ -25,6 +26,7 @@ import org.cysoft.bss.core.dao.mysql.FileMysql;
 import org.cysoft.bss.core.dao.mysql.LanguageMysql;
 import org.cysoft.bss.core.dao.mysql.CyBssServiceMysql;
 import org.cysoft.bss.core.dao.mysql.LocationMysql;
+import org.cysoft.bss.core.dao.mysql.ObjectMysql;
 import org.cysoft.bss.core.dao.mysql.PersonMysql;
 import org.cysoft.bss.core.dao.mysql.TicketMysql;
 import org.cysoft.bss.core.dao.mysql.UserMysql;
@@ -167,6 +169,15 @@ public class CyBssRestApp {
 		 	ContactDao contactDao=new ContactMysql();
 			return contactDao;
 		 }
+	 
+	
+	 @Bean
+	 @Description("Object Dao Rest")
+	 public ObjectDao objectDao(){
+		 	ObjectDao objectDao=new ObjectMysql();
+			return objectDao;
+		 }
+	
 	 
 	 @Bean
 	 @Description("MySql Data Source Rest ")
