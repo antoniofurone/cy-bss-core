@@ -23,9 +23,6 @@ public class LanguageWs extends CyBssWebServiceAdapter
 	implements ICyBssWebService{
 	
 	private static final Logger logger = LoggerFactory.getLogger(LanguageWs.class);
-	
-	
-	
 	private LanguageDao listDao=null;
 	
 	@Autowired

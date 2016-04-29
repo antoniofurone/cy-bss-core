@@ -49,7 +49,8 @@ public class CityMysql extends CyBssMysqlDao
 			
 			city.setId(rs.getLong("ID"));
             city.setName(rs.getString("NAME"));
-            city.setCode(rs.getString("STATE_REGION"));
+            city.setCode(rs.getString("CODE"));
+            city.setStateRegion(rs.getString("STATE_REGION"));
             city.setLatitude(rs.getDouble("LATITUDE"));
             city.setLongitude(rs.getDouble("LONGITUDE"));
             city.setCountryId(rs.getLong("COUNTRY_ID"));
@@ -110,7 +111,7 @@ public class CityMysql extends CyBssMysqlDao
 					city.getLatitude(),
 					city.getLongitude(),
 					city.getCountryId(),
-					city.getId()
+					id
 				});
 		} catch (DataAccessException e) {
 			// TODO Auto-generated catch block

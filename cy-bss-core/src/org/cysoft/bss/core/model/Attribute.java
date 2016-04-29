@@ -8,6 +8,8 @@ public class Attribute {
 	private String entityName="";
 	private long typeId;
 	private String typeName="";
+	private long objInstId;
+	private String value="";
 	
 	public long getId() {
 		return id;
@@ -65,12 +67,28 @@ public class Attribute {
 		this.typeName = typeName;
 	}
 
+	
+	public long getObjInstId() {
+		return objInstId;
+	}
+
+	public void setObjInstId(long objInstId) {
+		this.objInstId = objInstId;
+	}
+
+	public String getValue() {
+		return value;
+	}
+
+	public void setValue(String value) {
+		this.value = value;
+	}
+
 	@Override
 	public String toString() {
 		return "Attribute [id=" + id + ", name=" + name + ", objectId=" + objectId + ", objectName=" + objectName
-				+ ", entityName=" + entityName + ", typeId=" + typeId + ", typeName=" + typeName + "]";
+				+ ", entityName=" + entityName + ", typeId=" + typeId + ", typeName=" + typeName + ", objInstId="
+				+ objInstId + ", value=" + value + "]";
 	}
-
-	
 		
 }
