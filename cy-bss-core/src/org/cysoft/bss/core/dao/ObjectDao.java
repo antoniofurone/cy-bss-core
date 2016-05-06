@@ -25,7 +25,7 @@ public interface ObjectDao {
 	
 	public void setAttributeValue(long id,long attrId,String value);
 	public Attribute getAttributeValue(long id,long attrId);
-	public List<Attribute> getAttributeValues(long id);
+	public List<Attribute> getAttributeValues(long id, long objectId);
 	public void removeAttributeValue(long id,long attrId);
 	
 }

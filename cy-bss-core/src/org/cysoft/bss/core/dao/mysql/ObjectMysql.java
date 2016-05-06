@@ -235,51 +235,95 @@ implements ObjectDao{
 	@Override
 	public void setAttributeValue(long id, long attrId, String value) {
 		// TODO Auto-generated method stub
-
-		String cmd="insert into BSST_ATV_ATTR_VALUE(ATV_N_OBJ_INST_ID,ATT_N_ATTRIBUTE_ID,ATV_S_VALUE) ";
-		cmd+=" values (?,?,?)";
+		Attribute attr=this.getAttributeValue(id, attrId);
+		String cmd=null;
+		if (attr==null){
+			cmd="insert into BSST_ATV_ATTR_VALUE(ATV_S_VALUE,ATV_N_OBJ_INST_ID,ATT_N_ATTRIBUTE_ID) ";
+			cmd+=" values (?,?,?)";
+			}
+		else
+			{
+			cmd="update BSST_ATV_ATTR_VALUE set ATV_S_VALUE=? where ATV_N_OBJ_INST_ID=? and ATT_N_ATTRIBUTE_ID=?";
+			cmd+=" values (?,?,?)";
+			}
+		
 		JdbcTemplate jdbcTemplate = new JdbcTemplate(ds);
-		logger.info(cmd+"["+id+","+attrId+","+value+"]");
+		logger.info(cmd+"["+value+","+id+","+attrId+"]");
 		
 		jdbcTemplate.update(cmd, new Object[]{
-				id,attrId,value		
+				value,id,attrId		
 			});
-		
 	}
 
+	
 	@Override
 	public Attribute getAttributeValue(long id, long attrId) {
 		// TODO Auto-generated method stub
-		/*
+		
 		JdbcTemplate jdbcTemplate = new JdbcTemplate(ds);
 		
-		String query="select ID,NAME,TYPE_ID,TYPE,OBJ_ID,OBJECT,ENTITY from BSSV_ATTRIBUTE where ID=?";
-		logger.info(query+"["+attrId+"]");
+		String query="select ID,NAME,TYPE_ID,TYPE,OBJ_ID,OBJECT,ENTITY,OBJINST_ID,VALUE from BSSV_ATTRIBUTE_VALUE where ID=? and OBJINST_ID=?";
+		logger.info(query+"["+attrId+","+id+"]");
 	
 		Attribute ret=null;
 		try {
-			ret=jdbcTemplate.queryForObject(query, new Object[] { attrId },
-					new RowMapperAttribute());
+			ret=jdbcTemplate.queryForObject(query, new Object[] { attrId, id },
+					new RowMapperAttributeValue());
 		}
 			catch(IncorrectResultSizeDataAccessException e){
 					logger.info("ObjectMysql.IncorrectResultSizeDataAccessException:"+e.getMessage());
 				
 		}
 		return ret;
-		*/
-		return null;
 	}
 
+	
+	private class RowMapperAttributeValue implements RowMapper<Attribute>{
+		
+		@Override
+		public Attribute mapRow(ResultSet rs, int rownum) throws SQLException {
+			// TODO Auto-generated method stub
+			Attribute attribute=new Attribute();
+           
+			attribute.setId(rs.getLong("ID"));
+	        attribute.setName(rs.getString("NAME"));
+	        attribute.setTypeId(rs.getLong("TYPE_ID"));
+	        attribute.setTypeName(rs.getString("TYPE"));
+	        attribute.setObjectId(rs.getLong("OBJ_ID"));
+	        attribute.setObjectName(rs.getString("OBJECT"));
+	        attribute.setEntityName(rs.getString("ENTITY"));
+	        attribute.setObjInstId(rs.getLong("OBJINST_ID"));
+	        attribute.setValue(rs.getString("VALUE"));
+	        
+            return attribute;
+		}
+		
+	}
+	
 	@Override
-	public List<Attribute> getAttributeValues(long id) {
+	public List<Attribute> getAttributeValues(long id,long objectId) {
 		// TODO Auto-generated method stub
-		return null;
+		JdbcTemplate jdbcTemplate = new JdbcTemplate(ds);
+		
+		String query="select ID,NAME,TYPE_ID,TYPE,OBJ_ID,OBJECT,ENTITY,OBJINST_ID,VALUE from BSSV_ATTRIBUTE_VALUE where OBJINST_ID=? and OBJ_ID=?";
+		logger.info(query+"["+id+","+objectId+"]");
+		
+		List<Attribute> ret = jdbcTemplate.query(
+                query,new Object[]{id,objectId}, 
+                new RowMapperAttributeValue());
+		return ret;
 	}
 
 	@Override
 	public void removeAttributeValue(long id, long attrId) {
 		// TODO Auto-generated method stub
+		String cmd="delete from BSST_ATV_ATTR_VALUE where ATV_N_OBJ_INST_ID=? and ATT_N_ATTRIBUTE_ID=?";
+		JdbcTemplate jdbcTemplate = new JdbcTemplate(ds);
+		logger.info(cmd+"["+id+","+attrId+"]");
 		
+		jdbcTemplate.update(cmd, new Object[]{
+				id,attrId		
+			});
 	}
 
 	@Override

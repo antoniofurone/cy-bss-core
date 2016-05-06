@@ -249,5 +249,77 @@ public class ObjectWs extends CyBssWebServiceAdapter
 	}
 	
 	
+	@RequestMapping(value = "/{attrId}/getAttributeValue/{objInstId}",method = RequestMethod.GET)
+	@CyBssOperation(name = "getAttributeValue")
+	public AttributeResponse getAttributeValue(
+			@RequestHeader("Security-Token") String securityToken,
+			@PathVariable("attrId") Long attrId,
+			@PathVariable("objInstId") Long objInstId
+			) throws CyBssException
+	{
+		AttributeResponse response=new AttributeResponse();
+		
+		logger.info("ObjectWs.getAttributeValue() >>>");
+		
+		// checkGrant
+		if (!checkGrant(response,securityToken,"getAttributeValue",String.class,Long.class,Long.class))
+			return response;
+		// end checkGrant 
+				
+		
+		response.setAttribute(objectDao.getAttributeValue(objInstId, attrId));
+		logger.info("ObjectWs.getAttributeValue() <<<");
+		
+		return response;
+	}
+
+	@RequestMapping(value = "/{attrId}/removeAttributeValue/{objInstId}",method = RequestMethod.GET)
+	@CyBssOperation(name = "removeAttributeValue")
+	public AttributeResponse removeAttributeValue(
+			@RequestHeader("Security-Token") String securityToken,
+			@PathVariable("attrId") 	Long attrId,
+			@PathVariable("objInstId") 	Long objInstId
+			) throws CyBssException
+	{
+		AttributeResponse response=new AttributeResponse();
+		
+		logger.info("ObjectWs.removeAttributeValue() >>>");
+		
+		// checkGrant
+		if (!checkGrant(response,securityToken,"removeAttributeValue",String.class,Long.class,Long.class))
+			return response;
+		// end checkGrant
+		
+		objectDao.removeAttributeValue(objInstId,attrId);
+		
+		logger.info("ObjectWs.getAttributeValue() <<<");
+		
+		return response;
+	}
+	
+	@RequestMapping(value = "/{objectId}/getAttributeValues/{objInstId}",method = RequestMethod.GET)
+	@CyBssOperation(name = "getAttributeValues")
+	public AttributeListResponse getAttributeValues(
+			@RequestHeader("Security-Token") String securityToken,
+			@PathVariable("objectId") 	Long objectId,
+			@PathVariable("objInstId") 	Long objInstId
+			) throws CyBssException
+	{
+		AttributeListResponse response=new AttributeListResponse();
+		
+		logger.info("ObjectWs.getAttributeValues() >>>");
+		
+		// checkGrant
+		if (!checkGrant(response,securityToken,"getAttributeValues",String.class,Long.class,Long.class))
+			return response;
+		// end checkGrant 
+				
+		
+		response.setAttributes(objectDao.getAttributeValues(objInstId, objectId));
+		logger.info("ObjectWs.getAttributeValues() <<<");
+		
+		return response;
+	}
+
 	
 }
