@@ -3,6 +3,7 @@ package org.cysoft.bss.core.web.service.rest;
 import org.cysoft.bss.core.common.CyBssException;
 import org.cysoft.bss.core.dao.ObjectDao;
 import org.cysoft.bss.core.model.Attribute;
+import org.cysoft.bss.core.model.CyBssObject;
 import org.cysoft.bss.core.web.annotation.CyBssOperation;
 import org.cysoft.bss.core.web.annotation.CyBssService;
 import org.cysoft.bss.core.web.response.ICyBssResultConst;
@@ -10,6 +11,7 @@ import org.cysoft.bss.core.web.response.rest.AttributeListResponse;
 import org.cysoft.bss.core.web.response.rest.AttributeResponse;
 import org.cysoft.bss.core.web.response.rest.AttributeTypeListResponse;
 import org.cysoft.bss.core.web.response.rest.ObjectListResponse;
+import org.cysoft.bss.core.web.response.rest.ObjectResponse;
 import org.cysoft.bss.core.web.service.CyBssWebServiceAdapter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -80,6 +82,49 @@ public class ObjectWs extends CyBssWebServiceAdapter
 		response.setCyBssObjects(objectDao.getObjectAll());
 		return response;
 	}
+	
+	@RequestMapping(value = "/getObjectByName/{name}",method = RequestMethod.GET)
+	@CyBssOperation(name = "getObjectByName")
+	public ObjectResponse getObjectByName(
+			@RequestHeader(value="Security-Token",required=false, defaultValue="") String securityToken,
+			@PathVariable("name") String name
+			) throws CyBssException{
+		
+		logger.info("ObjectWs.getObjectByName() >>>");
+		ObjectResponse response=new ObjectResponse(); 
+		
+		CyBssObject object=objectDao.getByName(name);
+		if (object==null){
+			setResult(response, ICyBssResultConst.RESULT_NOT_FOUND, 
+					ICyBssResultConst.RESULT_D_NOT_FOUND,response.getLanguageCode());
+			return response;
+			}
+		
+		response.setObject(object);
+		return response;
+	}
+	
+	@RequestMapping(value = "/getObjectByEntity/{entityName}",method = RequestMethod.GET)
+	@CyBssOperation(name = "getObjectByEntity")
+	public ObjectResponse getObjectByEntity(
+			@RequestHeader(value="Security-Token",required=false, defaultValue="") String securityToken,
+			@PathVariable("entityName") String entityName
+			) throws CyBssException{
+		
+		logger.info("ObjectWs.getObjectByEntityName() >>>");
+		ObjectResponse response=new ObjectResponse(); 
+		
+		CyBssObject object=objectDao.getByEntity(entityName);
+		if (object==null){
+			setResult(response, ICyBssResultConst.RESULT_NOT_FOUND, 
+					ICyBssResultConst.RESULT_D_NOT_FOUND,response.getLanguageCode());
+			return response;
+			}
+		
+		response.setObject(object);
+		return response;
+	}
+	
 	
 	@RequestMapping(value = "/getAttributeTypeAll",method = RequestMethod.GET)
 	@CyBssOperation(name = "getAttributeTypeAll")
@@ -320,6 +365,5 @@ public class ObjectWs extends CyBssWebServiceAdapter
 		
 		return response;
 	}
-
 	
 }

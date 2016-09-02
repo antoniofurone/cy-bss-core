@@ -131,7 +131,7 @@ implements ICyBssWebService{
 	@RequestMapping(value = "/find",method = RequestMethod.GET)
 	@CyBssOperation(name = "find")
 	public CityListResponse find(
-			@RequestHeader("Security-Token") String securityToken,
+			@RequestHeader(value="Security-Token",required=false, defaultValue="") String securityToken,
 			@RequestParam(value="name", required=false, defaultValue="") String name,
 			@RequestParam(value="stateRegion", required=false, defaultValue="") String stateRegion,
 			@RequestParam(value="countryId", required=false, defaultValue="0") Long countryId
