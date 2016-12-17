@@ -16,6 +16,9 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.TransactionCallbackWithoutResult;
+import org.springframework.transaction.support.TransactionTemplate;
 
 
 public class PersonMysql extends CyBssMysqlDao
@@ -133,10 +136,46 @@ implements PersonDao{
 	}
 
 	@Override
-	public void remove(long id) throws CyBssException {
+	public void remove(final long id) throws CyBssException {
 		// TODO Auto-generated method stub
 		logger.info("PersonMysql.remove() >>>");
 		
+		
+		TransactionTemplate txTemplate=new TransactionTemplate(tx);
+		txTemplate.execute(new TransactionCallbackWithoutResult(){
+
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus arg0) {
+				// TODO Auto-generated method stub
+				JdbcTemplate jdbcTemplate = new JdbcTemplate(tx.getDataSource());
+				
+				String cmd="delete from BSST_CON_CONTACT where CON_N_ENTITY_ID=? and CON_S_ENTITY_NAME=?";
+				logger.info(cmd+"["+id+","+Person.ENTITY_NAME+"]");
+				jdbcTemplate.update(cmd, new Object[]{
+						id,Person.ENTITY_NAME
+				});		
+				
+				cmd="delete from BSST_ATV_ATTR_VALUE where ATV_N_OBJ_INST_ID=? and ATT_N_ATTRIBUTE_ID in ";
+				cmd+="(select ATT_N_ATTRIBUTE_ID from BSST_ATT_ATTRIBUTE where OBJ_N_OBJECT_ID in (select OBJ_N_OBJECT_ID from BSST_OBJ_OBJECT where OBJ_S_ENTITY_NAME=?))";
+				logger.info(cmd+"["+id+","+Person.ENTITY_NAME+"]");
+				jdbcTemplate.update(cmd, new Object[]{
+						id,Person.ENTITY_NAME
+				});		
+				
+				
+				cmd="delete from BSST_PER_PERSON where PER_N_PERSON_ID=?";
+				logger.info(cmd+"["+id+"]");
+				
+				jdbcTemplate.update(cmd, new Object[]{
+						id
+				});		
+				
+			}
+
+			
+		});
+		
+		/*
 		String cmd="delete from BSST_PER_PERSON where PER_N_PERSON_ID=?";
 		JdbcTemplate jdbcTemplate = new JdbcTemplate(ds);
 		logger.info(cmd+"["+id+"]");
@@ -150,7 +189,7 @@ implements PersonDao{
 			logger.error(e.toString());
 			throw new CyBssException(e);
 		} 
-		
+		*/
 		logger.info("PersonMysql.remove() <<<");
 
 	}

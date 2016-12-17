@@ -13,6 +13,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.TransactionCallbackWithoutResult;
+import org.springframework.transaction.support.TransactionTemplate;
 
 public class ObjectMysql extends CyBssMysqlDao
 implements ObjectDao{
@@ -221,15 +224,36 @@ implements ObjectDao{
 	}
 
 	@Override
-	public void removeAttribute(long attrId) {
+	public void removeAttribute(final long attrId) {
 		// TODO Auto-generated method stub
-		String cmd="delete from BSST_ATT_ATTRIBUTE where ATT_N_ATTRIBUTE_ID=?";
-		JdbcTemplate jdbcTemplate = new JdbcTemplate(ds);
-		logger.info(cmd+"["+attrId+"]");
 		
-		jdbcTemplate.update(cmd, new Object[]{
-				attrId		
-			});
+		TransactionTemplate txTemplate=new TransactionTemplate(tx);
+		txTemplate.execute(new TransactionCallbackWithoutResult(){
+
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus txStatus) {
+				// TODO Auto-generated method stub
+				
+				JdbcTemplate jdbcTemplate = new JdbcTemplate(tx.getDataSource());
+				
+				String cmd="delete from BSST_ATV_ATTR_VALUE where ATT_N_ATTRIBUTE_ID=?";
+				logger.info(cmd+"["+attrId+"]");
+				
+				jdbcTemplate.update(cmd, new Object[]{
+						attrId		
+					});
+				
+				cmd="delete from BSST_ATT_ATTRIBUTE where ATT_N_ATTRIBUTE_ID=?";
+				logger.info(cmd+"["+attrId+"]");
+				
+				jdbcTemplate.update(cmd, new Object[]{
+						attrId		
+					});
+				
+			}
+
+		});		
+		
 	}
 
 	@Override
@@ -244,7 +268,6 @@ implements ObjectDao{
 		else
 			{
 			cmd="update BSST_ATV_ATTR_VALUE set ATV_S_VALUE=? where ATV_N_OBJ_INST_ID=? and ATT_N_ATTRIBUTE_ID=?";
-			cmd+=" values (?,?,?)";
 			}
 		
 		JdbcTemplate jdbcTemplate = new JdbcTemplate(ds);

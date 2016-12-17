@@ -310,6 +310,32 @@ implements CompanyDao{
 					throw new RuntimeException(e);
 				}
 				
+				cmd="delete from BSST_CON_CONTACT where CON_N_ENTITY_ID=? and CON_S_ENTITY_NAME=?";
+				logger.info(cmd+"["+id+","+Company.ENTITY_NAME+"]");
+				try {
+					jdbcTemplate.update(cmd, new Object[]{
+							id,Company.ENTITY_NAME
+						});
+				} catch (DataAccessException e) {
+					// TODO Auto-generated catch block
+					logger.error(e.toString());
+					throw new RuntimeException(e);
+				}
+				
+				cmd="delete from BSST_ATV_ATTR_VALUE where ATV_N_OBJ_INST_ID=? and ATT_N_ATTRIBUTE_ID in ";
+				cmd+="(select ATT_N_ATTRIBUTE_ID from BSST_ATT_ATTRIBUTE where OBJ_N_OBJECT_ID in (select OBJ_N_OBJECT_ID from BSST_OBJ_OBJECT where OBJ_S_ENTITY_NAME=?))";
+				logger.info(cmd+"["+id+","+Company.ENTITY_NAME+"]");
+				try {
+					jdbcTemplate.update(cmd, new Object[]{
+							id,Company.ENTITY_NAME
+						});
+				} catch (DataAccessException e) {
+					// TODO Auto-generated catch block
+					logger.error(e.toString());
+					throw new RuntimeException(e);
+				}
+				
+				
 				cmd="delete from BSST_COM_COMPANY where COM_N_COMPANY_ID=?";
 				logger.info(cmd+"["+id+"]");
 				
