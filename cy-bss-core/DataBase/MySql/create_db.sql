@@ -1,4 +1,6 @@
 -- with root
+--ALTER USER USER() IDENTIFIED BY 'xxxxx';
+--ALTER USER 'root'@'localhost' PASSWORD EXPIRE NEVER;
 create database cybss;
 create user cybss identified by 'cybss';
 set password for 'cybss'@'%' = password('cybss');

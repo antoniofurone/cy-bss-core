@@ -12,6 +12,7 @@ import org.cysoft.bss.core.dao.FileDao;
 import org.cysoft.bss.core.dao.LanguageDao;
 import org.cysoft.bss.core.dao.CyBssServiceDao;
 import org.cysoft.bss.core.dao.LocationDao;
+import org.cysoft.bss.core.dao.MetricDao;
 import org.cysoft.bss.core.dao.ObjectDao;
 import org.cysoft.bss.core.dao.PersonDao;
 import org.cysoft.bss.core.dao.TicketDao;
@@ -26,6 +27,7 @@ import org.cysoft.bss.core.dao.mysql.FileMysql;
 import org.cysoft.bss.core.dao.mysql.LanguageMysql;
 import org.cysoft.bss.core.dao.mysql.CyBssServiceMysql;
 import org.cysoft.bss.core.dao.mysql.LocationMysql;
+import org.cysoft.bss.core.dao.mysql.MetricMysql;
 import org.cysoft.bss.core.dao.mysql.ObjectMysql;
 import org.cysoft.bss.core.dao.mysql.PersonMysql;
 import org.cysoft.bss.core.dao.mysql.TicketMysql;
@@ -170,7 +172,14 @@ public class CyBssRestApp {
 			return contactDao;
 		 }
 	 
+	 @Bean
+	 @Description("Metric Dao Rest")
+	 public MetricDao metricDao(){
+		 	MetricDao metricDao=new MetricMysql();
+			return metricDao;
+		 }
 	
+	 
 	 @Bean
 	 @Description("Object Dao Rest")
 	 public ObjectDao objectDao(){

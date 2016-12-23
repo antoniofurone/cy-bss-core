@@ -10,6 +10,7 @@ import org.cysoft.bss.core.common.CyBssException;
 import org.cysoft.bss.core.common.CyBssUtility;
 import org.cysoft.bss.core.dao.FileDao;
 import org.cysoft.bss.core.dao.LocationDao;
+import org.cysoft.bss.core.model.Company;
 import org.cysoft.bss.core.model.CyBssFile;
 import org.cysoft.bss.core.model.Location;
 import org.slf4j.Logger;
@@ -228,6 +229,20 @@ public class LocationMysql extends CyBssMysqlDao
 				try {
 					jdbcTemplate.update(cmd, new Object[]{
 							id,Location.ENTITY_NAME
+						});
+				} catch (DataAccessException e) {
+					// TODO Auto-generated catch block
+					logger.error(e.toString());
+					throw new RuntimeException(e);
+				}
+				
+				
+				cmd="delete from BSST_ATV_ATTR_VALUE where ATV_N_OBJ_INST_ID=? and ATT_N_ATTRIBUTE_ID in ";
+				cmd+="(select ATT_N_ATTRIBUTE_ID from BSST_ATT_ATTRIBUTE where OBJ_N_OBJECT_ID in (select OBJ_N_OBJECT_ID from BSST_OBJ_OBJECT where OBJ_S_ENTITY_NAME=?))";
+				logger.info(cmd+"["+id+","+Location.ENTITY_NAME+"]");
+				try {
+					jdbcTemplate.update(cmd, new Object[]{
+							id,Company.ENTITY_NAME
 						});
 				} catch (DataAccessException e) {
 					// TODO Auto-generated catch block
