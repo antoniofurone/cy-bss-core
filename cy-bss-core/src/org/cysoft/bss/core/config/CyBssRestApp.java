@@ -15,6 +15,7 @@ import org.cysoft.bss.core.dao.LocationDao;
 import org.cysoft.bss.core.dao.MetricDao;
 import org.cysoft.bss.core.dao.ObjectDao;
 import org.cysoft.bss.core.dao.PersonDao;
+import org.cysoft.bss.core.dao.ProductDao;
 import org.cysoft.bss.core.dao.TicketDao;
 import org.cysoft.bss.core.dao.UserDao;
 import org.cysoft.bss.core.dao.mysql.AppMysql;
@@ -30,6 +31,7 @@ import org.cysoft.bss.core.dao.mysql.LocationMysql;
 import org.cysoft.bss.core.dao.mysql.MetricMysql;
 import org.cysoft.bss.core.dao.mysql.ObjectMysql;
 import org.cysoft.bss.core.dao.mysql.PersonMysql;
+import org.cysoft.bss.core.dao.mysql.ProductMysql;
 import org.cysoft.bss.core.dao.mysql.TicketMysql;
 import org.cysoft.bss.core.dao.mysql.UserMysql;
 import org.slf4j.Logger;
@@ -179,6 +181,14 @@ public class CyBssRestApp {
 			return metricDao;
 		 }
 	
+	 @Bean
+	 @Description("Product Dao Rest")
+	 public ProductDao productDao(){
+		 	ProductDao productDao=new ProductMysql();
+			return productDao;
+		 }
+	 
+	 
 	 
 	 @Bean
 	 @Description("Object Dao Rest")
