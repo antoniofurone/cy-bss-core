@@ -8,7 +8,10 @@ public class ProductCategory {
 	private String name;
 	private double vat;
 	private long metricId;
+	private String metricName;
 	private String description;
+	
+	
 	public long getId() {
 		return id;
 	}
@@ -33,18 +36,23 @@ public class ProductCategory {
 	public void setMetricId(long metricId) {
 		this.metricId = metricId;
 	}
+	public String getMetricName() {
+		return metricName;
+	}
+	public void setMetricName(String metricName) {
+		this.metricName = metricName;
+	}
 	public String getDescription() {
 		return description;
 	}
 	public void setDescription(String description) {
 		this.description = description;
 	}
-	
-	
 	@Override
 	public String toString() {
 		return "ProductCategory [id=" + id + ", name=" + name + ", vat=" + vat + ", metricId=" + metricId
-				+ ", description=" + description + "]";
+				+ ", metricName=" + metricName + ", description=" + description + "]";
 	}
+	
 	
 }
