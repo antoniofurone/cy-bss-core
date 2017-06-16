@@ -2,6 +2,7 @@ package org.cysoft.bss.core.dao.mysql;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.cysoft.bss.core.common.CyBssException;
@@ -131,7 +132,7 @@ public class ProductMysql extends CyBssMysqlDao
 					new RowMapperCategory());
 		}
 		catch(IncorrectResultSizeDataAccessException e){
-			logger.info("CityMysql.IncorrectResultSizeDataAccessException:"+e.getMessage());
+			logger.info("ProductMysql.IncorrectResultSizeDataAccessException:"+e.getMessage());
 		
 		}
 		logger.info("ProductMysql.getCategory() <<<");
@@ -213,7 +214,6 @@ public class ProductMysql extends CyBssMysqlDao
 		} 
 		
 		logger.info("ContactMysql.removeType() <<<");
-
 	}
 
 	@Override
@@ -308,33 +308,208 @@ public class ProductMysql extends CyBssMysqlDao
 	@Override
 	public long add(Product product) throws CyBssException {
 		// TODO Auto-generated method stub
-		return 0;
+		logger.info("ProductMysql.add() >>>");
+		
+		String cmd="insert into BSST_PRO_PRODUCT(PRO_S_NAME,PRO_S_DESC,PRO_S_CODE,PCA_N_PRODUCT_CATEGORY_ID,PTY_N_PRODUCT_TYPE_ID,PRO_N_PRODUCT_PARENT_ID,PRO_N_PRODUCER_ID) ";
+		cmd+=" values (?,?,?,?,?,?,?)";
+		JdbcTemplate jdbcTemplate = new JdbcTemplate(ds);
+		logger.info(cmd+"["+product+"]");
+		
+		try {
+			jdbcTemplate.update(cmd, new Object[]{
+					product.getName(),
+					(product.getDescription()==null || product.getDescription().equals(""))?null:product.getDescription(),
+					(product.getCode()==null || product.getCode().equals(""))?null:product.getCode(),
+					product.getCategoryId(),
+					product.getTypeId(),
+					(product.getParentId()==0)?null:product.getParentId(),
+					(product.getProducerId()==0)?null:product.getProducerId()		
+				});
+		} catch (DataAccessException e) {
+			// TODO Auto-generated catch block
+			logger.error(e.toString());
+			throw new CyBssException(e);
+		} 
+		
+		logger.info("ProductMysql.add() <<<");
+		
+		return getLastInsertId(jdbcTemplate);
+
+	}
+
+
+	@Override
+	public List<Product> find(String name, long categoryId, long typeId, String attrName, String attrValue) {
+		// TODO Auto-generated method stub
+		
+		logger.info("ProductMysql.find() >>> name="+name+";categoryId="+categoryId+";typeId="+typeId
+				+";attrName="+attrName+";attrValue="+attrValue);
+		
+		String query="select a.ID,a.NAME,a.DESCRIPTION,a.CODE,a.CATEGORY_ID,a.CATEGORY_NAME,a.METRIC_ID,a.METRIC_NAME,a.VAT,a.TYPE_ID,a.TYPE_NAME,";
+		query+="a.PARENT_ID,a.PARENT_NAME,a.PRODUCER_ID,a.PRODUCER_CODE,a.PRODUCER_NAME ";
+		query+=" from BSSV_PRODUCT a";
+		if (attrName!=null && !attrName.equals("")){
+			query+=" join BSSV_ATTRIBUTE_VALUE b on b.OBJINST_ID=a.ID and b.NAME='"+attrName+"' and b.ENTITY='"+Product.ENTITY_NAME+"'";
+		}
+		if (!name.equals("") || categoryId!=0 || typeId!=0 || !attrName.equals("") || !attrValue.equals(""))
+			query+=" WHERE ";
+		
+		boolean insAnd=false;
+		List<Object> parms=new ArrayList<Object>();
+		
+		if (!name.equals("")){
+			if (!name.contains("%"))
+				query+=" a.NAME=?";
+			else
+				query+=" a.NAME like ?";
+			insAnd=true;
+			parms.add(name);
+		}
+		if (categoryId!=0){
+			query+=(insAnd?" AND":"")+" a.CATEGORY_ID=?";
+			insAnd=true;
+			parms.add(categoryId);
+		}
+		if (typeId!=0){
+			query+=(insAnd?" AND":"")+" a.TYPE_ID=?";
+			insAnd=true;
+			parms.add(typeId);
+		}
+		
+		if (!attrName.equals("")){
+			if (!attrValue.contains("%"))
+				query+=(insAnd?" AND":"")+" b.VALUE=?";
+			else
+				query+=(insAnd?" AND":"")+" b.VALUE like ?";
+			insAnd=true;
+			parms.add(attrValue);
+		}
+		query+=" order by ID";
+		
+		
+		JdbcTemplate jdbcTemplate = new JdbcTemplate(ds);
+		logger.info(query+"[name="+name+";categoryId="+categoryId+";typeId="+typeId
+				+";attrName="+attrName+";attrValue="+attrValue+"]");
+		
+		List<Product> ret=jdbcTemplate.query(query, parms.toArray(),new RowMapperProduct());
+			
+		logger.info("CompanyMysql.find() <<<");
+		return ret;
+	}
+
+	private class RowMapperProduct implements RowMapper<Product>{
+
+		@Override
+		public Product mapRow(ResultSet rs, int rownum) throws SQLException {
+			// TODO Auto-generated method stub
+			Product product=new Product();
+       	
+			product.setId(rs.getLong("ID"));
+			product.setName(rs.getString("NAME"));
+			product.setDescription(rs.getString("DESCRIPTION"));
+			product.setCode(rs.getString("CODE"));
+			product.setCategoryId(rs.getLong("CATEGORY_ID"));
+			
+			product.getCategory().setId(rs.getLong("CATEGORY_ID"));
+			product.getCategory().setName(rs.getString("CATEGORY_NAME"));
+			product.getCategory().setMetricId(rs.getLong("METRIC_ID"));
+			product.getCategory().setMetricName(rs.getString("METRIC_NAME"));
+			product.getCategory().setVat(rs.getDouble("VAT"));
+			
+			product.getProductType().setId(rs.getLong("TYPE_ID"));
+			product.getProductType().setName(rs.getString("TYPE_NAME"));
+			
+			product.setParentId(rs.getLong("PARENT_ID"));
+			product.setParentName(rs.getString("PARENT_NAME"));
+			
+			product.setProducerId(rs.getLong("PRODUCER_ID"));
+			product.setProducerCode(rs.getString("PRODUCER_CODE"));
+			product.setProducerName(rs.getString("PRODUCER_NAME"));
+			
+            return product;
+		}
+	}
+	
+	
+	@Override
+	public Product get(long id) {
+		// TODO Auto-generated method stub
+		logger.info("ProductMysql.get() >>>");
+		
+		// TODO Auto-generated method stub
+		JdbcTemplate jdbcTemplate = new JdbcTemplate(ds);
+		
+		String query="select a.ID,a.NAME,a.DESCRIPTION,a.CODE,a.CATEGORY_ID,a.CATEGORY_NAME,a.METRIC_ID,a.METRIC_NAME,a.VAT,a.TYPE_ID,a.TYPE_NAME,";
+		query+="a.PARENT_ID,a.PARENT_NAME,a.PRODUCER_ID,a.PRODUCER_CODE,a.PRODUCER_NAME ";
+		query+=" from BSSV_PRODUCT a";
+		query+=" where ID=?";
+		
+		logger.info(query+"["+id+"]");
+		Product ret=null;
+		try {
+			ret=jdbcTemplate.queryForObject(query, new Object[] { id },
+					new RowMapperProduct());
+		}
+		catch(IncorrectResultSizeDataAccessException e){
+			logger.info("ProductMysql.IncorrectResultSizeDataAccessException:"+e.getMessage());
+		
+		}
+		logger.info("ProductMysql.get() <<<");
+		return ret;
 	}
 
 	@Override
 	public void update(long id, Product product) throws CyBssException {
 		// TODO Auto-generated method stub
+		logger.info("ProductMysql.update() >>>");
 		
+		String cmd="update BSST_PRO_PRODUCT set PRO_S_NAME=?,PRO_S_DESC=?,PRO_S_CODE=?,PCA_N_PRODUCT_CATEGORY_ID=?,";
+		cmd+="PTY_N_PRODUCT_TYPE_ID=?,PRO_N_PRODUCT_PARENT_ID=?,PRO_N_PRODUCER_ID=? ";
+		cmd+="where PRO_N_PRODUCT_ID=?";
+		
+		JdbcTemplate jdbcTemplate = new JdbcTemplate(ds);
+		logger.info(cmd+"["+product+"]");
+	
+		try {
+			jdbcTemplate.update(cmd, new Object[]{
+					product.getName(),
+					(product.getDescription()==null || product.getDescription().equals(""))?null:product.getDescription(),
+					(product.getCode()==null || product.getCode().equals(""))?null:product.getCode(),
+					product.getCategoryId(),
+					product.getTypeId(),
+					(product.getParentId()==0)?null:product.getParentId(),
+					(product.getProducerId()==0)?null:product.getProducerId(),		
+					id
+				});
+		} catch (DataAccessException e) {
+			// TODO Auto-generated catch block
+			logger.error(e.toString());
+			throw new CyBssException(e);
+		} 
+		
+		logger.info("ProductMysql.updateType() <<<");
 	}
-
-	@Override
-	public List<Product> find(String name, long categoryId, long typeId, String attrName, String attrValue) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public Product get(long id) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
+	
 	@Override
 	public void remove(long id) throws CyBssException {
 		// TODO Auto-generated method stub
+		logger.info("ProductMysql.remove() >>>");
 		
+		String cmd="delete from BSST_PRO_PRODUCT where PRO_N_PRODUCT_ID=?";
+		JdbcTemplate jdbcTemplate = new JdbcTemplate(ds);
+		logger.info(cmd+"["+id+"]");
+		
+		try {
+			jdbcTemplate.update(cmd, new Object[]{
+					id
+				});
+		} catch (DataAccessException e) {
+			// TODO Auto-generated catch block
+			logger.error(e.toString());
+			throw new CyBssException(e);
+		} 
+		
+		logger.info("ContactMysql.remove() <<<");
 	}
-
-	
 
 }

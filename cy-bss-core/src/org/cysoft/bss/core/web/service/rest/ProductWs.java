@@ -1,7 +1,11 @@
 package org.cysoft.bss.core.web.service.rest;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.cysoft.bss.core.common.CyBssException;
 import org.cysoft.bss.core.dao.ProductDao;
+import org.cysoft.bss.core.model.Product;
 import org.cysoft.bss.core.model.ProductCategory;
 import org.cysoft.bss.core.model.ProductType;
 import org.cysoft.bss.core.web.annotation.CyBssOperation;
@@ -9,6 +13,8 @@ import org.cysoft.bss.core.web.annotation.CyBssService;
 import org.cysoft.bss.core.web.response.ICyBssResultConst;
 import org.cysoft.bss.core.web.response.rest.ProductCategoryListResponse;
 import org.cysoft.bss.core.web.response.rest.ProductCategoryResponse;
+import org.cysoft.bss.core.web.response.rest.ProductListResponse;
+import org.cysoft.bss.core.web.response.rest.ProductResponse;
 import org.cysoft.bss.core.web.response.rest.ProductTypeListResponse;
 import org.cysoft.bss.core.web.response.rest.ProductTypeResponse;
 import org.cysoft.bss.core.web.service.CyBssWebServiceAdapter;
@@ -21,6 +27,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -232,7 +239,7 @@ public class ProductWs extends CyBssWebServiceAdapter
 			return response;
 		// end checkGrant 
 		
-		if (productDao.getCategory(id)==null){
+		if (productDao.getType(id)==null){
 			setResult(response, ICyBssResultConst.RESULT_NOT_FOUND, 
 					ICyBssResultConst.RESULT_D_NOT_FOUND,response.getLanguageCode());
 			return response;
@@ -268,5 +275,148 @@ public class ProductWs extends CyBssWebServiceAdapter
 	}
 
 	// Product
+
+	@RequestMapping(value = "/add",method = RequestMethod.POST)
+	@CyBssOperation(name = "add")
+	public ProductResponse add(
+			@RequestHeader("Security-Token") String securityToken,
+			@RequestBody Product product
+			) throws CyBssException
+	{
+		ProductResponse response=new ProductResponse();
+		
+		logger.info("ProductWs.add() >>>");
+		
+		// checkGrant
+		if (!checkGrant(response,securityToken,"add",String.class,Product.class))
+				return response;
+		// end checkGrant 
+		
+		logger.info(product.toString());
+		long id=productDao.add(product);
+		product.setId(id);
+		response.setProduct(product);
+		
+		logger.info("ProductWs.add() <<<");
+		
+		return response;
+	}
 	
+	@RequestMapping(value = "/find",method = RequestMethod.GET)
+	@CyBssOperation(name = "find")
+	public ProductListResponse find(
+			@RequestHeader("Security-Token") String securityToken,
+			@RequestParam(value="name", required=false, defaultValue="") String name,
+			@RequestParam(value="categoryId", required=false, defaultValue="0") Integer categoryId,
+			@RequestParam(value="typeId", required=false, defaultValue="0") Integer productTypeId,
+			@RequestParam(value="attrName", required=false, defaultValue="") String attrName,
+			@RequestParam(value="attrValue", required=false, defaultValue="") String attrValue,
+			@RequestParam(value="offset", required=false, defaultValue="0") Integer offset,
+			@RequestParam(value="size", required=false, defaultValue="100") Integer size
+			) throws CyBssException{
+		
+		logger.info("ProductWs.find() >>> name="+name+";categoryId="+categoryId
+				+";productTypeId="+productTypeId+";attributeName="+attrName+";attributeValue="+attrValue);
+		
+		ProductListResponse response=new ProductListResponse();
+		
+		// checkGrant
+		if (!checkGrant(response,securityToken,"find",String.class,
+			String.class,Integer.class,Integer.class,
+			String.class,String.class,
+			Integer.class,Integer.class))
+			return response;
+		// end checkGrant 
+		
+		
+		List<Product> products=productDao.find(name,categoryId,productTypeId,attrName,attrValue);
+		int lsize=products.size();
+		
+		if (offset!=0){
+			if (offset<=lsize)
+				response.setProducts(products.subList(offset-1, ((offset-1)+size)>lsize?lsize:(offset-1)+size));
+			else
+				response.setProducts(new ArrayList<Product>());
+			}
+		else
+			response.setProducts(products);
+		
+		logger.info("ProductWs.find() <<< ");
+		
+		return response;
+	}
+	
+	@RequestMapping(value = "/{id}/get",method = RequestMethod.GET)
+	@CyBssOperation(name = "get")
+	public ProductResponse get(
+			@RequestHeader("Security-Token") String securityToken,
+			@PathVariable("id") Long id
+			) throws CyBssException{
+		
+		logger.info("Product.get() >>> id="+id);
+		ProductResponse response=new ProductResponse();
+		
+		Product product=productDao.get(id);
+		if (product!=null)
+			response.setProduct(product);
+		else
+			setResult(response, ICyBssResultConst.RESULT_NOT_FOUND, 
+					ICyBssResultConst.RESULT_D_NOT_FOUND,response.getLanguageCode());
+	
+		logger.info("ProductWs.get() <<< ");
+		return response;
+	}
+	
+	@RequestMapping(value = "/{id}/update",method = RequestMethod.POST)
+	@CyBssOperation(name = "update")
+	public ProductResponse update(
+			@RequestHeader("Security-Token") String securityToken,
+			@PathVariable("id") Long id,
+			@RequestBody Product product
+			) throws CyBssException
+	{
+		ProductResponse response=new ProductResponse();
+		
+		logger.info("ProductWs.update() >>> id="+id);
+		
+		// checkGrant
+		if (!checkGrant(response,securityToken,"update",String.class,Long.class,Product.class))
+			return response;
+		// end checkGrant 
+		
+		if (productDao.get(id)==null){
+			setResult(response, ICyBssResultConst.RESULT_NOT_FOUND, 
+					ICyBssResultConst.RESULT_D_NOT_FOUND,response.getLanguageCode());
+			return response;
+			}
+		
+		productDao.update(id, product);
+		response.setProduct(productDao.get(id));
+		
+		logger.info("ProductWs.update() <<<");
+		return response;
+	}
+
+	@RequestMapping(value = "/{id}/remove",method = RequestMethod.GET)
+	@CyBssOperation(name = "remove")
+	public ProductResponse remove(
+			@RequestHeader("Security-Token") String securityToken,
+			@PathVariable("id") Long id
+			) throws CyBssException{
+		
+		logger.info("ProductWs.remove() >>> id="+id);
+		ProductResponse response=new ProductResponse();
+		
+		// checkGrant
+		if (!checkGrant(response,securityToken,"remove",String.class,Long.class))
+			return response;
+		// end checkGrant 
+		
+		productDao.remove(id);
+	
+		logger.info("ProductWs.remove() <<< ");
+	
+		return response;
+	}
+
 }
