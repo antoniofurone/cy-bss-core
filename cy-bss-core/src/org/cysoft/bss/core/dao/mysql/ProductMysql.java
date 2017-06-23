@@ -16,6 +16,9 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.TransactionCallbackWithoutResult;
+import org.springframework.transaction.support.TransactionTemplate;
 
 public class ProductMysql extends CyBssMysqlDao
 	implements ProductDao{
@@ -409,6 +412,7 @@ public class ProductMysql extends CyBssMysqlDao
 			product.setDescription(rs.getString("DESCRIPTION"));
 			product.setCode(rs.getString("CODE"));
 			product.setCategoryId(rs.getLong("CATEGORY_ID"));
+			product.setTypeId(rs.getLong("TYPE_ID"));
 			
 			product.getCategory().setId(rs.getLong("CATEGORY_ID"));
 			product.getCategory().setName(rs.getString("CATEGORY_NAME"));
@@ -491,25 +495,50 @@ public class ProductMysql extends CyBssMysqlDao
 	}
 	
 	@Override
-	public void remove(long id) throws CyBssException {
+	public void remove(final long id) throws CyBssException {
 		// TODO Auto-generated method stub
 		logger.info("ProductMysql.remove() >>>");
 		
-		String cmd="delete from BSST_PRO_PRODUCT where PRO_N_PRODUCT_ID=?";
-		JdbcTemplate jdbcTemplate = new JdbcTemplate(ds);
-		logger.info(cmd+"["+id+"]");
-		
-		try {
-			jdbcTemplate.update(cmd, new Object[]{
-					id
-				});
-		} catch (DataAccessException e) {
-			// TODO Auto-generated catch block
-			logger.error(e.toString());
-			throw new CyBssException(e);
-		} 
-		
-		logger.info("ContactMysql.remove() <<<");
+		TransactionTemplate txTemplate=new TransactionTemplate(tx);
+		txTemplate.execute(new TransactionCallbackWithoutResult(){
+
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus arg0) {
+				// TODO Auto-generated method stub
+				
+				String cmd="delete from BSST_ATV_ATTR_VALUE where ATV_N_OBJ_INST_ID=? and ATT_N_ATTRIBUTE_ID in ";
+				cmd+="(select ATT_N_ATTRIBUTE_ID from BSST_ATT_ATTRIBUTE where OBJ_N_OBJECT_ID in (select OBJ_N_OBJECT_ID from BSST_OBJ_OBJECT where OBJ_S_ENTITY_NAME=?))";
+				JdbcTemplate jdbcTemplate = new JdbcTemplate(tx.getDataSource());
+				
+				logger.info(cmd+"["+id+","+Product.ENTITY_NAME+"]");
+				try {
+					jdbcTemplate.update(cmd, new Object[]{
+							id,Product.ENTITY_NAME
+						});
+				} catch (DataAccessException e) {
+					// TODO Auto-generated catch block
+					logger.error(e.toString());
+					throw new RuntimeException(e);
+				}
+				
+				
+				cmd="delete from BSST_PRO_PRODUCT where PRO_N_PRODUCT_ID=?";
+				logger.info(cmd+"["+id+"]");
+				
+				try {
+					jdbcTemplate.update(cmd, new Object[]{
+							id
+						});
+				} catch (DataAccessException e) {
+					// TODO Auto-generated catch block
+					logger.error(e.toString());
+					throw new RuntimeException(e);
+				}
+				
+			}
+		});	
+
+		logger.info("ProductMysql.remove() <<<");
 	}
 
 }

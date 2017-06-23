@@ -7,7 +7,7 @@ import org.cysoft.bss.core.model.Language;
 import org.cysoft.bss.core.web.annotation.CyBssOperation;
 import org.cysoft.bss.core.web.annotation.CyBssService;
 import org.cysoft.bss.core.web.response.ICyBssResultConst;
-import org.cysoft.bss.core.web.response.rest.AppResponse;
+import org.cysoft.bss.core.web.response.rest.app.AppResponse;
 import org.cysoft.bss.core.web.service.CyBssWebServiceAdapter;
 import org.cysoft.bss.core.web.service.ICyBssWebService;
 import org.slf4j.Logger;
