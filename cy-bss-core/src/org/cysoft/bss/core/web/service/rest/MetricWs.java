@@ -226,7 +226,7 @@ implements ICyBssWebService{
 			return response;
 		// end checkGrant 
 		
-		if (metricDao.getMetric(id)==null){
+		if (metricDao.getCurrency(id)==null){
 			setResult(response, ICyBssResultConst.RESULT_NOT_FOUND, 
 					ICyBssResultConst.RESULT_D_NOT_FOUND,response.getLanguageCode());
 			return response;

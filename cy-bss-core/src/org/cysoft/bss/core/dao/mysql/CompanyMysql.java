@@ -152,6 +152,14 @@ implements CompanyDao{
 	
 	
 	private class RowMapperCompany implements RowMapper<Company>{
+		private boolean mManaged=false;
+		
+		public RowMapperCompany(){
+		}
+		
+		public RowMapperCompany(boolean managed){
+			mManaged=managed;
+		}
 
 		@Override
 		public Company mapRow(ResultSet rs, int rownum) throws SQLException {
@@ -174,7 +182,9 @@ implements CompanyDao{
             company.setGroupId(rs.getLong("GROUP_ID"));
             company.setGroupCode(rs.getString("GROUP_CODE"));
             company.setGroupName(rs.getString("GROUP_NAME"));
-            
+            if (mManaged){
+            	company.setInvoiceLogoId(rs.getLong("MNC_N_INVOICE_LOGO"));
+            }
             
             return company;
 		}
@@ -658,6 +668,123 @@ implements CompanyDao{
 		
 		
 		logger.info("CompanyMysql.removeSubs() <<<");
+	}
+
+	@Override
+	public void addManaged(long id, long invoiceLogoId) throws CyBssException {
+		// TODO Auto-generated method stub
+		logger.info("CompanyMysql.addManaged() >>>");
+		
+		String cmd="insert into BSST_MNC_MANAGED_COMPANY(MNC_N_COMPANY_ID,MNC_N_INVOICE_LOGO) ";
+		cmd+=" values (?,?)";
+		
+		JdbcTemplate jdbcTemplate = new JdbcTemplate(tx.getDataSource());
+		logger.info(cmd+"["+id+","+invoiceLogoId+"]");
+				
+		jdbcTemplate.update(cmd, new Object[]{
+				id, 
+				(invoiceLogoId==0)?null:invoiceLogoId,
+				});
+		
+		logger.info("CompanyMysql.addManaged() <<<");
+		}
+	
+
+	@Override
+	public void updateManaged(long id, long invoiceLogoId) throws CyBssException {
+		// TODO Auto-generated method stub
+		logger.info("CompanyMysql.updateManaged() >>>");
+		
+		String cmd="update BSST_MNC_MANAGED_COMPANY set MNC_N_INVOICE_LOGO=? ";
+		cmd+="where MNC_N_COMPANY_ID=?";
+		JdbcTemplate jdbcTemplate = new JdbcTemplate(ds);
+		logger.info(cmd+"["+id+","+invoiceLogoId+"]");
+		
+		try {
+			jdbcTemplate.update(cmd, new Object[]{
+					(invoiceLogoId==0)?null:invoiceLogoId,
+					id
+				});
+		} catch (DataAccessException e) {
+			// TODO Auto-generated catch block
+			logger.error(e.toString());
+			throw new CyBssException(e);
+		} 
+		
+		logger.info("CompanyMysql.updateCategory() <<<");
+	}
+
+	@Override
+	public Company getManaged(long id) throws CyBssException {
+		// TODO Auto-generated method stub
+		logger.info("CompanyMysql.getManaged() >>>");
+		
+		// TODO Auto-generated method stub
+		JdbcTemplate jdbcTemplate = new JdbcTemplate(ds);
+		
+		String query="select a.ID,a.CODE,a.NAME,a.ADDRESS,a.ZIP,a.CITY_ID,a.CITY,a.COUNTRY,a.FISCAL_CODE,a.VAT_CODE,a.HEAD_DEPT_ID,";
+		query+="a.HEAD_DEPT_CODE,a.HEAD_DEPT_NAME,a.GROUP_ID,a.GROUP_CODE,a.GROUP_NAME,b.MNC_N_INVOICE_LOGO ";
+		query+="from BSSV_COMPANY a ";
+		query+="join BSST_MNC_MANAGED_COMPANY b on a.ID=b.MNC_N_COMPANY_ID ";
+		query+="where ID=?";
+		
+		logger.info(query+"["+id+"]");
+		Company ret=null;
+		try {
+			ret=jdbcTemplate.queryForObject(query, new Object[] { id },
+					new RowMapperCompany(true));
+		}
+		catch(IncorrectResultSizeDataAccessException e){
+			logger.info("CompanyMysql.IncorrectResultSizeDataAccessException:"+e.getMessage());
+		
+		}
+		logger.info("CompanyMysql.getManaged() <<<");
+		return ret;
+		
+	}
+
+	@Override
+	public List<Company> getManagedAll() {
+		// TODO Auto-generated method stub
+		logger.info("CompanyMysql.getManagedAll() >>>");
+		
+		String query="select a.ID,a.CODE,a.NAME,a.ADDRESS,a.ZIP,a.CITY_ID,a.CITY,a.COUNTRY,a.FISCAL_CODE,a.VAT_CODE,a.HEAD_DEPT_ID,";
+		query+="a.HEAD_DEPT_CODE,a.HEAD_DEPT_NAME,a.GROUP_ID,a.GROUP_CODE,a.GROUP_NAME,b.MNC_N_INVOICE_LOGO ";
+		query+="from BSSV_COMPANY a ";
+		query+="join BSST_MNC_MANAGED_COMPANY b on a.ID=b.MNC_N_COMPANY_ID ";
+		
+		JdbcTemplate jdbcTemplate = new JdbcTemplate(ds);
+		logger.info(query);
+		
+		List<Company> ret = jdbcTemplate.query(
+                query, 
+                new RowMapperCompany(true));
+		
+		logger.info("CompanyMysql.getManagedAll() <<<");
+		
+		return ret;
+	}
+
+	@Override
+	public void removeManaged(long id) throws CyBssException {
+		// TODO Auto-generated method stub
+		logger.info("CompanyMysql.removeManaged() >>>");
+		
+		String cmd="delete from BSST_MNC_MANAGED_COMPANY where MNC_N_COMPANY_ID=?";
+		JdbcTemplate jdbcTemplate = new JdbcTemplate(ds);
+		logger.info(cmd+"["+id+"]");
+		
+		try {
+			jdbcTemplate.update(cmd, new Object[]{
+					id
+				});
+		} catch (DataAccessException e) {
+			// TODO Auto-generated catch block
+			logger.error(e.toString());
+			throw new CyBssException(e);
+		} 
+		
+		logger.info("CompanyMysql.removeManaged() <<<");
 	}
 
 }

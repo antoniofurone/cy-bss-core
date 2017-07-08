@@ -133,15 +133,22 @@ public class Company {
 		this.groupName = groupName;
 	}
 	
+	private long invoiceLogoId;
+	public long getInvoiceLogoId() {
+		return invoiceLogoId;
+	}
+	public void setInvoiceLogoId(long invoiceLogoId) {
+		this.invoiceLogoId = invoiceLogoId;
+	}
+	
 	@Override
 	public String toString() {
 		return "Company [id=" + id + ", code=" + code + ", name=" + name + ", address=" + address + ", cityId=" + cityId
 				+ ", city=" + city + ", zipCode=" + zipCode + ", country=" + country + ", fiscalCode=" + fiscalCode
 				+ ", vatCode=" + vatCode + ", headDeptId=" + headDeptId + ", headDeptCode=" + headDeptCode
 				+ ", headDeptName=" + headDeptName + ", groupId=" + groupId + ", groupCode=" + groupCode
-				+ ", groupName=" + groupName + "]";
+				+ ", groupName=" + groupName + ", invoiceLogoId=" + invoiceLogoId + "]";
 	}
-	
 	
 	
 }

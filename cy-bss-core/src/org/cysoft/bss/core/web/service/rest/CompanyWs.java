@@ -639,6 +639,119 @@ implements ICyBssWebService{
 		return response;
 	}
 
+	// ManagedCompany
+	// addManaged
+	@RequestMapping(value = "/addManaged",method = RequestMethod.POST)
+	@CyBssOperation(name = "addManaged")
+	public CompanyResponse addManaged(
+			@RequestHeader("Security-Token") String securityToken,
+			@RequestBody Company company
+			) throws CyBssException
+	{
+		CompanyResponse response=new CompanyResponse();
+		
+		logger.info("CompanyWs.addManaged() >>>");
+		
+		// checkGrant
+		if (!checkGrant(response,securityToken,"addManaged",String.class,Company.class))
+			return response;
+		// end checkGrant 
+		
+		companyDao.addManaged(company.getId(),company.getInvoiceLogoId());
+		response.setCompany(companyDao.getManaged(company.getId()));
+		
+		logger.info("CompanyWs.addManaged() <<<");
+		
+		return response;
+	}
 	
+	// getManagedAll
+	@RequestMapping(value = "/getManagedAll",method = RequestMethod.GET)
+	@CyBssOperation(name = "getManagedAll")
+	public CompanyListResponse getManagedAll(
+			@RequestHeader(value="Security-Token",required=false, defaultValue="") String securityToken
+			) throws CyBssException{
+		
+		logger.info("CompanyWs.getManagedAll() >>>");
+		CompanyListResponse response=new CompanyListResponse(); 
+		response.setCompanies(companyDao.getManagedAll());
+		return response;
+	}
+	
+	// getManaged
+	@RequestMapping(value = "/{id}/getManaged",method = RequestMethod.GET)
+	@CyBssOperation(name = "getManaged")
+	public CompanyResponse getCategory(
+			@RequestHeader("Security-Token") String securityToken,
+			@PathVariable("id") Long id
+			) throws CyBssException{
+		
+		logger.info("CompanyWs.getManaged() >>> id="+id);
+		CompanyResponse response=new CompanyResponse();
+		
+		Company company=companyDao.getManaged(id);
+		if (company!=null)
+			response.setCompany(company);
+		else
+			setResult(response, ICyBssResultConst.RESULT_NOT_FOUND, 
+					ICyBssResultConst.RESULT_D_NOT_FOUND,response.getLanguageCode());
+	
+		logger.info("ProductWs.getCategory() <<< ");
+		return response;
+	}
+	
+	//updateManaged
+	@RequestMapping(value = "/{id}/updateManaged",method = RequestMethod.POST)
+	@CyBssOperation(name = "updateManaged")
+	public CompanyResponse updateManaged(
+			@RequestHeader("Security-Token") String securityToken,
+			@PathVariable("id") Long id,
+			@RequestBody Company company
+			) throws CyBssException
+	{
+		CompanyResponse response=new CompanyResponse();
+		
+		logger.info("CompanyWs.updateManaged() >>> id="+id);
+		
+		// checkGrant
+		if (!checkGrant(response,securityToken,"updateManaged",String.class,Long.class,Company.class))
+			return response;
+		// end checkGrant 
+		
+		if (companyDao.getManaged(id)==null){
+			setResult(response, ICyBssResultConst.RESULT_NOT_FOUND, 
+					ICyBssResultConst.RESULT_D_NOT_FOUND,response.getLanguageCode());
+			return response;
+			}
+		
+		companyDao.updateManaged(id, company.getInvoiceLogoId());
+		response.setCompany(companyDao.getManaged(id));
+		
+		logger.info("CompanyWs.updateManaged() <<<");
+		return response;
+	}
+	
+	//removeManaged
+	@RequestMapping(value = "/{id}/removeManaged",method = RequestMethod.GET)
+	@CyBssOperation(name = "removeManaged")
+	public CompanyResponse removeManaged(
+			@RequestHeader("Security-Token") String securityToken,
+			@PathVariable("id") Long id
+			) throws CyBssException{
+		
+		logger.info("CompanyWs.removeManaged() >>> id="+id);
+		CompanyResponse response=new CompanyResponse();
+		
+		// checkGrant
+		if (!checkGrant(response,securityToken,"removeManaged",String.class,Long.class))
+			return response;
+		// end checkGrant 
+		
+		companyDao.removeManaged(id);
+	
+		logger.info("CompanyWs.removeManaged() <<< ");
+	
+		return response;
+	}
 		
 }

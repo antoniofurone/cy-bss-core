@@ -29,10 +29,16 @@ public interface CompanyDao {
 	public void removeSubs(long id,long subsId);
 		
 	public Company getByCode(String code);
-	public Company get(long id);
+	public Company get(long id); 
 	public CompanyDept getDept(long deptId);
 	
 	public List<PersonRole> getPersonRoleAll(long langId);
 	public PersonRole getPersonRole(long roleId,long langId);
 	
+	// Managed Company
+	public void addManaged(long id, long invoiceLogoId) throws CyBssException;
+	public void updateManaged(long id, long invoiceLogoId) throws CyBssException;
+	public Company getManaged(long id) throws CyBssException;
+	public List<Company> getManagedAll();
+	public void removeManaged(long id) throws CyBssException;	
 }
