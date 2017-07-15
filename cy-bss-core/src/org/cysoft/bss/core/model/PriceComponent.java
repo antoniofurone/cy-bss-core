@@ -2,6 +2,10 @@ package org.cysoft.bss.core.model;
 
 public class PriceComponent {
 	
+	public static final String CODE_NRC_UT="NRC_UT";
+	public static final String CODE_NRC_OFC="NRC_OFC";
+	public static final String CODE_USG_QXP="USG_QXP";
+	
 	private long id;
 	public long getId() {
 		return id;

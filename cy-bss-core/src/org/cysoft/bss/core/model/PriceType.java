@@ -2,6 +2,10 @@ package org.cysoft.bss.core.model;
 
 public class PriceType {
 	
+	public final static String TYPE_RC="RC";
+	public final static String TYPE_NRC="NRC";
+	public final static String TYPE_USG="USG";
+	
 	private long id;
 	public long getId() {
 		return id;

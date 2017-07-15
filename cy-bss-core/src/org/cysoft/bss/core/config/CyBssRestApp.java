@@ -17,6 +17,7 @@ import org.cysoft.bss.core.dao.ObjectDao;
 import org.cysoft.bss.core.dao.PersonDao;
 import org.cysoft.bss.core.dao.PriceDao;
 import org.cysoft.bss.core.dao.ProductDao;
+import org.cysoft.bss.core.dao.PurchaseDao;
 import org.cysoft.bss.core.dao.TicketDao;
 import org.cysoft.bss.core.dao.UserDao;
 import org.cysoft.bss.core.dao.mysql.AppMysql;
@@ -34,6 +35,7 @@ import org.cysoft.bss.core.dao.mysql.ObjectMysql;
 import org.cysoft.bss.core.dao.mysql.PersonMysql;
 import org.cysoft.bss.core.dao.mysql.PriceMysql;
 import org.cysoft.bss.core.dao.mysql.ProductMysql;
+import org.cysoft.bss.core.dao.mysql.PurchaseMysql;
 import org.cysoft.bss.core.dao.mysql.TicketMysql;
 import org.cysoft.bss.core.dao.mysql.UserMysql;
 import org.slf4j.Logger;
@@ -205,6 +207,12 @@ public class CyBssRestApp {
 			return objectDao;
 		 }
 	
+	 @Bean
+	 @Description("Purchase Dao Rest")
+	 public PurchaseDao purchaseDao(){
+		 	PurchaseDao purchaseDao=new PurchaseMysql();
+			return purchaseDao;
+		 }
 	 
 	 @Bean
 	 @Description("MySql Data Source Rest ")
