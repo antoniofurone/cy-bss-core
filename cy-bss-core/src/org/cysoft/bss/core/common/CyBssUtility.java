@@ -4,6 +4,7 @@ import java.math.BigInteger;
 import java.security.SecureRandom;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 
@@ -80,4 +81,10 @@ public class CyBssUtility {
 		      sb.append(String.format("%02x", b & 0xff));
 		   return sb.toString();
 		}
+	   
+	   public static Date getCurrentDate()
+	    {
+	        Calendar c=Calendar.getInstance();
+	        return c.getTime();
+	    }
 }

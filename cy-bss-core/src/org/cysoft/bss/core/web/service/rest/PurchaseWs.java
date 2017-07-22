@@ -1,8 +1,12 @@
 package org.cysoft.bss.core.web.service.rest;
 
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.cysoft.bss.core.bo.Charge;
 import org.cysoft.bss.core.common.CyBssException;
+import org.cysoft.bss.core.common.CyBssUtility;
 import org.cysoft.bss.core.dao.PriceDao;
 import org.cysoft.bss.core.dao.PurchaseDao;
 import org.cysoft.bss.core.model.PriceComponent;
@@ -17,6 +21,7 @@ import org.cysoft.bss.core.web.service.ICyBssWebService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -70,22 +75,7 @@ public class PurchaseWs extends CyBssWebServiceAdapter
 			return response;
 		}	
 		
-		Charge charge=new Charge(component);
-		charge.setPrice(purchase.getPrice());
-		charge.setPriceTot(purchase.getPriceTot());
-		charge.setQty(purchase.getQty());
-		charge.setVat(purchase.getVat());
-		charge.calc();
-		
-		purchase.setPrice(charge.getPrice());
-		purchase.setPriceTot(charge.getPriceTot());
-		purchase.setAmount(charge.getAmount());
-		purchase.setVatAmount(charge.getVatAmount());
-		
-		if (purchase.getTacitRenewal()==null || purchase.getTacitRenewal().equals(""))
-			purchase.setTacitRenewal(Purchase.TACIT_RENEWAL_NO);
-		if (purchase.getPurchaseType()==null || purchase.getPurchaseType().equals(""))
-			purchase.setPurchaseType(Purchase.PURCHASE_TYPE_BILLABLE);
+		purchase=addUpdateSetting(purchase, component);
 		
 		long id=purchaseDao.add(purchase);
 		purchase.setId(id);
@@ -109,6 +99,8 @@ public class PurchaseWs extends CyBssWebServiceAdapter
 			@RequestParam(value="personId", required=false, defaultValue="0") Integer personId,
 			@RequestParam(value="personCode", required=false, defaultValue="") String personCode,
 			@RequestParam(value="personName", required=false, defaultValue="") String personName,
+			@RequestParam(value="attrName", required=false, defaultValue="") String attrName,
+			@RequestParam(value="attrValue", required=false, defaultValue="") String attrValue,
 			@RequestParam(value="fromDate", required=false, defaultValue="") String fromDate,
 			@RequestParam(value="toDate", required=false, defaultValue="") String toDate,
 			@RequestParam(value="offset", required=false, defaultValue="0") Integer offset,
@@ -119,6 +111,7 @@ public class PurchaseWs extends CyBssWebServiceAdapter
 				";productId="+productId+";productName="+productName+
 				";supplierId="+supplierId+";supplierCode="+supplierCode+";supplierName="+supplierName+
 				";personId="+personId+";personCode="+personCode+";personName="+personName+
+				";attrName="+attrName+";attrValue="+attrValue+
 				";fromDate="+fromDate+";toDate="+toDate
 				);
 		
@@ -132,105 +125,141 @@ public class PurchaseWs extends CyBssWebServiceAdapter
 			Integer.class,String.class,String.class,
 			Integer.class,String.class,String.class,
 			String.class,String.class,
+			String.class,String.class,
 			Integer.class,Integer.class
 			))
 			return response;
 		// end checkGrant 
 		
-		/*
-		List<Product> products=productDao.find(name,categoryId,productTypeId,attrName,attrValue);
-		int lsize=products.size();
+		
+		List<Purchase> purchases=purchaseDao.find(companyId,productId,productName,
+				supplierId,supplierCode,supplierName,
+				personId,personCode,personName,
+				attrName,attrValue,
+				fromDate,toDate);
+		int lsize=purchases.size();
 		
 		if (offset!=0){
 			if (offset<=lsize)
-				response.setProducts(products.subList(offset-1, ((offset-1)+size)>lsize?lsize:(offset-1)+size));
+				response.setPurchases(purchases.subList(offset-1, ((offset-1)+size)>lsize?lsize:(offset-1)+size));
 			else
-				response.setProducts(new ArrayList<Product>());
+				response.setPurchases(new ArrayList<Purchase>());
 			}
 		else
-			response.setProducts(products);
+			response.setPurchases(purchases);
 		
-		*/
 		logger.info("PurchaseWs.find() <<< ");
 		
 		return response;
 		
 	}
 	
-	
-	/*
-	
 	@RequestMapping(value = "/{id}/get",method = RequestMethod.GET)
 	@CyBssOperation(name = "get")
-	public ProductResponse get(
+	public PurchaseResponse get(
 			@RequestHeader("Security-Token") String securityToken,
 			@PathVariable("id") Long id
 			) throws CyBssException{
 		
-		logger.info("Product.get() >>> id="+id);
-		ProductResponse response=new ProductResponse();
+		logger.info("Purchase.get() >>> id="+id);
+		PurchaseResponse response=new PurchaseResponse();
 		
-		Product product=productDao.get(id);
-		if (product!=null)
-			response.setProduct(product);
+		Purchase purchase=purchaseDao.get(id);
+		if (purchase!=null)
+			response.setPurchase(purchase);
 		else
 			setResult(response, ICyBssResultConst.RESULT_NOT_FOUND, 
 					ICyBssResultConst.RESULT_D_NOT_FOUND,response.getLanguageCode());
 	
-		logger.info("ProductWs.get() <<< ");
+		logger.info("PurchaseWs.get() <<< ");
 		return response;
 	}
 	
 	@RequestMapping(value = "/{id}/update",method = RequestMethod.POST)
 	@CyBssOperation(name = "update")
-	public ProductResponse update(
+	public PurchaseResponse update(
 			@RequestHeader("Security-Token") String securityToken,
 			@PathVariable("id") Long id,
-			@RequestBody Product product
+			@RequestBody Purchase purchase
 			) throws CyBssException
 	{
-		ProductResponse response=new ProductResponse();
+		PurchaseResponse response=new PurchaseResponse();
 		
-		logger.info("ProductWs.update() >>> id="+id);
+		logger.info("PurchaseWs.update() >>> id="+id);
 		
 		// checkGrant
-		if (!checkGrant(response,securityToken,"update",String.class,Long.class,Product.class))
+		if (!checkGrant(response,securityToken,"update",String.class,Long.class,Purchase.class))
 			return response;
 		// end checkGrant 
 		
-		if (productDao.get(id)==null){
+		if (purchaseDao.get(id)==null){
 			setResult(response, ICyBssResultConst.RESULT_NOT_FOUND, 
 					ICyBssResultConst.RESULT_D_NOT_FOUND,response.getLanguageCode());
 			return response;
 			}
 		
-		productDao.update(id, product);
-		response.setProduct(productDao.get(id));
 		
-		logger.info("ProductWs.update() <<<");
+		PriceComponent component=priceDao.getPriceComponent(purchase.getComponentId());
+		if (component==null){
+			setResult(response, ICyBssResultConst.RESULT_NOT_FOUND, 
+					ICyBssResultConst.RESULT_D_NOT_FOUND,response.getLanguageCode());
+			return response;
+		}	
+		
+		purchase=addUpdateSetting(purchase, component);
+		
+		purchaseDao.update(id, purchase);
+		response.setPurchase(purchaseDao.get(id));
+		
+		logger.info("PurchaseWs.update() <<<");
 		return response;
 	}
 
 	@RequestMapping(value = "/{id}/remove",method = RequestMethod.GET)
 	@CyBssOperation(name = "remove")
-	public ProductResponse remove(
+	public PurchaseResponse remove(
 			@RequestHeader("Security-Token") String securityToken,
 			@PathVariable("id") Long id
 			) throws CyBssException{
 		
-		logger.info("ProductWs.remove() >>> id="+id);
-		ProductResponse response=new ProductResponse();
+		logger.info("PurchaseWs.remove() >>> id="+id);
+		PurchaseResponse response=new PurchaseResponse();
 		
 		// checkGrant
 		if (!checkGrant(response,securityToken,"remove",String.class,Long.class))
 			return response;
 		// end checkGrant 
 		
-		productDao.remove(id);
+		purchaseDao.remove(id);
 	
 		logger.info("ProductWs.remove() <<< ");
 	
 		return response;
 	}
-	*/
+	
+	private Purchase addUpdateSetting(Purchase purchase, PriceComponent component){
+		
+		Charge charge=new Charge(component);
+		charge.setPrice(purchase.getPrice());
+		charge.setPriceTot(purchase.getPriceTot());
+		charge.setQty(purchase.getQty());
+		charge.setVat(purchase.getVat());
+		charge.calc();
+		
+		purchase.setPrice(charge.getPrice());
+		purchase.setPriceTot(charge.getPriceTot());
+		purchase.setAmount(charge.getAmount());
+		purchase.setVatAmount(charge.getVatAmount());
+		
+		if (purchase.getTacitRenewal()==null || purchase.getTacitRenewal().equals(""))
+			purchase.setTacitRenewal(Purchase.TACIT_RENEWAL_NO);
+		if (purchase.getPurchaseType()==null || purchase.getPurchaseType().equals(""))
+			purchase.setPurchaseType(Purchase.PURCHASE_TYPE_BILLABLE);
+		
+		if (purchase.getDate()==null || purchase.getDate().equals(""))
+			purchase.setDate(CyBssUtility.dateToString(CyBssUtility.getCurrentDate(),CyBssUtility.DATE_yyyy_MM_dd));
+		
+		return purchase;
+	}
+	
 }

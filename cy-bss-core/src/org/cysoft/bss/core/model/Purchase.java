@@ -1,7 +1,7 @@
 package org.cysoft.bss.core.model;
 
 public class Purchase {
-	public static final String ENTITY_NAME="Shopping";
+	public static final String ENTITY_NAME="Purchase";
 	
 	private long id;
 	public long getId() {
@@ -71,6 +71,7 @@ public class Purchase {
 	}
 
 	private long personId;
+	private String personCode="";
 	private String personFirstName="";
 	private String personSecondName="";
 	public long getPersonId() {
@@ -78,6 +79,12 @@ public class Purchase {
 	}
 	public void setPersonId(long personId) {
 		this.personId = personId;
+	}
+	public String getPersonCode() {
+		return personCode;
+	}
+	public void setPersonCode(String personCode) {
+		this.personCode = personCode;
 	}
 	public String getPersonFirstName() {
 		return personFirstName;
@@ -276,15 +283,15 @@ public class Purchase {
 	}
 	@Override
 	public String toString() {
-		return "Shopping [id=" + id + ", companyId=" + companyId + ", companyCode=" + companyCode + ", companyName="
+		return "Purchase [id=" + id + ", companyId=" + companyId + ", companyCode=" + companyCode + ", companyName="
 				+ companyName + ", productId=" + productId + ", productName=" + productName + ", supplierId="
 				+ supplierId + ", supplierCode=" + supplierCode + ", supplierName=" + supplierName + ", personId="
-				+ personId + ", personFirstName=" + personFirstName + ", personSecondName=" + personSecondName
-				+ ", componentId=" + componentId + ", componentCode=" + componentCode + ", componentName="
-				+ componentName + ", componentTypeCode=" + componentTypeCode + ", componentTypeName="
-				+ componentTypeName + ", qtyUmId=" + qtyUmId + ", qtyUmSimbol=" + qtyUmSimbol + ", qty=" + qty
-				+ ", frequencyId=" + frequencyId + ", frequencyName=" + frequencyName + ", currencyId=" + currencyId
-				+ ", currencyCode=" + currencyCode + ", currencyName=" + currencyName + ", price=" + price
+				+ personId + ", personCode=" + personCode + ", personFirstName=" + personFirstName
+				+ ", personSecondName=" + personSecondName + ", componentId=" + componentId + ", componentCode="
+				+ componentCode + ", componentName=" + componentName + ", componentTypeCode=" + componentTypeCode
+				+ ", componentTypeName=" + componentTypeName + ", qtyUmId=" + qtyUmId + ", qtyUmSimbol=" + qtyUmSimbol
+				+ ", qty=" + qty + ", frequencyId=" + frequencyId + ", frequencyName=" + frequencyName + ", currencyId="
+				+ currencyId + ", currencyCode=" + currencyCode + ", currencyName=" + currencyName + ", price=" + price
 				+ ", priceTot=" + priceTot + ", amount=" + amount + ", vat=" + vat + ", vatAmount=" + vatAmount
 				+ ", date=" + date + ", dateStart=" + dateStart + ", dateEnd=" + dateEnd + ", updateDate=" + updateDate
 				+ ", tacitRenewal=" + tacitRenewal + ", purchaseType=" + purchaseType + "]";
