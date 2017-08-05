@@ -1,11 +1,11 @@
-package org.cysoft.bss.core.dao;
+package org.cysoft.bss.core.service;
 
 import java.util.List;
 
 import org.cysoft.bss.core.common.CyBssException;
 import org.cysoft.bss.core.model.Purchase;
 
-public interface PurchaseDao {
+public interface PurchaseService {
 	
 	public long add(Purchase purchase) throws CyBssException;
 	public List<Purchase> find(long companyId, long productId, String productName,
@@ -16,6 +16,6 @@ public interface PurchaseDao {
 	public void update(long id,Purchase purchase) throws CyBssException;
 	public Purchase get(long id);
 	public void remove(long id) throws CyBssException;
-		
+	
+	
 }
-

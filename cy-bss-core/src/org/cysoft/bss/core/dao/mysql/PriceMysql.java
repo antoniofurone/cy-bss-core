@@ -27,7 +27,7 @@ public class PriceMysql extends CyBssMysqlDao
 		
 		String query="select PRT_N_PRICE_TYPE_ID,PRT_S_CODE,PRT_S_NAME,PRT_S_DESC from BSST_PRT_PRICE_TYPE";
 		
-		JdbcTemplate jdbcTemplate = new JdbcTemplate(ds);
+		JdbcTemplate jdbcTemplate = new JdbcTemplate(tx.getDataSource());
 		logger.info(query);
 		
 		List<PriceType> ret = jdbcTemplate.query(
@@ -64,7 +64,7 @@ public class PriceMysql extends CyBssMysqlDao
 		logger.info("PriceMysql.getPriceType() >>>");
 		
 		// TODO Auto-generated method stub
-		JdbcTemplate jdbcTemplate = new JdbcTemplate(ds);
+		JdbcTemplate jdbcTemplate = new JdbcTemplate(tx.getDataSource());
 		
 		String query="select PRT_N_PRICE_TYPE_ID,PRT_S_CODE,PRT_S_NAME,PRT_S_DESC from BSST_PRT_PRICE_TYPE";
 		query+=" where PRT_N_PRICE_TYPE_ID=?";
@@ -91,7 +91,7 @@ public class PriceMysql extends CyBssMysqlDao
 		
 		String query="select ID,CODE,NAME,DESCRIPTION,PERIOD_METRIC_ID,PERIOD_METRIC_NAME,TYPE_ID,TYPE_CODE,TYPE_NAME from BSSV_PRICE_COMPONENT";
 		
-		JdbcTemplate jdbcTemplate = new JdbcTemplate(ds);
+		JdbcTemplate jdbcTemplate = new JdbcTemplate(tx.getDataSource());
 		logger.info(query);
 		
 		List<PriceComponent> ret = jdbcTemplate.query(
@@ -134,7 +134,7 @@ public class PriceMysql extends CyBssMysqlDao
 		logger.info("PriceMysql.getPriceComponent() >>>");
 		
 		// TODO Auto-generated method stub
-		JdbcTemplate jdbcTemplate = new JdbcTemplate(ds);
+		JdbcTemplate jdbcTemplate = new JdbcTemplate(tx.getDataSource());
 		
 		String query="select ID,CODE,NAME,DESCRIPTION,PERIOD_METRIC_ID,PERIOD_METRIC_NAME,TYPE_ID,TYPE_CODE,TYPE_NAME from BSSV_PRICE_COMPONENT";
 		query+=" where ID=?";
@@ -161,7 +161,7 @@ public class PriceMysql extends CyBssMysqlDao
 		
 		String cmd="update BSST_PRC_PRICE_COMPONENT set PRC_S_NAME=?,PRC_S_DESC=? ";
 		cmd+="where PRC_N_PRICE_COMPONENT_ID=?";
-		JdbcTemplate jdbcTemplate = new JdbcTemplate(ds);
+		JdbcTemplate jdbcTemplate = new JdbcTemplate(tx.getDataSource());
 		logger.info(cmd+"["+component+"]");
 		
 		try {

@@ -37,7 +37,7 @@ public class PurchaseMysql extends CyBssMysqlDao
 		cmd+="PUR_N_VAT,PUR_N_VAT_AMOUNT,PUR_D_DATE_START,PUR_D_DATE_END,PRC_N_PRICE_COMPONENT_ID,";
 		cmd+="PUR_N_FREQUENCY,PUR_D_DATE,PUR_C_TACIT_RENEWAL,PUR_C_TYPE)";
 		cmd+=" values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
-		JdbcTemplate jdbcTemplate = new JdbcTemplate(ds);
+		JdbcTemplate jdbcTemplate = new JdbcTemplate(tx.getDataSource());
 		logger.info(cmd+"["+purchase+"]");
 		
 		try {
@@ -59,7 +59,7 @@ public class PurchaseMysql extends CyBssMysqlDao
 					purchase.getFrequencyId()==0?null:purchase.getFrequencyId(),
 					CyBssUtility.tryStringToDate(purchase.getDate()),
 					purchase.getTacitRenewal(),
-					purchase.getPurchaseType()
+					purchase.getTransactionType()
 				});
 		} catch (DataAccessException | ParseException e) {
 			// TODO Auto-generated catch block
@@ -181,7 +181,7 @@ public class PurchaseMysql extends CyBssMysqlDao
 		}
 
 		if (!toDate.equals("")){
-			query+=(insAnd?" AND":"")+" DATE_SUB(DATE,INTERVAL 1 DAY)<=?";
+			query+=(insAnd?" AND":"")+" DATE<=?";
 			insAnd=true;
 			try {
 				parms.add(CyBssUtility.dateChangeFormat(toDate, CyBssUtility.DATE_yyyy_MM_dd));
@@ -193,7 +193,7 @@ public class PurchaseMysql extends CyBssMysqlDao
 		query+=" order by DATE desc";
 
 		
-		JdbcTemplate jdbcTemplate = new JdbcTemplate(ds);
+		JdbcTemplate jdbcTemplate = new JdbcTemplate(tx.getDataSource());
 		logger.info(query+"[companyId="+companyId+";productId="+productId+";productName="+productName
 				+";supplierId="+supplierId+";supplierCode="+supplierCode+";supplierName="+supplierName
 				+";personId="+personId+";personCode="+personCode+";personName="+personName
@@ -249,8 +249,9 @@ public class PurchaseMysql extends CyBssMysqlDao
 			purchase.setDateStart(rs.getString("DATE_START"));
 			purchase.setDateEnd(rs.getString("DATE_END"));
 			purchase.setTacitRenewal(rs.getString("TACIT_RENEWAL"));
-			purchase.setPurchaseType(rs.getString("TYPE"));
+			purchase.setTransactionType(rs.getString("TYPE"));
 			purchase.setUpdateDate(rs.getString("UPDATE_DATE"));
+			purchase.setPriceTot(purchase.getPrice()+purchase.getPrice()*purchase.getVat()/100);
 			return purchase;
 		}
 	}
@@ -266,7 +267,7 @@ public class PurchaseMysql extends CyBssMysqlDao
 		cmd+="PUR_N_FREQUENCY=?,PUR_D_DATE=?,PUR_C_TACIT_RENEWAL=?,PUR_C_TYPE=? ";
 		cmd+="where PUR_N_PURCHASE_ID=?";
 		
-		JdbcTemplate jdbcTemplate = new JdbcTemplate(ds);
+		JdbcTemplate jdbcTemplate = new JdbcTemplate(tx.getDataSource());
 		logger.info(cmd+"["+purchase+"]");
 	
 		try {
@@ -288,7 +289,7 @@ public class PurchaseMysql extends CyBssMysqlDao
 					purchase.getFrequencyId()==0?null:purchase.getFrequencyId(),
 					CyBssUtility.tryStringToDate(purchase.getDate()),
 					purchase.getTacitRenewal(),
-					purchase.getPurchaseType(),
+					purchase.getTransactionType(),
 					id
 				});
 		} catch (DataAccessException | ParseException e) {
@@ -306,7 +307,7 @@ public class PurchaseMysql extends CyBssMysqlDao
 		logger.info("PurchaseMysql.get() >>>");
 		
 		// TODO Auto-generated method stub
-		JdbcTemplate jdbcTemplate = new JdbcTemplate(ds);
+		JdbcTemplate jdbcTemplate = new JdbcTemplate(tx.getDataSource());
 		
 		String query="select a.ID,a.COMPANY_ID,a.COMPANY_CODE,a.COMPANY_NAME,";
 		query+="a.PRODUCT_ID,a.PRODUCT_NAME,";

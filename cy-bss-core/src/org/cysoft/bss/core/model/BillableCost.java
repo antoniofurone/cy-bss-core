@@ -1,8 +1,8 @@
 package org.cysoft.bss.core.model;
 
-public class Purchase extends CommercialTransaction{
-	public static final String ENTITY_NAME="Purchase";
-
+public class BillableCost extends Billable {
+	public static final String ENTITY_NAME="BillableCost";
+	
 	public long getSupplierId() {
 		return getTpCompanyId();
 	}
@@ -24,10 +24,12 @@ public class Purchase extends CommercialTransaction{
 		setTpCompanyName(supplierName);
 	}
 	
+	
 	@Override
 	public String toString() {
-		return "Purchase [getId()=" + getId() + ", getCompanyId()=" + getCompanyId() + ", getCompanyCode()="
-				+ getCompanyCode() + ", getCompanyName()=" + getCompanyName() + ", getProductId()=" + getProductId()
+		return "BillableCost [getId()=" + getId() + ", getParentId()=" + getParentId() + ", getInvoiceId()="
+				+ getInvoiceId() + ", getCompanyId()=" + getCompanyId() + ", getCompanyCode()=" + getCompanyCode()
+				+ ", getCompanyName()=" + getCompanyName() + ", getProductId()=" + getProductId()
 				+ ", getProductName()=" + getProductName() + ", getTpCompanyId()=" + getTpCompanyId()
 				+ ", getTpCompanyCode()=" + getTpCompanyCode() + ", getTpCompanyName()=" + getTpCompanyName()
 				+ ", getPersonId()=" + getPersonId() + ", getPersonCode()=" + getPersonCode()
@@ -35,16 +37,16 @@ public class Purchase extends CommercialTransaction{
 				+ ", getComponentId()=" + getComponentId() + ", getComponentCode()=" + getComponentCode()
 				+ ", getComponentName()=" + getComponentName() + ", getComponentTypeCode()=" + getComponentTypeCode()
 				+ ", getComponentTypeName()=" + getComponentTypeName() + ", getQtyUmId()=" + getQtyUmId()
-				+ ", getQtyUmSimbol()=" + getQtyUmSimbol() + ", getQty()=" + getQty() + ", getFrequencyId()="
-				+ getFrequencyId() + ", getFrequencyName()=" + getFrequencyName() + ", getCurrencyId()="
+				+ ", getQtyUmSimbol()=" + getQtyUmSimbol() + ", getQty()=" + getQty() + ", getCurrencyId()="
 				+ getCurrencyId() + ", getCurrencyCode()=" + getCurrencyCode() + ", getCurrencyName()="
 				+ getCurrencyName() + ", getPrice()=" + getPrice() + ", getPriceTot()=" + getPriceTot()
 				+ ", getAmount()=" + getAmount() + ", getVat()=" + getVat() + ", getVatAmount()=" + getVatAmount()
-				+ ", getDate()=" + getDate() + ", getDateStart()=" + getDateStart() + ", getDateEnd()=" + getDateEnd()
-				+ ", getUpdateDate()=" + getUpdateDate() + ", getTacitRenewal()=" + getTacitRenewal()
-				+ ", getTransactionType()=" + getTransactionType() + ", getComponent()=" + getComponent()
-				+ ", toString()=" + super.toString() + ", getClass()=" + getClass() + ", hashCode()=" + hashCode()
-				+ "]";
+				+ ", getTotAmount()=" + getTotAmount() + ", getDate()=" + getDate() + ", getDateStart()="
+				+ getDateStart() + ", getDateEnd()=" + getDateEnd() + ", getUpdateDate()=" + getUpdateDate()
+				+ ", getBillableType()=" + getBillableType() + ", toString()=" + super.toString() + ", getComponent()="
+				+ getComponent() + ", getClass()=" + getClass() + ", hashCode()=" + hashCode() + "]";
 	}
+	
+	
 	
 }

@@ -2,9 +2,9 @@ package org.cysoft.bss.core.web.service.rest;
 
 
 import org.cysoft.bss.core.common.CyBssException;
-import org.cysoft.bss.core.dao.PriceDao;
 import org.cysoft.bss.core.model.PriceComponent;
 import org.cysoft.bss.core.model.PriceType;
+import org.cysoft.bss.core.service.PriceService;
 import org.cysoft.bss.core.web.annotation.CyBssOperation;
 import org.cysoft.bss.core.web.annotation.CyBssService;
 import org.cysoft.bss.core.web.response.ICyBssResultConst;
@@ -32,10 +32,10 @@ public class PriceWs extends CyBssWebServiceAdapter
 
 	private static final Logger logger = LoggerFactory.getLogger(PriceWs.class);
 	
-	protected PriceDao priceDao=null;
+	protected PriceService priceService=null;
 	@Autowired
-	public void setPriceDao(PriceDao priceDao){
-			this.priceDao=priceDao;
+	public void setPriceService(PriceService priceService){
+			this.priceService=priceService;
 	}
 	
 	// PriceType
@@ -47,7 +47,7 @@ public class PriceWs extends CyBssWebServiceAdapter
 		
 		logger.info("PriceWs.getPriceTypeAll() >>>");
 		PriceTypeListResponse response=new PriceTypeListResponse(); 
-		response.setTypes(priceDao.getPriceTypeAll());
+		response.setTypes(priceService.getPriceTypeAll());
 		return response;
 	}
 	
@@ -61,7 +61,7 @@ public class PriceWs extends CyBssWebServiceAdapter
 		logger.info("PriceWs.getPriceType() >>> id="+id);
 		PriceTypeResponse response=new PriceTypeResponse();
 		
-		PriceType priceType=priceDao.getPriceType(id);
+		PriceType priceType=priceService.getPriceType(id);
 		if (priceType!=null)
 			response.setType(priceType);
 		else
@@ -82,7 +82,7 @@ public class PriceWs extends CyBssWebServiceAdapter
 		
 		logger.info("PriceWs.getPriceComponentAll() >>>");
 		PriceComponentListResponse response=new PriceComponentListResponse(); 
-		response.setComponents(priceDao.getComponentAll());
+		response.setComponents(priceService.getComponentAll());
 		return response;
 	}
 	
@@ -96,7 +96,7 @@ public class PriceWs extends CyBssWebServiceAdapter
 		logger.info("PriceWs.getPriceComponent() >>> id="+id);
 		PriceComponentResponse response=new PriceComponentResponse();
 		
-		PriceComponent priceComponent=priceDao.getPriceComponent(id);
+		PriceComponent priceComponent=priceService.getPriceComponent(id);
 		if (priceComponent!=null)
 			response.setComponent(priceComponent);
 		else
@@ -124,14 +124,14 @@ public class PriceWs extends CyBssWebServiceAdapter
 			return response;
 		// end checkGrant 
 		
-		if (priceDao.getPriceComponent(id)==null){
+		if (priceService.getPriceComponent(id)==null){
 			setResult(response, ICyBssResultConst.RESULT_NOT_FOUND, 
 					ICyBssResultConst.RESULT_D_NOT_FOUND,response.getLanguageCode());
 			return response;
 			}
 		
-		priceDao.updateComponent(id, component);
-		response.setComponent(priceDao.getPriceComponent(id));
+		priceService.updateComponent(id, component);
+		response.setComponent(priceService.getPriceComponent(id));
 		
 		logger.info("PriceWs.updatePriceComponent() <<<");
 		return response;

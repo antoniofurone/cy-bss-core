@@ -27,7 +27,7 @@ implements ObjectDao{
 		// TODO Auto-generated method stub
 		
 		String query="select OBJ_N_OBJECT_ID,OBJ_S_NAME,OBJ_S_ENTITY_NAME from BSST_OBJ_OBJECT";
-		JdbcTemplate jdbcTemplate = new JdbcTemplate(ds);
+		JdbcTemplate jdbcTemplate = new JdbcTemplate(tx.getDataSource());
 		logger.info(query);
 		
 		List<CyBssObject> ret = jdbcTemplate.query(
@@ -52,10 +52,11 @@ implements ObjectDao{
 		}
 		
 	}
+	
 	@Override
 	public CyBssObject getByEntity(String entityName) {
 		// TODO Auto-generated method stub
-		JdbcTemplate jdbcTemplate = new JdbcTemplate(ds);
+		JdbcTemplate jdbcTemplate = new JdbcTemplate(tx.getDataSource());
 
 		String query="select OBJ_N_OBJECT_ID,OBJ_S_NAME,OBJ_S_ENTITY_NAME from BSST_OBJ_OBJECT where OBJ_S_ENTITY_NAME=?";
 		
@@ -73,7 +74,7 @@ implements ObjectDao{
 	@Override
 	public CyBssObject getByName(String objectName) {
 		// TODO Auto-generated method stub
-		JdbcTemplate jdbcTemplate = new JdbcTemplate(ds);
+		JdbcTemplate jdbcTemplate = new JdbcTemplate(tx.getDataSource());
 
 		String query="select OBJ_N_OBJECT_ID,OBJ_S_NAME,OBJ_S_ENTITY_NAME from BSST_OBJ_OBJECT where OBJ_S_NAME=?";
 		
@@ -92,7 +93,7 @@ implements ObjectDao{
 	public List<AttributeType> getAttributeTypeAll() {
 		// TODO Auto-generated method stub
 		String query="select ATY_N_ATTR_TYPE_ID,ATY_S_NAME,ATY_S_DESCRIPTION from BSST_ATY_ATTR_TYPE";
-		JdbcTemplate jdbcTemplate = new JdbcTemplate(ds);
+		JdbcTemplate jdbcTemplate = new JdbcTemplate(tx.getDataSource());
 		logger.info(query);
 		
 		List<AttributeType> ret = jdbcTemplate.query(
@@ -123,7 +124,7 @@ implements ObjectDao{
 		
 		String cmd="insert into BSST_ATT_ATTRIBUTE(ATT_S_NAME,ATY_N_ATTR_TYPE_ID,OBJ_N_OBJECT_ID) ";
 		cmd+=" values (?,?,?)";
-		JdbcTemplate jdbcTemplate = new JdbcTemplate(ds);
+		JdbcTemplate jdbcTemplate = new JdbcTemplate(tx.getDataSource());
 		logger.info(cmd+"["+attr+"]");
 		
 		jdbcTemplate.update(cmd, new Object[]{
@@ -137,7 +138,7 @@ implements ObjectDao{
 	public List<Attribute> getAttributes(long objectId) {
 		// TODO Auto-generated method stub
 		String query="select ID,NAME,TYPE_ID,TYPE,OBJ_ID,OBJECT,ENTITY from BSSV_ATTRIBUTE where OBJ_ID=?";
-		JdbcTemplate jdbcTemplate = new JdbcTemplate(ds);
+		JdbcTemplate jdbcTemplate = new JdbcTemplate(tx.getDataSource());
 		logger.info(query);
 		
 		List<Attribute> ret = jdbcTemplate.query(
@@ -171,7 +172,7 @@ implements ObjectDao{
 	@Override
 	public Attribute getAttribute(long attrId) {
 		// TODO Auto-generated method stub
-		JdbcTemplate jdbcTemplate = new JdbcTemplate(ds);
+		JdbcTemplate jdbcTemplate = new JdbcTemplate(tx.getDataSource());
 				
 		String query="select ID,NAME,TYPE_ID,TYPE,OBJ_ID,OBJECT,ENTITY from BSSV_ATTRIBUTE where ID=?";
 		logger.info(query+"["+attrId+"]");
@@ -192,7 +193,7 @@ implements ObjectDao{
 	@Override
 	public Attribute getAttributeByName(long objectId, String attrName) {
 		// TODO Auto-generated method stub
-		JdbcTemplate jdbcTemplate = new JdbcTemplate(ds);
+		JdbcTemplate jdbcTemplate = new JdbcTemplate(tx.getDataSource());
 		
 		String query="select ID,NAME,TYPE_ID,TYPE,OBJ_ID,OBJECT,ENTITY from BSSV_ATTRIBUTE where OBJ_ID=? and NAME=?";
 		logger.info(query+"["+objectId+","+attrName+"]");
@@ -214,7 +215,7 @@ implements ObjectDao{
 		// TODO Auto-generated method stub
 		String cmd="update BSST_ATT_ATTRIBUTE set ATT_S_NAME=?,ATY_N_ATTR_TYPE_ID=?,OBJ_N_OBJECT_ID=? ";
 		cmd+=" where ATT_N_ATTRIBUTE_ID=?";
-		JdbcTemplate jdbcTemplate = new JdbcTemplate(ds);
+		JdbcTemplate jdbcTemplate = new JdbcTemplate(tx.getDataSource());
 		logger.info(cmd+"["+attr+"]");
 		
 		jdbcTemplate.update(cmd, new Object[]{
@@ -270,7 +271,7 @@ implements ObjectDao{
 			cmd="update BSST_ATV_ATTR_VALUE set ATV_S_VALUE=? where ATV_N_OBJ_INST_ID=? and ATT_N_ATTRIBUTE_ID=?";
 			}
 		
-		JdbcTemplate jdbcTemplate = new JdbcTemplate(ds);
+		JdbcTemplate jdbcTemplate = new JdbcTemplate(tx.getDataSource());
 		logger.info(cmd+"["+value+","+id+","+attrId+"]");
 		
 		jdbcTemplate.update(cmd, new Object[]{
@@ -283,7 +284,7 @@ implements ObjectDao{
 	public Attribute getAttributeValue(long id, long attrId) {
 		// TODO Auto-generated method stub
 		
-		JdbcTemplate jdbcTemplate = new JdbcTemplate(ds);
+		JdbcTemplate jdbcTemplate = new JdbcTemplate(tx.getDataSource());
 		
 		String query="select ID,NAME,TYPE_ID,TYPE,OBJ_ID,OBJECT,ENTITY,OBJINST_ID,VALUE from BSSV_ATTRIBUTE_VALUE where ID=? and OBJINST_ID=?";
 		logger.info(query+"["+attrId+","+id+"]");
@@ -326,7 +327,7 @@ implements ObjectDao{
 	@Override
 	public List<Attribute> getAttributeValues(long id,long objectId) {
 		// TODO Auto-generated method stub
-		JdbcTemplate jdbcTemplate = new JdbcTemplate(ds);
+		JdbcTemplate jdbcTemplate = new JdbcTemplate(tx.getDataSource());
 		
 		String query="select ID,NAME,TYPE_ID,TYPE,OBJ_ID,OBJECT,ENTITY,OBJINST_ID,VALUE from BSSV_ATTRIBUTE_VALUE where OBJINST_ID=? and OBJ_ID=?";
 		logger.info(query+"["+id+","+objectId+"]");
@@ -341,18 +342,28 @@ implements ObjectDao{
 	public void removeAttributeValue(long id, long attrId) {
 		// TODO Auto-generated method stub
 		String cmd="delete from BSST_ATV_ATTR_VALUE where ATV_N_OBJ_INST_ID=? and ATT_N_ATTRIBUTE_ID=?";
-		JdbcTemplate jdbcTemplate = new JdbcTemplate(ds);
+		JdbcTemplate jdbcTemplate = new JdbcTemplate(tx.getDataSource());
 		logger.info(cmd+"["+id+","+attrId+"]");
 		
 		jdbcTemplate.update(cmd, new Object[]{
 				id,attrId		
 			});
 	}
-
+	
+	@Override
+	public void removeAttributeValue(long id,String entityName){
+		String cmd="delete from BSST_ATV_ATTR_VALUE where ATV_N_OBJ_INST_ID=? and ATT_N_ATTRIBUTE_ID in ";
+		cmd+="(select ATT_N_ATTRIBUTE_ID from BSST_ATT_ATTRIBUTE where OBJ_N_OBJECT_ID in (select OBJ_N_OBJECT_ID from BSST_OBJ_OBJECT where OBJ_S_ENTITY_NAME=?))";
+		JdbcTemplate jdbcTemplate = new JdbcTemplate(tx.getDataSource());
+		jdbcTemplate.update(cmd, new Object[]{
+					id,entityName
+				});
+	}
+	
 	@Override
 	public CyBssObject get(long id) {
 		// TODO Auto-generated method stub
-		JdbcTemplate jdbcTemplate = new JdbcTemplate(ds);
+		JdbcTemplate jdbcTemplate = new JdbcTemplate(tx.getDataSource());
 
 		String query="select OBJ_N_OBJECT_ID,OBJ_S_NAME,OBJ_S_ENTITY_NAME from BSST_OBJ_OBJECT where OBJ_N_OBJECT_ID=?";
 		

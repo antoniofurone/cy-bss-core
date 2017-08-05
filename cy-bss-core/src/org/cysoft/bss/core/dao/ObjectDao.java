@@ -27,5 +27,6 @@ public interface ObjectDao {
 	public Attribute getAttributeValue(long id,long attrId);
 	public List<Attribute> getAttributeValues(long id, long objectId);
 	public void removeAttributeValue(long id,long attrId);
+	public void removeAttributeValue(long id,String entityName);
 	
 }

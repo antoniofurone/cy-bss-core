@@ -3,6 +3,7 @@ package org.cysoft.bss.core.config;
 
 import org.cysoft.bss.core.common.CyBssDataSource;
 import org.cysoft.bss.core.dao.AppDao;
+import org.cysoft.bss.core.dao.BillableCostDao;
 import org.cysoft.bss.core.dao.CityDao;
 import org.cysoft.bss.core.dao.CompanyDao;
 import org.cysoft.bss.core.dao.ContactDao;
@@ -21,6 +22,7 @@ import org.cysoft.bss.core.dao.PurchaseDao;
 import org.cysoft.bss.core.dao.TicketDao;
 import org.cysoft.bss.core.dao.UserDao;
 import org.cysoft.bss.core.dao.mysql.AppMysql;
+import org.cysoft.bss.core.dao.mysql.BillableCostMysql;
 import org.cysoft.bss.core.dao.mysql.CityMysql;
 import org.cysoft.bss.core.dao.mysql.CompanyMysql;
 import org.cysoft.bss.core.dao.mysql.ContactMysql;
@@ -57,7 +59,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
 @Configuration
-@ComponentScan({"org.cysoft.bss.core.web.service.rest"})
+@ComponentScan({"org.cysoft.bss.core.web.service.rest","org.cysoft.bss.core.service.impl"})
 @PropertySource("classpath:cy-bss-core.properties")
 @EnableWebMvc
 @EnableAsync
@@ -212,6 +214,13 @@ public class CyBssRestApp {
 	 public PurchaseDao purchaseDao(){
 		 	PurchaseDao purchaseDao=new PurchaseMysql();
 			return purchaseDao;
+		 }
+	 
+	 @Bean
+	 @Description("BillableCost Dao Rest")
+	 public BillableCostDao billableCostDao(){
+		 	BillableCostDao billableCostDao=new BillableCostMysql();
+			return billableCostDao;
 		 }
 	 
 	 @Bean
