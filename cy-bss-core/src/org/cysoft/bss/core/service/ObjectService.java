@@ -1,4 +1,4 @@
-package org.cysoft.bss.core.dao;
+package org.cysoft.bss.core.service;
 
 import java.util.List;
 
@@ -6,7 +6,7 @@ import org.cysoft.bss.core.model.Attribute;
 import org.cysoft.bss.core.model.AttributeType;
 import org.cysoft.bss.core.model.CyBssObject;
 
-public interface ObjectDao {
+public interface ObjectService {
 	
 	public List<CyBssObject> getObjectAll();
 	public CyBssObject getByEntity(String entityName);
@@ -28,5 +28,5 @@ public interface ObjectDao {
 	public List<Attribute> getAttributeValues(long id, long objectId);
 	public void removeAttributeValue(long id,long attrId);
 	public void removeAttributeValues(long id,String entityName);
-	public void removeAttributeValues(long attrId);
+	
 }

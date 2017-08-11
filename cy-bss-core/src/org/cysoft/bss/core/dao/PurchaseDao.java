@@ -15,7 +15,7 @@ public interface PurchaseDao {
 	
 	public void update(long id,Purchase purchase) throws CyBssException;
 	public Purchase get(long id);
-	public void remove(long id) throws CyBssException;
+	public void remove(long id);
 		
 }
 

@@ -10,11 +10,13 @@ import org.cysoft.bss.core.dao.ContactDao;
 import org.cysoft.bss.core.dao.CountryDao;
 import org.cysoft.bss.core.dao.CyBssAuthDao;
 import org.cysoft.bss.core.dao.FileDao;
+import org.cysoft.bss.core.dao.InvoiceDao;
 import org.cysoft.bss.core.dao.LanguageDao;
 import org.cysoft.bss.core.dao.CyBssServiceDao;
 import org.cysoft.bss.core.dao.LocationDao;
 import org.cysoft.bss.core.dao.MetricDao;
 import org.cysoft.bss.core.dao.ObjectDao;
+import org.cysoft.bss.core.dao.PassiveInvoiceDao;
 import org.cysoft.bss.core.dao.PersonDao;
 import org.cysoft.bss.core.dao.PriceDao;
 import org.cysoft.bss.core.dao.ProductDao;
@@ -29,11 +31,13 @@ import org.cysoft.bss.core.dao.mysql.ContactMysql;
 import org.cysoft.bss.core.dao.mysql.CountryMysql;
 import org.cysoft.bss.core.dao.mysql.CyBssAuthMysql;
 import org.cysoft.bss.core.dao.mysql.FileMysql;
+import org.cysoft.bss.core.dao.mysql.InvoiceMysql;
 import org.cysoft.bss.core.dao.mysql.LanguageMysql;
 import org.cysoft.bss.core.dao.mysql.CyBssServiceMysql;
 import org.cysoft.bss.core.dao.mysql.LocationMysql;
 import org.cysoft.bss.core.dao.mysql.MetricMysql;
 import org.cysoft.bss.core.dao.mysql.ObjectMysql;
+import org.cysoft.bss.core.dao.mysql.PassiveInvoiceMysql;
 import org.cysoft.bss.core.dao.mysql.PersonMysql;
 import org.cysoft.bss.core.dao.mysql.PriceMysql;
 import org.cysoft.bss.core.dao.mysql.ProductMysql;
@@ -221,6 +225,20 @@ public class CyBssRestApp {
 	 public BillableCostDao billableCostDao(){
 		 	BillableCostDao billableCostDao=new BillableCostMysql();
 			return billableCostDao;
+		 }
+	
+	 @Bean
+	 @Description("PassiveInvoice Dao Rest")
+	 public PassiveInvoiceDao passiveInvoiceDao(){
+		 	PassiveInvoiceDao passiveInvoiceDao=new PassiveInvoiceMysql();
+			return passiveInvoiceDao;
+		 }
+	
+	 @Bean
+	 @Description("Invoice Dao Rest")
+	 public InvoiceDao invoiceDao(){
+		 	InvoiceDao invoiceDao=new InvoiceMysql();
+			return invoiceDao;
 		 }
 	 
 	 @Bean

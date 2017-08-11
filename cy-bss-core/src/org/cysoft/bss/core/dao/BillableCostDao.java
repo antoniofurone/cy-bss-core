@@ -12,6 +12,6 @@ public interface BillableCostDao {
 	public List<BillableCost> getUnbilledByPerson(long personId) throws CyBssException;
 	public List<BillableCost> getBilled(long purchaseId) throws CyBssException;
 	public BillableCost get(long id);
-	public void remove(long id) throws CyBssException;
+	public void removeByPurchase(long purchaseId);
 }
 

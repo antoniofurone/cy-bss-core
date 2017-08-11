@@ -88,9 +88,15 @@ public class BillableCostMysql extends CyBssMysqlDao
 	}
 
 	@Override
-	public void remove(long id) throws CyBssException {
+	public void removeByPurchase(long purchaseId) {
 		// TODO Auto-generated method stub
+		JdbcTemplate jdbcTemplate = new JdbcTemplate(tx.getDataSource());
+		String cmd="delete from BSST_BIC_BILLABLE_COST where PUR_N_PURCHASE_ID=? and BIC_C_BILLED='N'";
+		logger.info(cmd+"["+purchaseId+"]");
 		
+		jdbcTemplate.update(cmd, new Object[]{
+				purchaseId		
+		});
 	}
 			
 }

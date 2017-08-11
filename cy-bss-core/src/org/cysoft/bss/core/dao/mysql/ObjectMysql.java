@@ -13,9 +13,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallbackWithoutResult;
-import org.springframework.transaction.support.TransactionTemplate;
 
 public class ObjectMysql extends CyBssMysqlDao
 implements ObjectDao{
@@ -225,36 +222,15 @@ implements ObjectDao{
 	}
 
 	@Override
-	public void removeAttribute(final long attrId) {
+	public void removeAttribute(long attrId) {
 		// TODO Auto-generated method stub
-		
-		TransactionTemplate txTemplate=new TransactionTemplate(tx);
-		txTemplate.execute(new TransactionCallbackWithoutResult(){
-
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus txStatus) {
-				// TODO Auto-generated method stub
+		JdbcTemplate jdbcTemplate = new JdbcTemplate(tx.getDataSource());
+		String cmd="delete from BSST_ATT_ATTRIBUTE where ATT_N_ATTRIBUTE_ID=?";
+		logger.info(cmd+"["+attrId+"]");
 				
-				JdbcTemplate jdbcTemplate = new JdbcTemplate(tx.getDataSource());
-				
-				String cmd="delete from BSST_ATV_ATTR_VALUE where ATT_N_ATTRIBUTE_ID=?";
-				logger.info(cmd+"["+attrId+"]");
-				
-				jdbcTemplate.update(cmd, new Object[]{
-						attrId		
-					});
-				
-				cmd="delete from BSST_ATT_ATTRIBUTE where ATT_N_ATTRIBUTE_ID=?";
-				logger.info(cmd+"["+attrId+"]");
-				
-				jdbcTemplate.update(cmd, new Object[]{
-						attrId		
-					});
-				
-			}
-
-		});		
-		
+		jdbcTemplate.update(cmd, new Object[]{
+				attrId		
+		});
 	}
 
 	@Override
@@ -351,13 +327,24 @@ implements ObjectDao{
 	}
 	
 	@Override
-	public void removeAttributeValue(long id,String entityName){
+	public void removeAttributeValues(long id,String entityName){
 		String cmd="delete from BSST_ATV_ATTR_VALUE where ATV_N_OBJ_INST_ID=? and ATT_N_ATTRIBUTE_ID in ";
 		cmd+="(select ATT_N_ATTRIBUTE_ID from BSST_ATT_ATTRIBUTE where OBJ_N_OBJECT_ID in (select OBJ_N_OBJECT_ID from BSST_OBJ_OBJECT where OBJ_S_ENTITY_NAME=?))";
 		JdbcTemplate jdbcTemplate = new JdbcTemplate(tx.getDataSource());
 		jdbcTemplate.update(cmd, new Object[]{
 					id,entityName
 				});
+	}
+	
+	@Override
+	public void removeAttributeValues(long attrId) {
+		// TODO Auto-generated method stub
+		JdbcTemplate jdbcTemplate = new JdbcTemplate(tx.getDataSource());
+		String cmd="delete from BSST_ATV_ATTR_VALUE where ATT_N_ATTRIBUTE_ID=?";
+		logger.info(cmd+"["+attrId+"]");
+		jdbcTemplate.update(cmd, new Object[]{
+				attrId		
+			});
 	}
 	
 	@Override
@@ -377,5 +364,7 @@ implements ObjectDao{
 		}
 		return ret;
 	}
+
+	
 
 }

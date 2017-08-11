@@ -1,9 +1,9 @@
 package org.cysoft.bss.core.web.service.rest;
 
 import org.cysoft.bss.core.common.CyBssException;
-import org.cysoft.bss.core.dao.ObjectDao;
 import org.cysoft.bss.core.model.Attribute;
 import org.cysoft.bss.core.model.CyBssObject;
+import org.cysoft.bss.core.service.ObjectService;
 import org.cysoft.bss.core.web.annotation.CyBssOperation;
 import org.cysoft.bss.core.web.annotation.CyBssService;
 import org.cysoft.bss.core.web.response.ICyBssResultConst;
@@ -31,10 +31,10 @@ public class ObjectWs extends CyBssWebServiceAdapter
 	
 	private static final Logger logger = LoggerFactory.getLogger(ObjectWs.class);
 	
-	protected  ObjectDao objectDao=null;
+	protected  ObjectService objectService=null;
 	@Autowired
-	public void setObjectDao(ObjectDao objectDao){
-			this.objectDao=objectDao;
+	public void setObjectServic(ObjectService objectService){
+			this.objectService=objectService;
 	}
 	
 	@RequestMapping(value = "/addAttribute",method = RequestMethod.POST)
@@ -54,13 +54,13 @@ public class ObjectWs extends CyBssWebServiceAdapter
 		// end checkGrant 
 				
 	
-		if (objectDao.get(attribute.getObjectId())==null){
+		if (objectService.get(attribute.getObjectId())==null){
 			setResult(response, ICyBssResultConst.RESULT_NOT_FOUND, 
 					ICyBssResultConst.RESULT_D_NOT_FOUND,response.getLanguageCode());
 			return response;
 			}
 		
-		long id=objectDao.addAttribute(attribute);
+		long id=objectService.addAttribute(attribute);
 		attribute.setId(id);
 		response.setAttribute(attribute);
 			
@@ -79,7 +79,7 @@ public class ObjectWs extends CyBssWebServiceAdapter
 		
 		logger.info("ObjectWs.getObjectAll() >>>");
 		ObjectListResponse response=new ObjectListResponse(); 
-		response.setCyBssObjects(objectDao.getObjectAll());
+		response.setCyBssObjects(objectService.getObjectAll());
 		return response;
 	}
 	
@@ -93,7 +93,7 @@ public class ObjectWs extends CyBssWebServiceAdapter
 		logger.info("ObjectWs.getObjectByName() >>>");
 		ObjectResponse response=new ObjectResponse(); 
 		
-		CyBssObject object=objectDao.getByName(name);
+		CyBssObject object=objectService.getByName(name);
 		if (object==null){
 			setResult(response, ICyBssResultConst.RESULT_NOT_FOUND, 
 					ICyBssResultConst.RESULT_D_NOT_FOUND,response.getLanguageCode());
@@ -114,7 +114,7 @@ public class ObjectWs extends CyBssWebServiceAdapter
 		logger.info("ObjectWs.getObjectByEntityName() >>>");
 		ObjectResponse response=new ObjectResponse(); 
 		
-		CyBssObject object=objectDao.getByEntity(entityName);
+		CyBssObject object=objectService.getByEntity(entityName);
 		if (object==null){
 			setResult(response, ICyBssResultConst.RESULT_NOT_FOUND, 
 					ICyBssResultConst.RESULT_D_NOT_FOUND,response.getLanguageCode());
@@ -134,7 +134,7 @@ public class ObjectWs extends CyBssWebServiceAdapter
 		
 		logger.info("ObjectWs.getAttributeTypeAll() >>>");
 		AttributeTypeListResponse response=new AttributeTypeListResponse(); 
-		response.setAttributeTypes(objectDao.getAttributeTypeAll());
+		response.setAttributeTypes(objectService.getAttributeTypeAll());
 		return response;
 	}
 
@@ -149,7 +149,7 @@ public class ObjectWs extends CyBssWebServiceAdapter
 		AttributeListResponse response=new AttributeListResponse();
 		
 		logger.info("ObjectWs.getAttributes() >>>");
-		response.setAttributes(objectDao.getAttributes(objectId));
+		response.setAttributes(objectService.getAttributes(objectId));
 		logger.info("ObjectWs.getAttributes() <<<");
 		
 		return response;
@@ -166,7 +166,7 @@ public class ObjectWs extends CyBssWebServiceAdapter
 		AttributeResponse response=new AttributeResponse();
 		
 		logger.info("ObjectWs.getAttribute() >>>");
-		response.setAttribute(objectDao.getAttribute(attrId));
+		response.setAttribute(objectService.getAttribute(attrId));
 		logger.info("ObjectWs.getAttribute() <<<");
 		
 		return response;
@@ -184,7 +184,7 @@ public class ObjectWs extends CyBssWebServiceAdapter
 		AttributeResponse response=new AttributeResponse();
 		
 		logger.info("ObjectWs.getAttributeByName() >>>");
-		response.setAttribute(objectDao.getAttributeByName(id, name));
+		response.setAttribute(objectService.getAttributeByName(id, name));
 		logger.info("ObjectWs.getAttributeByName() <<<");
 		
 		return response;
@@ -207,19 +207,19 @@ public class ObjectWs extends CyBssWebServiceAdapter
 			return response;
 		// end checkGrant 
 	
-		if (objectDao.getAttribute(attribute.getId())==null){
+		if (objectService.getAttribute(attribute.getId())==null){
 			setResult(response, ICyBssResultConst.RESULT_NOT_FOUND, 
 					ICyBssResultConst.RESULT_D_NOT_FOUND,response.getLanguageCode());
 			return response;
 			}
 		
-		if (objectDao.get(attribute.getObjectId())==null){
+		if (objectService.get(attribute.getObjectId())==null){
 			setResult(response, ICyBssResultConst.RESULT_NOT_FOUND, 
 					ICyBssResultConst.RESULT_D_NOT_FOUND,response.getLanguageCode());
 			return response;
 			}
 		
-		objectDao.updateAttribute(attribute);
+		objectService.updateAttribute(attribute);
 		response.setAttribute(attribute);
 			
 		logger.info("ObjectWs.updateAttribute() <<<");
@@ -244,13 +244,13 @@ public class ObjectWs extends CyBssWebServiceAdapter
 			return response;
 		// end checkGrant 
 				
-		if (objectDao.getAttribute(attrId)==null){
+		if (objectService.getAttribute(attrId)==null){
 			setResult(response, ICyBssResultConst.RESULT_NOT_FOUND, 
 					ICyBssResultConst.RESULT_D_NOT_FOUND,response.getLanguageCode());
 			return response;
 			}
 		
-		objectDao.removeAttribute(attrId);
+		objectService.removeAttribute(attrId);
 			
 		logger.info("ObjectWs.removeAttribute() <<<");
 		
@@ -274,14 +274,14 @@ public class ObjectWs extends CyBssWebServiceAdapter
 			return response;
 		// end checkGrant 
 				
-		Attribute attribute=objectDao.getAttribute(attrValue.getId());
+		Attribute attribute=objectService.getAttribute(attrValue.getId());
 		if (attribute==null){
 			setResult(response, ICyBssResultConst.RESULT_NOT_FOUND, 
 					ICyBssResultConst.RESULT_D_NOT_FOUND,response.getLanguageCode());
 			return response;
 			}
 		
-		objectDao.setAttributeValue(attrValue.getObjInstId(), 
+		objectService.setAttributeValue(attrValue.getObjInstId(), 
 				attrValue.getId(), attrValue.getValue());
 	
 		attribute.setObjInstId(attrValue.getObjInstId());
@@ -312,7 +312,7 @@ public class ObjectWs extends CyBssWebServiceAdapter
 		// end checkGrant 
 				
 		
-		response.setAttribute(objectDao.getAttributeValue(objInstId, attrId));
+		response.setAttribute(objectService.getAttributeValue(objInstId, attrId));
 		logger.info("ObjectWs.getAttributeValue() <<<");
 		
 		return response;
@@ -335,7 +335,7 @@ public class ObjectWs extends CyBssWebServiceAdapter
 			return response;
 		// end checkGrant
 		
-		objectDao.removeAttributeValue(objInstId,attrId);
+		objectService.removeAttributeValue(objInstId,attrId);
 		
 		logger.info("ObjectWs.getAttributeValue() <<<");
 		
@@ -360,7 +360,7 @@ public class ObjectWs extends CyBssWebServiceAdapter
 		// end checkGrant 
 				
 		
-		response.setAttributes(objectDao.getAttributeValues(objInstId, objectId));
+		response.setAttributes(objectService.getAttributeValues(objInstId, objectId));
 		logger.info("ObjectWs.getAttributeValues() <<<");
 		
 		return response;

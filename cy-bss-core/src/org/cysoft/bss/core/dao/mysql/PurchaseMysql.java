@@ -17,9 +17,6 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallbackWithoutResult;
-import org.springframework.transaction.support.TransactionTemplate;
 
 public class PurchaseMysql extends CyBssMysqlDao
 	implements PurchaseDao{
@@ -340,49 +337,13 @@ public class PurchaseMysql extends CyBssMysqlDao
 	}
 
 	@Override
-	public void remove(final long id) throws CyBssException {
+	public void remove(final long id) {
 		// TODO Auto-generated method stub
-		
 		logger.info("PurchaseMysql.remove() >>>");
-		
-		TransactionTemplate txTemplate=new TransactionTemplate(tx);
-		txTemplate.execute(new TransactionCallbackWithoutResult(){
-
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus arg0) {
-				// TODO Auto-generated method stub
-				
-				String cmd="delete from BSST_ATV_ATTR_VALUE where ATV_N_OBJ_INST_ID=? and ATT_N_ATTRIBUTE_ID in ";
-				cmd+="(select ATT_N_ATTRIBUTE_ID from BSST_ATT_ATTRIBUTE where OBJ_N_OBJECT_ID in (select OBJ_N_OBJECT_ID from BSST_OBJ_OBJECT where OBJ_S_ENTITY_NAME=?))";
-				JdbcTemplate jdbcTemplate = new JdbcTemplate(tx.getDataSource());
-				
-				logger.info(cmd+"["+id+","+Purchase.ENTITY_NAME+"]");
-				try {
-					jdbcTemplate.update(cmd, new Object[]{
-							id,Purchase.ENTITY_NAME
-						});
-				} catch (DataAccessException e) {
-					// TODO Auto-generated catch block
-					logger.error(e.toString());
-					throw new RuntimeException(e);
-				}
-				
-				cmd="delete from BSST_PUR_PURCHASE where PUR_N_PURCHASE_ID=?";
-				logger.info(cmd+"["+id+"]");
-				
-				try {
-					jdbcTemplate.update(cmd, new Object[]{
-							id
-						});
-				} catch (DataAccessException e) {
-					// TODO Auto-generated catch block
-					logger.error(e.toString());
-					throw new RuntimeException(e);
-				}
-				
-			}
-		});	
-
+		JdbcTemplate jdbcTemplate = new JdbcTemplate(tx.getDataSource());
+		String cmd="delete from BSST_PUR_PURCHASE where PUR_N_PURCHASE_ID=?";
+		logger.info(cmd+"["+id+"]");
+		jdbcTemplate.update(cmd, new Object[]{id});
 		logger.info("ProductMysql.remove() <<<");
 		
 	}

@@ -5,6 +5,7 @@ import java.util.List;
 import org.cysoft.bss.core.common.CyBssException;
 import org.cysoft.bss.core.common.CyBssUtility;
 import org.cysoft.bss.core.dao.BillableCostDao;
+import org.cysoft.bss.core.dao.ObjectDao;
 import org.cysoft.bss.core.dao.PurchaseDao;
 import org.cysoft.bss.core.model.Billable;
 import org.cysoft.bss.core.model.BillableCost;
@@ -14,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
+import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import org.springframework.transaction.support.TransactionTemplate;
 
 @Service
@@ -34,6 +36,11 @@ public class PurchaseServiceImpl extends CyBssServiceImpl
 			this.billableCostDao=billableCostDao;
 	}
 	
+	protected ObjectDao objectDao=null;
+	@Autowired
+	public void setObjectDao(ObjectDao objectDao){
+			this.objectDao=objectDao;
+	}
 	
 	@Override
 	public long add(final Purchase purchase) throws CyBssException {
@@ -117,9 +124,18 @@ public class PurchaseServiceImpl extends CyBssServiceImpl
 
 
 	@Override
-	public void remove(long id) throws CyBssException {
+	public void remove(final long id) throws CyBssException {
 		// TODO Auto-generated method stub
-		purchaseDao.remove(id);
+		TransactionTemplate txTemplate=new TransactionTemplate(tx);
+		txTemplate.execute(new TransactionCallbackWithoutResult(){
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus txStatus) {
+				// TODO Auto-generated method stub
+					billableCostDao.removeByPurchase(id);
+					objectDao.removeAttributeValues(id, Purchase.ENTITY_NAME);
+					purchaseDao.remove(id);
+			}
+		});
 	}
 
 }
