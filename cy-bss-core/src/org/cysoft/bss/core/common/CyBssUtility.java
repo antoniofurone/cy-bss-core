@@ -87,4 +87,10 @@ public class CyBssUtility {
 	        Calendar c=Calendar.getInstance();
 	        return c.getTime();
 	    }
+	   
+	   public static int getYear(Date date){
+		   Calendar c=Calendar.getInstance();
+		   c.setTime(date);
+		   return c.get(Calendar.YEAR);
+	   }
 }

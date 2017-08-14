@@ -10,10 +10,10 @@ public class InvoiceListResponse extends CyBssResponseAdapter
 implements ICyBssResponse{
 	
 	private List<Invoice> invoices=null;
-	protected List<Invoice> getInvoices() {
+	public List<Invoice> getInvoices() {
 		return invoices;
 	}
-	protected void setInvoices(List<Invoice> invoices) {
+	public void setInvoices(List<Invoice> invoices) {
 		this.invoices = invoices;
 	}
 	

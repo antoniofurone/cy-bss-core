@@ -64,6 +64,22 @@ public class Invoice {
 		this.companyId = companyId;
 	}
 	
+	private String companyCode;
+	public String getCompanyCode() {
+		return companyCode;
+	}
+	public void setCompanyCode(String companyCode) {
+		this.companyCode = companyCode;
+	}
+
+	private String companyName;
+	public String getCompanyName() {
+		return companyName;
+	}
+	public void setCompanyName(String companyName) {
+		this.companyName = companyName;
+	}
+
 	private long tpCompanyId;
 	public long getTpCompanyId() {
 		return tpCompanyId;
@@ -72,20 +88,71 @@ public class Invoice {
 		this.tpCompanyId = tpCompanyId;
 	}
 	
+	private String tpCompanyCode;
+	public String getTpCompanyCode() {
+		return tpCompanyCode;
+	}
+	public void setTpCompanyCode(String tpCompanyCode) {
+		this.tpCompanyCode = tpCompanyCode;
+	}
+	
+	private String tpCompanyName;
+	public String getTpCompanyName() {
+		return tpCompanyName;
+	}
+	public void setTpCompanyName(String tpCompanyName) {
+		this.tpCompanyName = tpCompanyName;
+	}
+
 	private long personId;
+	private String personCode="";
+	private String personFirstName="";
+	private String personSecondName="";
 	public long getPersonId() {
 		return personId;
 	}
 	public void setPersonId(long personId) {
 		this.personId = personId;
 	}
+	public String getPersonCode() {
+		return personCode;
+	}
+	public void setPersonCode(String personCode) {
+		this.personCode = personCode;
+	}
+	public String getPersonFirstName() {
+		return personFirstName;
+	}
+	public void setPersonFirstName(String personFirstName) {
+		this.personFirstName = personFirstName;
+	}
+	public String getPersonSecondName() {
+		return personSecondName;
+	}
+	public void setPersonSecondName(String personSecondName) {
+		this.personSecondName = personSecondName;
+	}
 	
 	private long currencyId;
+	private String currencyCode="";
+	private String currencyName="";
 	public long getCurrencyId() {
 		return currencyId;
 	}
 	public void setCurrencyId(long currencyId) {
 		this.currencyId = currencyId;
+	}
+	public String getCurrencyCode() {
+		return currencyCode;
+	}
+	public void setCurrencyCode(String currencyCode) {
+		this.currencyCode = currencyCode;
+	}
+	public String getCurrencyName() {
+		return currencyName;
+	}
+	public void setCurrencyName(String currencyName) {
+		this.currencyName = currencyName;
 	}
 	
 	private double amount;

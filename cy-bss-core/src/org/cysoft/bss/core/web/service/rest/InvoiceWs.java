@@ -1,22 +1,29 @@
 package org.cysoft.bss.core.web.service.rest;
 
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.cysoft.bss.core.common.CyBssException;
+import org.cysoft.bss.core.common.CyBssUtility;
 import org.cysoft.bss.core.model.Invoice;
 import org.cysoft.bss.core.service.InvoiceService;
 import org.cysoft.bss.core.web.annotation.CyBssOperation;
 import org.cysoft.bss.core.web.annotation.CyBssService;
 import org.cysoft.bss.core.web.response.ICyBssResultConst;
+import org.cysoft.bss.core.web.response.rest.invoice.InvoiceListResponse;
 import org.cysoft.bss.core.web.response.rest.invoice.InvoiceResponse;
 import org.cysoft.bss.core.web.service.CyBssWebServiceAdapter;
 import org.cysoft.bss.core.web.service.ICyBssWebService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -33,10 +40,11 @@ public class InvoiceWs extends CyBssWebServiceAdapter
 			this.invoiceService=invoiceService;
 	}
 	
-	@RequestMapping(value = "/add",method = RequestMethod.POST)
+	@RequestMapping(value = "/{invoiceType}/add",method = RequestMethod.POST)
 	@CyBssOperation(name = "add")
 	public InvoiceResponse add(
 			@RequestHeader("Security-Token") String securityToken,
+			@PathVariable("invoiceType") String invoiceType,
 			@RequestBody Invoice invoice
 			) throws CyBssException
 	{
@@ -45,38 +53,43 @@ public class InvoiceWs extends CyBssWebServiceAdapter
 		logger.info("InvoiceWs.add() >>>");
 		
 		// checkGrant
-		if (!checkGrant(response,securityToken,"add",String.class,Invoice.class))
+		if (!checkGrant(response,securityToken,"add",String.class,String.class,Invoice.class))
 				return response;
 		// end checkGrant 
 		
 		logger.info(invoice.toString());
 		
-		if (!invoice.getInvoiceType().equals(Invoice.TYPE_ACTIVE) &&
-			!invoice.getInvoiceType().equals(Invoice.TYPE_PASSIVE)){
+		if (!invoiceType.equalsIgnoreCase(Invoice.TYPE_ACTIVE) &&
+			!invoiceType.equalsIgnoreCase(Invoice.TYPE_PASSIVE)){
 			setResult(response, ICyBssResultConst.RESULT_INVOICE_TYPE_INVALID, 
 					ICyBssResultConst.RESULT_D_INVOICE_TYPE_INVALID,response.getLanguageCode());
 			return response;
 		}
+		invoice.setInvoiceType(invoiceType.toUpperCase());
 		
-		invoiceService.add(invoice.getCompanyId(), invoice.getTpCompanyId(), 
-				invoice.getPersonId(), invoice.getInvoiceType());
+		
+		if (invoice.getDate()==null || invoice.getDate().equals(""))
+			invoice.setDate(CyBssUtility.dateToString(CyBssUtility.getCurrentDate(),CyBssUtility.DATE_yyyy_MM_dd));
+		
+		long id=invoiceService.add(invoice);
+		invoice.setId(id);
+		response.setInvoice(invoice);
 		
 		logger.info("InvoiceWs.add() <<<");
 		
 		return response;
 	}
 	
-	/*
-	@RequestMapping(value = "/find",method = RequestMethod.GET)
+	
+	@RequestMapping(value = "/{invoiceType}/find",method = RequestMethod.GET)
 	@CyBssOperation(name = "find")
-	public PurchaseListResponse find(
+	public InvoiceListResponse find(
 			@RequestHeader("Security-Token") String securityToken,
+			@PathVariable("invoiceType") String invoiceType,
 			@RequestParam(value="companyId", required=false, defaultValue="0") Integer companyId,
-			@RequestParam(value="productId", required=false, defaultValue="0") Integer productId,
-			@RequestParam(value="productName", required=false, defaultValue="") String productName,
-			@RequestParam(value="supplierId", required=false, defaultValue="0") Integer supplierId,
-			@RequestParam(value="supplierCode", required=false, defaultValue="") String supplierCode,
-			@RequestParam(value="supplierName", required=false, defaultValue="") String supplierName,
+			@RequestParam(value="tpCompanyId", required=false, defaultValue="0") Integer tpCompanyId,
+			@RequestParam(value="tpCompanyCode", required=false, defaultValue="") String tpCompanyCode,
+			@RequestParam(value="tpCompanyName", required=false, defaultValue="") String tpCompanyName,
 			@RequestParam(value="personId", required=false, defaultValue="0") Integer personId,
 			@RequestParam(value="personCode", required=false, defaultValue="") String personCode,
 			@RequestParam(value="personName", required=false, defaultValue="") String personName,
@@ -87,22 +100,24 @@ public class InvoiceWs extends CyBssWebServiceAdapter
 			@RequestParam(value="offset", required=false, defaultValue="0") Integer offset,
 			@RequestParam(value="size", required=false, defaultValue="100") Integer size
 			) throws CyBssException{
+	
 		
-		logger.info("PurchaseWs.find() >>> compayId="+companyId+
-				";productId="+productId+";productName="+productName+
-				";supplierId="+supplierId+";supplierCode="+supplierCode+";supplierName="+supplierName+
+		logger.info("InvoiceWs.find() >>> compayId="+companyId+
+				";invoiceType="+invoiceType+
+				";tpCompanyId="+tpCompanyId+";tpCompanyCode="+tpCompanyCode+";tpCompanyName="+tpCompanyName+
 				";personId="+personId+";personCode="+personCode+";personName="+personName+
 				";attrName="+attrName+";attrValue="+attrValue+
 				";fromDate="+fromDate+";toDate="+toDate
 				);
 		
-		PurchaseListResponse response=new PurchaseListResponse();
+		InvoiceListResponse response=new InvoiceListResponse();
+		
 		
 		// checkGrant
 		if (!checkGrant(response,securityToken,"find",
 			String.class,
+			String.class,
 			Integer.class,
-			Integer.class,String.class,
 			Integer.class,String.class,String.class,
 			Integer.class,String.class,String.class,
 			String.class,String.class,
@@ -112,29 +127,35 @@ public class InvoiceWs extends CyBssWebServiceAdapter
 			return response;
 		// end checkGrant 
 		
+		if (!invoiceType.equalsIgnoreCase(Invoice.TYPE_ACTIVE) &&
+				!invoiceType.equalsIgnoreCase(Invoice.TYPE_PASSIVE)){
+				setResult(response, ICyBssResultConst.RESULT_INVOICE_TYPE_INVALID, 
+						ICyBssResultConst.RESULT_D_INVOICE_TYPE_INVALID,response.getLanguageCode());
+				return response;
+			}
 		
-		List<Purchase> purchases=purchaseService.find(companyId,productId,productName,
-				supplierId,supplierCode,supplierName,
+		invoiceType=invoiceType.toUpperCase();
+		List<Invoice> invoices=invoiceService.find(invoiceType,companyId,
+				tpCompanyId,tpCompanyCode,tpCompanyName,
 				personId,personCode,personName,
 				attrName,attrValue,
 				fromDate,toDate);
-		int lsize=purchases.size();
+		int lsize=invoices.size();
 		
 		if (offset!=0){
 			if (offset<=lsize)
-				response.setPurchases(purchases.subList(offset-1, ((offset-1)+size)>lsize?lsize:(offset-1)+size));
+				response.setInvoices(invoices.subList(offset-1, ((offset-1)+size)>lsize?lsize:(offset-1)+size));
 			else
-				response.setPurchases(new ArrayList<Purchase>());
+				response.setInvoices(new ArrayList<Invoice>());
 			}
 		else
-			response.setPurchases(purchases);
+			response.setInvoices(invoices);
 		
-		logger.info("PurchaseWs.find() <<< ");
-		
+		logger.info("InvoiceWs.find() <<< ");
 		return response;
-		
 	}
 	
+	/*
 	@RequestMapping(value = "/{id}/get",method = RequestMethod.GET)
 	@CyBssOperation(name = "get")
 	public PurchaseResponse get(

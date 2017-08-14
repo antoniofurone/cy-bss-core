@@ -8,10 +8,10 @@ public class InvoiceResponse extends CyBssResponseAdapter
 implements ICyBssResponse{
 	
 	Invoice invoice=null;
-	protected Invoice getInvoice() {
+	public Invoice getInvoice() {
 		return invoice;
 	}
-	protected void setInvoice(Invoice invoice) {
+	public void setInvoice(Invoice invoice) {
 		this.invoice = invoice;
 	}
 	
