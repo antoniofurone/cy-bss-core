@@ -155,99 +155,165 @@ public class InvoiceWs extends CyBssWebServiceAdapter
 		return response;
 	}
 	
-	/*
-	@RequestMapping(value = "/{id}/get",method = RequestMethod.GET)
+	
+	@RequestMapping(value = "/{invoiceType}/{id}/get",method = RequestMethod.GET)
 	@CyBssOperation(name = "get")
-	public PurchaseResponse get(
+	public InvoiceResponse get(
 			@RequestHeader("Security-Token") String securityToken,
-			@PathVariable("id") Long id
+			@PathVariable("id") Long id,
+			@PathVariable("invoiceType") String invoiceType
 			) throws CyBssException{
 		
-		logger.info("Purchase.get() >>> id="+id);
-		PurchaseResponse response=new PurchaseResponse();
+		logger.info("InvoiceWs.get() >>> id="+id);
+		InvoiceResponse response=new InvoiceResponse();
 		
-		Purchase purchase=purchaseService.get(id);
-		if (purchase!=null)
-			response.setPurchase(purchase);
+		// checkGrant
+		if (!checkGrant(response,securityToken,"get",String.class,Long.class,String.class))
+			return response;
+		// end checkGrant 
+		
+		if (!invoiceType.equalsIgnoreCase(Invoice.TYPE_ACTIVE) &&
+				!invoiceType.equalsIgnoreCase(Invoice.TYPE_PASSIVE)){
+				setResult(response, ICyBssResultConst.RESULT_INVOICE_TYPE_INVALID, 
+						ICyBssResultConst.RESULT_D_INVOICE_TYPE_INVALID,response.getLanguageCode());
+				return response;
+			}
+		invoiceType=invoiceType.toUpperCase();
+		
+		Invoice invoice=invoiceService.get(invoiceType, id);
+		if (invoice!=null)
+			response.setInvoice(invoice);
 		else
 			setResult(response, ICyBssResultConst.RESULT_NOT_FOUND, 
 					ICyBssResultConst.RESULT_D_NOT_FOUND,response.getLanguageCode());
-	
-		logger.info("PurchaseWs.get() <<< ");
+		
+		logger.info("InvoiceWs.get() <<< ");
 		return response;
 	}
 	
-	@RequestMapping(value = "/{id}/update",method = RequestMethod.POST)
-	@CyBssOperation(name = "update")
-	public PurchaseResponse update(
+	
+	@RequestMapping(value = "/{invoiceType}/{id}/remove",method = RequestMethod.GET)
+	@CyBssOperation(name = "remove")
+	public InvoiceResponse remove(
 			@RequestHeader("Security-Token") String securityToken,
 			@PathVariable("id") Long id,
-			@RequestBody Purchase purchase
-			) throws CyBssException
-	{
-		PurchaseResponse response=new PurchaseResponse();
-		
-		logger.info("PurchaseWs.update() >>> id="+id);
-		
-		// checkGrant
-		if (!checkGrant(response,securityToken,"update",String.class,Long.class,Purchase.class))
-			return response;
-		// end checkGrant 
-		
-		if (purchaseService.get(id)==null){
-			setResult(response, ICyBssResultConst.RESULT_NOT_FOUND, 
-					ICyBssResultConst.RESULT_D_NOT_FOUND,response.getLanguageCode());
-			return response;
-			}
-		
-		
-		PriceComponent component=priceService.getPriceComponent(purchase.getComponentId());
-		if (component==null){
-			setResult(response, ICyBssResultConst.RESULT_NOT_FOUND, 
-					ICyBssResultConst.RESULT_D_NOT_FOUND,response.getLanguageCode());
-			return response;
-		}	
-		
-		purchase.setComponent(component);
-		
-		purchase.calcAmounts();
-		
-		if (purchase.getTacitRenewal()==null || purchase.getTacitRenewal().equals(""))
-			purchase.setTacitRenewal(Purchase.TACIT_RENEWAL_NO);
-		if (purchase.getTransactionType()==null || purchase.getTransactionType().equals(""))
-			purchase.setTransactionType(Purchase.TRANSACTION_TYPE_BILLABLE);
-		
-		if (purchase.getDate()==null || purchase.getDate().equals(""))
-			purchase.setDate(CyBssUtility.dateToString(CyBssUtility.getCurrentDate(),CyBssUtility.DATE_yyyy_MM_dd));
-		
-		purchaseService.update(id, purchase);
-		response.setPurchase(purchaseService.get(id));
-		
-		logger.info("PurchaseWs.update() <<<");
-		return response;
-	}
-
-	@RequestMapping(value = "/{id}/remove",method = RequestMethod.GET)
-	@CyBssOperation(name = "remove")
-	public PurchaseResponse remove(
-			@RequestHeader("Security-Token") String securityToken,
-			@PathVariable("id") Long id
+			@PathVariable("invoiceType") String invoiceType
 			) throws CyBssException{
 		
-		logger.info("PurchaseWs.remove() >>> id="+id);
-		PurchaseResponse response=new PurchaseResponse();
+		logger.info("InvoiceWs.remove() >>> id="+id);
+		InvoiceResponse response=new InvoiceResponse();
 		
 		// checkGrant
-		if (!checkGrant(response,securityToken,"remove",String.class,Long.class))
+		if (!checkGrant(response,securityToken,"remove",String.class,Long.class,String.class))
 			return response;
 		// end checkGrant 
 		
-		purchaseService.remove(id);
-	
-		logger.info("ProductWs.remove() <<< ");
-	
+		if (!invoiceType.equalsIgnoreCase(Invoice.TYPE_ACTIVE) &&
+				!invoiceType.equalsIgnoreCase(Invoice.TYPE_PASSIVE)){
+				setResult(response, ICyBssResultConst.RESULT_INVOICE_TYPE_INVALID, 
+						ICyBssResultConst.RESULT_D_INVOICE_TYPE_INVALID,response.getLanguageCode());
+				return response;
+			}
+		invoiceType=invoiceType.toUpperCase();
+		
+		
+		Invoice invoice=invoiceService.get(invoiceType, id);
+		if (invoice==null){
+			setResult(response, ICyBssResultConst.RESULT_NOT_FOUND, 
+					ICyBssResultConst.RESULT_D_NOT_FOUND,response.getLanguageCode());
+			return response;
+		}
+		
+		invoiceService.remove(invoiceType, id);
+		
+		logger.info("InvoiceWs.remove() <<< ");
 		return response;
 	}
 	
-	*/
+	@RequestMapping(value = "/{invoiceType}/{id}/close",method = RequestMethod.GET)
+	@CyBssOperation(name = "close")
+	public InvoiceResponse close(
+			@RequestHeader("Security-Token") String securityToken,
+			@PathVariable("id") Long id,
+			@PathVariable("invoiceType") String invoiceType
+			) throws CyBssException{
+		
+		logger.info("InvoiceWs.close() >>> id="+id);
+		InvoiceResponse response=new InvoiceResponse();
+		
+		// checkGrant
+		if (!checkGrant(response,securityToken,"close",String.class,Long.class,String.class))
+			return response;
+		// end checkGrant 
+		
+		if (!invoiceType.equalsIgnoreCase(Invoice.TYPE_ACTIVE) &&
+				!invoiceType.equalsIgnoreCase(Invoice.TYPE_PASSIVE)){
+				setResult(response, ICyBssResultConst.RESULT_INVOICE_TYPE_INVALID, 
+						ICyBssResultConst.RESULT_D_INVOICE_TYPE_INVALID,response.getLanguageCode());
+				return response;
+			}
+		invoiceType=invoiceType.toUpperCase();
+		invoiceService.close(invoiceType, id);
+		
+		
+		logger.info("InvoiceWs.close() <<< ");
+		return response;
+	}
+	
+	@RequestMapping(value = "/{invoiceType}/{id}/getBillables",method = RequestMethod.GET)
+	@CyBssOperation(name = "getBillables")
+	public InvoiceResponse getBillables(
+			@RequestHeader("Security-Token") String securityToken,
+			@PathVariable("id") Long id,
+			@PathVariable("invoiceType") String invoiceType
+			) throws CyBssException{
+		
+		logger.info("InvoiceWs.getBillables() >>> id="+id);
+		InvoiceResponse response=new InvoiceResponse();
+		
+		
+		
+		logger.info("InvoiceWs.getBillables() <<< ");
+		return response;
+	}
+	
+	@RequestMapping(value = "/{invoiceType}/{id}/addBillable/{billableId}",method = RequestMethod.GET)
+	@CyBssOperation(name = "addBillable")
+	public InvoiceResponse addBillable(
+			@RequestHeader("Security-Token") String securityToken,
+			@PathVariable("id") Long id,
+			@PathVariable("billableId") Long billableId,
+			@PathVariable("invoiceType") String invoiceType
+			) throws CyBssException{
+		
+		logger.info("InvoiceWs.addBillable() >>> id="+id+";billableId="+billableId);
+		InvoiceResponse response=new InvoiceResponse();
+		
+		
+		
+		
+		
+		logger.info("InvoiceWs.addBillable() <<< ");
+		return response;
+	}
+	
+	@RequestMapping(value = "/{invoiceType}/{id}/removeBillable/{billableId}",method = RequestMethod.GET)
+	@CyBssOperation(name = "remveoBillable")
+	public InvoiceResponse removeBillable(
+			@RequestHeader("Security-Token") String securityToken,
+			@PathVariable("id") Long id,
+			@PathVariable("billableId") Long billableId,
+			@PathVariable("invoiceType") String invoiceType
+			) throws CyBssException{
+		
+		logger.info("InvoiceWs.removeBillable() >>> id="+id+";billableId="+billableId);
+		InvoiceResponse response=new InvoiceResponse();
+		
+		
+		
+		
+		
+		logger.info("InvoiceWs.removeBillable() <<< ");
+		return response;
+	}
 }

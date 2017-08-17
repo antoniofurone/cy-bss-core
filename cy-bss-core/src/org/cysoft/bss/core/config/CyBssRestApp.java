@@ -3,7 +3,7 @@ package org.cysoft.bss.core.config;
 
 import org.cysoft.bss.core.common.CyBssDataSource;
 import org.cysoft.bss.core.dao.AppDao;
-import org.cysoft.bss.core.dao.BillableCostDao;
+import org.cysoft.bss.core.dao.BillableDao;
 import org.cysoft.bss.core.dao.CityDao;
 import org.cysoft.bss.core.dao.CompanyDao;
 import org.cysoft.bss.core.dao.ContactDao;
@@ -16,7 +16,6 @@ import org.cysoft.bss.core.dao.CyBssServiceDao;
 import org.cysoft.bss.core.dao.LocationDao;
 import org.cysoft.bss.core.dao.MetricDao;
 import org.cysoft.bss.core.dao.ObjectDao;
-import org.cysoft.bss.core.dao.PassiveInvoiceDao;
 import org.cysoft.bss.core.dao.PersonDao;
 import org.cysoft.bss.core.dao.PriceDao;
 import org.cysoft.bss.core.dao.ProductDao;
@@ -25,6 +24,7 @@ import org.cysoft.bss.core.dao.TicketDao;
 import org.cysoft.bss.core.dao.UserDao;
 import org.cysoft.bss.core.dao.mysql.AppMysql;
 import org.cysoft.bss.core.dao.mysql.BillableCostMysql;
+import org.cysoft.bss.core.dao.mysql.BillableRevenueMysql;
 import org.cysoft.bss.core.dao.mysql.CityMysql;
 import org.cysoft.bss.core.dao.mysql.CompanyMysql;
 import org.cysoft.bss.core.dao.mysql.ContactMysql;
@@ -222,15 +222,23 @@ public class CyBssRestApp {
 	 
 	 @Bean
 	 @Description("BillableCost Dao Rest")
-	 public BillableCostDao billableCostDao(){
-		 	BillableCostDao billableCostDao=new BillableCostMysql();
+	 public BillableDao billableCostDao(){
+		 	BillableDao billableCostDao=new BillableCostMysql();
 			return billableCostDao;
 		 }
 	
+	 
+	 @Bean
+	 @Description("BillableRevenue Dao Rest")
+	 public BillableDao billableRevenueDao(){
+		 	BillableDao billableRevenueDao=new BillableRevenueMysql();
+			return billableRevenueDao;
+		 }
+	 
 	 @Bean
 	 @Description("PassiveInvoice Dao Rest")
-	 public PassiveInvoiceDao passiveInvoiceDao(){
-		 	PassiveInvoiceDao passiveInvoiceDao=new PassiveInvoiceMysql();
+	 public InvoiceDao passiveInvoiceDao(){
+		 	InvoiceDao passiveInvoiceDao=new PassiveInvoiceMysql();
 			return passiveInvoiceDao;
 		 }
 	

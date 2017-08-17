@@ -12,5 +12,7 @@ public interface InvoiceService {
 			long tpCompanyId, String tpCompanyCode, String tpCompanyName,
 			long personId, String personCode, String personName,
 			String attrName, String attrValue,String fromDate,String toDate) throws CyBssException;
-	
+	public Invoice get(String invoiceType,long id);
+	public void remove(String invoiceType,long id) throws CyBssException;
+	public void close(String invoiceType,long id) throws CyBssException;
 }

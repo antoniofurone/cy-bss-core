@@ -67,22 +67,22 @@ public abstract class Billable {
 	private String tpCompanyCode="";
 	private String tpCompanyName="";
 	
-	protected long getTpCompanyId() {
+	public long getTpCompanyId() {
 		return tpCompanyId;
 	}
-	protected void setTpCompanyId(long tpCompanyId) {
+	public void setTpCompanyId(long tpCompanyId) {
 		this.tpCompanyId = tpCompanyId;
 	}
-	protected String getTpCompanyCode() {
+	public String getTpCompanyCode() {
 		return tpCompanyCode;
 	}
-	protected void setTpCompanyCode(String tpCompanyCode) {
+	public void setTpCompanyCode(String tpCompanyCode) {
 		this.tpCompanyCode = tpCompanyCode;
 	}
-	protected String getTpCompanyName() {
+	public String getTpCompanyName() {
 		return tpCompanyName;
 	}
-	protected void setTpCompanyName(String tpCompanyName) {
+	public void setTpCompanyName(String tpCompanyName) {
 		this.tpCompanyName = tpCompanyName;
 	}
 	
@@ -279,25 +279,15 @@ public abstract class Billable {
 	public void setBillableType(String billableType) {
 		this.billableType = billableType;
 	}
-
 	
-	@Override
-	public String toString() {
-		return "Billable [id=" + id + ", parentId=" + parentId + ", invoiceId=" + invoiceId + ", companyId="
-				+ companyId + ", companyCode=" + companyCode + ", companyName=" + companyName + ", productId="
-				+ productId + ", productName=" + productName + ", tpCompanyId=" + tpCompanyId + ", tpCompanyCode="
-				+ tpCompanyCode + ", tpCompanyName=" + tpCompanyName + ", personId=" + personId + ", personCode="
-				+ personCode + ", personFirstName=" + personFirstName + ", personSecondName=" + personSecondName
-				+ ", componentId=" + componentId + ", componentCode=" + componentCode + ", componentName="
-				+ componentName + ", componentTypeCode=" + componentTypeCode + ", componentTypeName="
-				+ componentTypeName + ", qtyUmId=" + qtyUmId + ", qtyUmSimbol=" + qtyUmSimbol + ", qty=" + qty
-				+ ", currencyId=" + currencyId + ", currencyCode=" + currencyCode + ", currencyName=" + currencyName
-				+ ", price=" + price + ", priceTot=" + priceTot + ", amount=" + amount + ", vat=" + vat + ", vatAmount="
-				+ vatAmount + ", totAmount=" + totAmount + ", date=" + date + ", dateStart=" + dateStart + ", dateEnd="
-				+ dateEnd + ", updateDate=" + updateDate + ", billableType=" + billableType + ", component=" + component
-				+ "]";
+	private String billed="";
+	public String getBilled() {
+		return billed;
 	}
-
+	public void setBilled(String billed) {
+		this.billed = billed;
+	}
+	
 	private PriceComponent component=null;
 	public PriceComponent getComponent() {
 		return component;
@@ -305,6 +295,23 @@ public abstract class Billable {
 	public void setComponent(PriceComponent component) {
 		this.component = component;
 	}
+	@Override
+	public String toString() {
+		return "Billable [id=" + id + ", parentId=" + parentId + ", invoiceId=" + invoiceId + ", companyId=" + companyId
+				+ ", companyCode=" + companyCode + ", companyName=" + companyName + ", productId=" + productId
+				+ ", productName=" + productName + ", tpCompanyId=" + tpCompanyId + ", tpCompanyCode=" + tpCompanyCode
+				+ ", tpCompanyName=" + tpCompanyName + ", personId=" + personId + ", personCode=" + personCode
+				+ ", personFirstName=" + personFirstName + ", personSecondName=" + personSecondName + ", componentId="
+				+ componentId + ", componentCode=" + componentCode + ", componentName=" + componentName
+				+ ", componentTypeCode=" + componentTypeCode + ", componentTypeName=" + componentTypeName + ", qtyUmId="
+				+ qtyUmId + ", qtyUmSimbol=" + qtyUmSimbol + ", qty=" + qty + ", currencyId=" + currencyId
+				+ ", currencyCode=" + currencyCode + ", currencyName=" + currencyName + ", price=" + price
+				+ ", priceTot=" + priceTot + ", amount=" + amount + ", vat=" + vat + ", vatAmount=" + vatAmount
+				+ ", totAmount=" + totAmount + ", date=" + date + ", dateStart=" + dateStart + ", dateEnd=" + dateEnd
+				+ ", updateDate=" + updateDate + ", billableType=" + billableType + ", billed=" + billed
+				+ ", component=" + component + "]";
+	}
+	
 	
 	
 }

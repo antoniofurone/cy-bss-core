@@ -4,7 +4,7 @@ import java.util.List;
 
 import org.cysoft.bss.core.common.CyBssException;
 import org.cysoft.bss.core.common.CyBssUtility;
-import org.cysoft.bss.core.dao.BillableCostDao;
+import org.cysoft.bss.core.dao.BillableDao;
 import org.cysoft.bss.core.dao.ObjectDao;
 import org.cysoft.bss.core.dao.PurchaseDao;
 import org.cysoft.bss.core.model.Billable;
@@ -30,9 +30,9 @@ public class PurchaseServiceImpl extends CyBssServiceImpl
 			this.purchaseDao=purchaseDao;
 	}
 	
-	protected BillableCostDao billableCostDao=null;
+	protected BillableDao billableCostDao=null;
 	@Autowired
-	public void setBillableCostDao(BillableCostDao billableCostDao){
+	public void setBillableCostDao(BillableDao billableCostDao){
 			this.billableCostDao=billableCostDao;
 	}
 	

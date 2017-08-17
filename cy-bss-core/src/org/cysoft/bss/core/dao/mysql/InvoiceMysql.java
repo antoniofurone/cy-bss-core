@@ -28,6 +28,30 @@ public class InvoiceMysql extends CyBssMysqlDao
 		return null;
 	}
 
+	@Override
+	public Invoice get(long id) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void remove(long id) throws CyBssException{
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void cancel(long id) throws CyBssException{
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void close(long id) throws CyBssException{
+		// TODO Auto-generated method stub
+		
+	}
+
 		
 		
 }

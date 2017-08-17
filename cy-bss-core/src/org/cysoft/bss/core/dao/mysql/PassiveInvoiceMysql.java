@@ -9,16 +9,17 @@ import java.util.List;
 
 import org.cysoft.bss.core.common.CyBssException;
 import org.cysoft.bss.core.common.CyBssUtility;
-import org.cysoft.bss.core.dao.PassiveInvoiceDao;
+import org.cysoft.bss.core.dao.InvoiceDao;
 import org.cysoft.bss.core.model.Invoice;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.dao.DataAccessException;
+import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 
 public class PassiveInvoiceMysql extends CyBssMysqlDao
-	implements PassiveInvoiceDao{
+	implements InvoiceDao{
 
 	private static final Logger logger = LoggerFactory.getLogger(PassiveInvoiceMysql.class);
 
@@ -175,6 +176,7 @@ public class PassiveInvoiceMysql extends CyBssMysqlDao
 			// TODO Auto-generated method stub
 			Invoice invoice=new Invoice();
 		
+			invoice.setInvoiceType(Invoice.TYPE_PASSIVE);
 			invoice.setId(rs.getLong("ID"));
 			invoice.setDate(rs.getString("DATE"));
 			invoice.setYear(rs.getInt("YEAR"));
@@ -192,7 +194,7 @@ public class PassiveInvoiceMysql extends CyBssMysqlDao
 			invoice.setPersonCode(rs.getString("PERSON_CODE"));
 			invoice.setPersonFirstName(rs.getString("PERSON_FIRST_NAME"));
 			invoice.setPersonSecondName(rs.getString("PERSON_SECOND_NAME"));
-			
+		
 			invoice.setCurrencyId(rs.getLong("CURRENCY_ID"));
 			invoice.setCurrencyCode(rs.getString("CURRENCY_CODE"));
 			invoice.setCurrencyName(rs.getString("CURRENCY_NAME"));
@@ -200,8 +202,119 @@ public class PassiveInvoiceMysql extends CyBssMysqlDao
 			invoice.setVatAmount(rs.getDouble("VAT_AMOUNT"));
 			invoice.setTotAmount(rs.getDouble("TOT_AMOUNT"));
 			
+			invoice.setNote(rs.getString("NOTE"));
+			invoice.setCancelled(rs.getString("CANCELLED"));
+			invoice.setStringNumber(rs.getString("STRING_NUMBER"));
+			
+			
 			return invoice;
 		}
+	}
+
+	@Override
+	public Invoice get(long id) {
+		// TODO Auto-generated method stub
+		JdbcTemplate jdbcTemplate = new JdbcTemplate(tx.getDataSource());
+				
+		String query="select a.ID,a.DATE,a.YEAR,a.NUMBER,a.COMPANY_ID,a.COMPANY_CODE,a.COMPANY_NAME,";
+		query+="a.SUPPLIER_ID,a.SUPPLIER_CODE,a.SUPPLIER_NAME,";
+		query+="a.PERSON_ID,a.PERSON_CODE,a.PERSON_FIRST_NAME,a.PERSON_SECOND_NAME,";
+		query+="a.CURRENCY_ID,a.CURRENCY_CODE,a.CURRENCY_NAME,";
+		query+="a.AMOUNT,a.VAT_AMOUNT,a.TOT_AMOUNT,";
+		query+="a.NOTE,a.CANCELLED,a.STRING_NUMBER";
+		query+=" from BSSV_PASSIVE_INVOICE a";
+		query+=" where ID=?";
+				
+		logger.info(query+"["+id+"]");
+		Invoice ret=null;
+		try {
+			ret=jdbcTemplate.queryForObject(query, new Object[] { id },
+					new RowMapperInvoice());
+		}
+		catch(IncorrectResultSizeDataAccessException e){
+			logger.info("InvoiceMysql.IncorrectResultSizeDataAccessException:"+e.getMessage());
+		
+		}
+		
+		logger.info("InvoiceMysql.get() <<<");
+		return ret;
+	}
+
+	@Override
+	public void remove(long id) throws CyBssException {
+		// TODO Auto-generated method stub
+		JdbcTemplate jdbcTemplate = new JdbcTemplate(tx.getDataSource());
+		String cmd="delete from BSST_PIN_PASSIVE_INVOICE where PIN_N_INVOICE_ID=? and PIN_N_NUMBER IS NULL";
+		logger.info(cmd+"["+id+"]");
+				
+		long rowUpdated=jdbcTemplate.update(cmd, new Object[]{
+				id		
+		});
+		
+		if (rowUpdated==0){
+			throw new CyBssException("Passive Invoice <"+id+"> not updated in remove().");
+		}
+		
+	}
+
+	@Override
+	public void cancel(long id) throws CyBssException 
+	{
+		// TODO Auto-generated method stub
+		JdbcTemplate jdbcTemplate = new JdbcTemplate(tx.getDataSource());
+		String cmd="update BSST_PIN_PASSIVE_INVOICE set PIN_C_CANCELLED='Y' where PIN_N_INVOICE_ID=?";
+		logger.info(cmd+"["+id+"]");
+				
+		long rowUpdated=jdbcTemplate.update(cmd, new Object[]{
+				id		
+		});
+		
+		if (rowUpdated==0){
+			throw new CyBssException("Passive Invoice <"+id+"> not updated in cancel().");
+		}
+	}
+
+	@Override
+	public void close(long id) throws CyBssException {
+		// TODO Auto-generated method stub
+		Invoice invoice=this.get(id);
+		
+		int invoiceMaxNumber=this.getInvoiceMaxNumber(invoice.getYear());
+		invoiceMaxNumber++;
+		
+		String stringNumber=invoice.getYear()+"/"+invoiceMaxNumber;
+		
+		JdbcTemplate jdbcTemplate = new JdbcTemplate(tx.getDataSource());
+		String cmd="update BSST_PIN_PASSIVE_INVOICE set PIN_N_NUMBER=?,PIN_S_NUMBER=?";
+		cmd+=" where PIN_N_INVOICE_ID=? and PIN_N_NUMBER IS NULL";
+		logger.info(cmd+"["+id+","+invoiceMaxNumber+","+stringNumber+"]");
+				
+		long rowUpdated=jdbcTemplate.update(cmd, new Object[]{
+				invoiceMaxNumber,stringNumber,id		
+		});
+		
+		if (rowUpdated==0){
+			throw new CyBssException("Passive Invoice <"+id+"> not updated in close().");
+		}
+	}
+	
+	
+	private int getInvoiceMaxNumber(int year){
+		// TODO Auto-generated method stub
+		JdbcTemplate jdbcTemplate = new JdbcTemplate(tx.getDataSource());
+		int maxNumber=0;
+		
+		String query="select MAX(PIN_N_NUMBER) from BSST_PIN_PASSIVE_INVOICE where PIN_N_YEAR=?";
+				
+		logger.info(query+"["+year+"]");
+		maxNumber=jdbcTemplate.queryForObject(query, new Object[] { year },new RowMapper<Integer>() {
+			            @Override
+			            public Integer mapRow(ResultSet rs, int rowNum) throws SQLException {
+			            	int  ret=rs.getInt(1);
+			                return ret;
+			            }
+			        });
+		return maxNumber;
 	}
 	
 }

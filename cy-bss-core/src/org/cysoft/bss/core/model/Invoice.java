@@ -7,6 +7,7 @@ public class Invoice {
 	
 	public static final String TYPE_ACTIVE="A";
 	public static final String TYPE_PASSIVE="P";
+	
 	private String invoiceType="A";
 	public String getInvoiceType() {
 		return invoiceType;
@@ -196,14 +197,21 @@ public class Invoice {
 	}
 	
 	private List<Billable> billables=new ArrayList<Billable>();
-	protected List<Billable> getBillables() {
+	public List<Billable> getBillables() {
 		return billables;
 	}
 
-	protected void setBillables(List<Billable> billables) {
+	public void setBillables(List<Billable> billables) {
 		this.billables = billables;
 	}
 
+	public boolean isClosed(){
+		if (number==0) 
+			return false;
+		else
+			return true;
+	}
+	
 	@Override
 	public String toString() {
 		return "Invoice [invoiceType=" + invoiceType + ", id=" + id + ", date=" + date + ", year=" + year + ", number="
