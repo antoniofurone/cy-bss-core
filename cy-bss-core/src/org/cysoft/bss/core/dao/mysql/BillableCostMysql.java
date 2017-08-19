@@ -3,6 +3,7 @@ package org.cysoft.bss.core.dao.mysql;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.cysoft.bss.core.common.CyBssException;
@@ -150,7 +151,7 @@ public class BillableCostMysql extends CyBssMysqlDao
 			billable.setAmount(rs.getDouble("AMOUNT"));
 			billable.setVat(rs.getDouble("VAT"));
 			billable.setVatAmount(rs.getDouble("VAT_AMOUNT"));
-			billable.setVatAmount(rs.getDouble("TOT_AMOUNT"));
+			billable.setTotAmount(rs.getDouble("TOT_AMOUNT"));
 			
 			billable.setDate(rs.getString("DATE"));
 			billable.setDateStart(rs.getString("DATE_START"));
@@ -187,4 +188,131 @@ public class BillableCostMysql extends CyBssMysqlDao
 				invoiceId		
 		});
 	}
+
+	@Override
+	public List<Billable> getNotLinked(long companyId, long tpCompanyId, long personId, long currencyId) {
+		// TODO Auto-generated method stub
+		logger.info("BillableCostMysql.getNotAssocToInvoice() >>>");
+		
+		String query="select ID,PURCHASE_ID,INVOICE_ID,";
+		query+="COMPANY_ID,COMPANY_CODE,COMPANY_NAME,";
+		query+="PRODUCT_ID,PRODUCT_NAME,";
+		query+="SUPPLIER_ID,SUPPLIER_CODE,SUPPLIER_NAME,";
+		query+="PERSON_ID,PERSON_CODE,PERSON_FIRST_NAME,PERSON_SECOND_NAME,";
+		query+="COMPONENT_ID,COMPONENT_CODE,COMPONENT_NAME,";
+		query+="COMPONENT_TYPE_CODE,COMPONENT_TYPE_NAME,";
+		query+="QTY_UM_ID,QTY_UM_SIMBOL,QTY,";
+		query+="CURRENCY_ID,CURRENCY_CODE,CURRENCY_NAME,";
+		query+="PRICE, AMOUNT,VAT,VAT_AMOUNT,TOT_AMOUNT,";
+		query+="DATE,DATE_START,DATE_END,TYPE,BILLED,UPDATE_DATE";
+		query+=" from BSSV_BILLABLE_COST";
+		query+=" where INVOICE_ID IS NULL";
+		
+		List<Object> parms=new ArrayList<Object>();
+		if (companyId!=0){
+			query+=" AND COMPANY_ID=?";
+			parms.add(companyId);
+		}
+		if (tpCompanyId!=0){
+			query+=" AND SUPPLIER_ID=?";
+			parms.add(tpCompanyId);
+		}
+		if (personId!=0){
+			query+=" AND PERSON_ID=?";
+			parms.add(personId);
+		}
+		if (currencyId!=0){
+			query+=" AND CURRENCY_ID=?";
+			parms.add(currencyId);
+		}
+		
+		JdbcTemplate jdbcTemplate = new JdbcTemplate(tx.getDataSource());
+		logger.info(query+"[companyId="+companyId			
+				+";supplierId="+tpCompanyId
+				+";personId="+personId
+				+";currencyId="+currencyId
+				+"]");
+		
+		List<Billable> ret=jdbcTemplate.query(query, parms.toArray(),new RowMapperBillableCost());
+		
+		logger.info("BillableCostMysql.getNotAssocToInvoice() <<<");
+		return ret;
+	}
+
+	@Override
+	public void link(long invoiceId, long billableId) {
+		// TODO Auto-generated method stub
+		JdbcTemplate jdbcTemplate = new JdbcTemplate(tx.getDataSource());
+		String cmd="update BSST_BIC_BILLABLE_COST set PIN_N_INVOICE_ID=? where BIC_N_BILLABLE_ID=? and PIN_N_INVOICE_ID IS NULL and BIC_C_BILLED='N'";
+		logger.info(cmd+"["+invoiceId+";"+billableId+"]");
+				
+		jdbcTemplate.update(cmd, new Object[]{
+				invoiceId,billableId		
+		});
+	}
+
+	@Override
+	public void unlink(long invoiceId, long billableId) {
+		// TODO Auto-generated method stub
+		JdbcTemplate jdbcTemplate = new JdbcTemplate(tx.getDataSource());
+		String cmd="update BSST_BIC_BILLABLE_COST set PIN_N_INVOICE_ID=NULL where BIC_N_BILLABLE_ID=? and PIN_N_INVOICE_ID=? and BIC_C_BILLED='N'";
+		logger.info(cmd+"["+invoiceId+";"+billableId+"]");
+				
+		jdbcTemplate.update(cmd, new Object[]{
+				billableId,invoiceId		
+		});
+	}
+
+	@Override
+	public List<Billable> getBilledByPurchase(long purchaseId) {
+		// TODO Auto-generated method stub
+		logger.info("BillableCostMysql.getBilledByPurchase() >>>");
+		
+		String query="select ";
+		query+="PURCHASE_ID,COMPANY_ID,PRODUCT_ID,SUPPLIER_ID,";
+		query+="PERSON_ID,COMPONENT_ID,QTY_UM_ID,CURRENCY_ID,PRICE,VAT,";
+		query+="sum(QTY) as QTY,sum(AMOUNT) as AMOUNT,sum(VAT_AMOUNT) as VAT_AMOUNT,sum(TOT_AMOUNT) as TOT_AMOUNT";
+		query+=" from BSSV_BILLABLE_COST";
+		query+=" where BILLED='Y' and PURCHASE_ID=?";
+		query+=" group by PURCHASE_ID,COMPANY_ID,PRODUCT_ID,SUPPLIER_ID,";
+		query+="PERSON_ID,COMPONENT_ID,QTY_UM_ID,CURRENCY_ID,PRICE,VAT";
+		query+=" having abs(sum(TOT_AMOUNT))>0.1";
+		
+		JdbcTemplate jdbcTemplate = new JdbcTemplate(tx.getDataSource());
+		logger.info(query+"["+purchaseId+"]");
+		List<Billable> ret=jdbcTemplate.query(query, new Object[]{purchaseId},new RowMapperBillableCostAggr());
+		
+		
+		logger.info("BillableCostMysql.getBilledByPurchase() <<<");
+		
+		return ret;
+	}
+	
+	private class RowMapperBillableCostAggr implements RowMapper<Billable>{
+
+		@Override
+		public Billable mapRow(ResultSet rs, int rownum) throws SQLException {
+			// TODO Auto-generated method stub
+			BillableCost billable=new BillableCost();
+		
+			billable.setParentId(rs.getLong("PURCHASE_ID"));
+			billable.setCompanyId(rs.getLong("COMPANY_ID"));
+			billable.setProductId(rs.getLong("PRODUCT_ID"));
+			billable.setSupplierId(rs.getLong("SUPPLIER_ID"));
+			billable.setPersonId(rs.getLong("PERSON_ID"));
+			billable.setComponentId(rs.getLong("COMPONENT_ID"));
+			billable.setQtyUmId(rs.getLong("QTY_UM_ID"));
+			billable.setCurrencyId(rs.getLong("CURRENCY_ID"));
+			billable.setPrice(rs.getDouble("PRICE"));
+			billable.setVat(rs.getDouble("VAT"));
+			
+			billable.setQty(rs.getDouble("QTY"));
+			billable.setAmount(rs.getDouble("AMOUNT"));
+			billable.setVatAmount(rs.getDouble("VAT_AMOUNT"));
+			billable.setTotAmount(rs.getDouble("TOT_AMOUNT"));
+				
+			return billable;
+		}
+	}
+
 }

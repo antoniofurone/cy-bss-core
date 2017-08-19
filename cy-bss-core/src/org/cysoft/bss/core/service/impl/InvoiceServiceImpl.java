@@ -6,6 +6,7 @@ import java.util.Locale;
 import org.cysoft.bss.core.common.CyBssException;
 import org.cysoft.bss.core.dao.BillableDao;
 import org.cysoft.bss.core.dao.InvoiceDao;
+import org.cysoft.bss.core.model.Billable;
 import org.cysoft.bss.core.model.Invoice;
 import org.cysoft.bss.core.service.InvoiceService;
 import org.cysoft.bss.core.web.response.ICyBssResultConst;
@@ -145,5 +146,102 @@ public class InvoiceServiceImpl extends CyBssServiceImpl
 
 	}
 
+
+	@Override
+	public List<Billable> getBillables(String invoiceType, long id) throws CyBssException {
+		// TODO Auto-generated method stub
+		final InvoiceDao _invoiceDao=invoiceType.equals(Invoice.TYPE_PASSIVE)?passiveInvoiceDao:invoiceDao;
+		final BillableDao _billableDao=invoiceType.equals(Invoice.TYPE_PASSIVE)?billableCostDao:billableRevenueDao;
+		
+		final Invoice invoice=_invoiceDao.get(id);
+		if (invoice==null)
+			throw new CyBssException(msgSource.getMessage(ICyBssResultConst.RESULT_D_NOT_FOUND, null, Locale.ENGLISH));
+		
+		return _billableDao.getNotLinked(invoice.getCompanyId(), invoice.getTpCompanyId(), 
+				invoice.getPersonId(), invoice.getCurrencyId());
+	}
+
+
+	@Override
+	public void linkBillable(final String invoiceType, final long id, final long billableId) throws CyBssException {
+		// TODO Auto-generated method stub
+		final InvoiceDao _invoiceDao=invoiceType.equals(Invoice.TYPE_PASSIVE)?passiveInvoiceDao:invoiceDao;
+		
+		final Invoice invoice=_invoiceDao.get(id);
+		if (invoice==null)
+			throw new CyBssException(msgSource.getMessage(ICyBssResultConst.RESULT_D_NOT_FOUND, null, Locale.ENGLISH));
+		
+		
+		TransactionTemplate txTemplate=new TransactionTemplate(tx);
+		txTemplate.execute(new TransactionCallbackWithoutResult(){
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus txStatus) {
+		
+				try {
+					final BillableDao _billableDao=invoiceType.equals(Invoice.TYPE_PASSIVE)?billableCostDao:billableRevenueDao;
+					
+					_billableDao.link(id, billableId);
+					calcAmounts(invoiceType,invoice);
+				} catch (CyBssException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+					throw new RuntimeException(e);
+				}
+			}
+		});
+	
+	}
+
+	@Override
+	public void unLinkBillable(final String invoiceType, final long id, final long billableId) throws CyBssException {
+		// TODO Auto-generated method stub
+		final InvoiceDao _invoiceDao=invoiceType.equals(Invoice.TYPE_PASSIVE)?passiveInvoiceDao:invoiceDao;
+		
+		final Invoice invoice=_invoiceDao.get(id);
+		if (invoice==null)
+			throw new CyBssException(msgSource.getMessage(ICyBssResultConst.RESULT_D_NOT_FOUND, null, Locale.ENGLISH));
+		
+		TransactionTemplate txTemplate=new TransactionTemplate(tx);
+		txTemplate.execute(new TransactionCallbackWithoutResult(){
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus txStatus) {
+		
+				try {
+					final BillableDao _billableDao=invoiceType.equals(Invoice.TYPE_PASSIVE)?billableCostDao:billableRevenueDao;
+					
+					_billableDao.unlink(id, billableId);
+					 calcAmounts(invoiceType,invoice);
+				} catch (CyBssException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+					throw new RuntimeException(e);
+				}	
+			}
+		});
+	
+	}
+
+	
+	private void calcAmounts(String invoiceType,Invoice invoice) throws CyBssException{
+		final InvoiceDao _invoiceDao=invoiceType.equals(Invoice.TYPE_PASSIVE)?passiveInvoiceDao:invoiceDao;
+		final BillableDao _billableDao=invoiceType.equals(Invoice.TYPE_PASSIVE)?billableCostDao:billableRevenueDao;
+		
+		invoice.setAmount(0);
+		invoice.setVatAmount(0);
+		invoice.setTotAmount(0);
+		
+		List<Billable> billables=_billableDao.getByInvoice(invoice.getId());
+		for (Billable billable:billables){
+			if (invoice.getCurrencyId()!=billable.getCurrencyId())
+				throw new CyBssException("calcAmounts: Billable has different currency from Invoice");
+			
+			invoice.setAmount(invoice.getAmount()+billable.getAmount());
+			invoice.setVatAmount(invoice.getVatAmount()+billable.getVatAmount());
+			invoice.setTotAmount(invoice.getAmount()+invoice.getVatAmount());
+		}
+		
+		_invoiceDao.update(invoice);
+		
+	}
 	
 }

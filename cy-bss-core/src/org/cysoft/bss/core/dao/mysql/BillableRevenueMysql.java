@@ -39,4 +39,28 @@ implements BillableDao{
 		
 	}
 
+	@Override
+	public List<Billable> getNotLinked(long customerId, long tpCustomerId, long personId, long currencyId) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void link(long invoiceId, long billableId) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void unlink(long invoiceId, long billableId) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public List<Billable> getBilledByPurchase(long purchaseId) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }

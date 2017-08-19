@@ -56,35 +56,9 @@ public class PurchaseServiceImpl extends CyBssServiceImpl
 				try {
 					id = purchaseDao.add(purchase);
 					purchase.setId(id);
-							
-					if (purchase.getTransactionType().equals(Purchase.TRANSACTION_TYPE_BILLABLE)){
-						
-						BillableCost billableCost=new BillableCost();
-						
-						billableCost.setParentId(purchase.getId());
-						billableCost.setCompanyId(purchase.getCompanyId());
-						billableCost.setProductId(purchase.getProductId());
-						billableCost.setSupplierId(purchase.getSupplierId());
-						
-						billableCost.setQty(purchase.getQty());
-						billableCost.setQtyUmId(purchase.getQtyUmId());
-						billableCost.setCurrencyId(purchase.getCurrencyId());
-						
-						billableCost.setPrice(purchase.getPrice());
-						billableCost.setAmount(purchase.getAmount());
-						billableCost.setVatAmount(purchase.getVatAmount());
-						billableCost.setTotAmount(purchase.getAmount()+purchase.getVatAmount());
-						
-						billableCost.setDateStart(purchase.getDate());
-						billableCost.setDateEnd(purchase.getDate());
-						billableCost.setDate(CyBssUtility.dateToString(CyBssUtility.getCurrentDate(),CyBssUtility.DATE_yyyy_MM_dd));
-						
-						billableCost.setComponentId(purchase.getComponentId());
-						billableCost.setBillableType(Billable.TYPE_ACTUAL);
-						
-						billableCostDao.add(billableCost);
-					}
-				
+					if (purchase.getTransactionType().equals(Purchase.TRANSACTION_TYPE_BILLABLE))
+						addBillable(purchase);
+			
 				} catch (CyBssException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -110,9 +84,44 @@ public class PurchaseServiceImpl extends CyBssServiceImpl
 
 
 	@Override
-	public void update(long id, Purchase purchase) throws CyBssException {
+	public void update(final long id, final Purchase purchase) throws CyBssException {
 		// TODO Auto-generated method stub
-		purchaseDao.update(id, purchase);
+		TransactionTemplate txTemplate=new TransactionTemplate(tx);
+		txTemplate.execute(new TransactionCallbackWithoutResult(){
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus txStatus) {
+				// TODO Auto-generated method stub
+				
+				billableCostDao.removeByPurchase(id);
+				List<Billable> billables=billableCostDao.getBilledByPurchase(id);
+				try {
+					
+					for(Billable billable:billables){
+						
+						billable.setQty(billable.getQty()*-1);
+						billable.setAmount(billable.getAmount()*-1);
+						billable.setVatAmount(billable.getVatAmount()*-1);
+						billable.setTotAmount(billable.getTotAmount()*-1);
+						
+						billable.setBillableType(Billable.TYPE_CANCELLATION);
+						billable.setDate(CyBssUtility.dateToString(CyBssUtility.getCurrentDate(),CyBssUtility.DATE_yyyy_MM_dd));
+						
+						billableCostDao.add(billable);
+					}
+					
+					purchaseDao.update(id, purchase);
+					purchase.setId(id);
+					if (purchase.getTransactionType().equals(Purchase.TRANSACTION_TYPE_BILLABLE))
+						addBillable(purchase);
+				
+				} catch (CyBssException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+					throw new RuntimeException(e);
+				}
+			}
+		});
+				
 	}
 
 
@@ -138,4 +147,35 @@ public class PurchaseServiceImpl extends CyBssServiceImpl
 		});
 	}
 
+	
+	private void addBillable(Purchase purchase) throws CyBssException {
+		
+		BillableCost billableCost=new BillableCost();
+		
+		billableCost.setParentId(purchase.getId());
+		billableCost.setCompanyId(purchase.getCompanyId());
+		billableCost.setProductId(purchase.getProductId());
+		billableCost.setSupplierId(purchase.getSupplierId());
+		
+		billableCost.setQty(purchase.getQty());
+		billableCost.setQtyUmId(purchase.getQtyUmId());
+		billableCost.setCurrencyId(purchase.getCurrencyId());
+		
+		billableCost.setPrice(purchase.getPrice());
+		billableCost.setAmount(purchase.getAmount());
+		billableCost.setVat(purchase.getVat());
+		billableCost.setVatAmount(purchase.getVatAmount());
+		billableCost.setTotAmount(purchase.getAmount()+purchase.getVatAmount());
+		
+		billableCost.setDateStart(purchase.getDate());
+		billableCost.setDateEnd(purchase.getDate());
+		billableCost.setDate(CyBssUtility.dateToString(CyBssUtility.getCurrentDate(),CyBssUtility.DATE_yyyy_MM_dd));
+		
+		billableCost.setComponentId(purchase.getComponentId());
+		billableCost.setBillableType(Billable.TYPE_ACTUAL);
+		
+		billableCostDao.add(billableCost);
+		
+	}
+	
 }

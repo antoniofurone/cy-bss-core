@@ -253,8 +253,16 @@ public class InvoiceWs extends CyBssWebServiceAdapter
 				return response;
 			}
 		invoiceType=invoiceType.toUpperCase();
-		invoiceService.close(invoiceType, id);
 		
+		Invoice invoice=invoiceService.get(invoiceType, id);
+		if (invoice==null){
+			setResult(response, ICyBssResultConst.RESULT_NOT_FOUND, 
+					ICyBssResultConst.RESULT_D_NOT_FOUND,response.getLanguageCode());
+			return response;
+		}
+		
+		invoiceService.close(invoiceType, id);
+		response.setInvoice(invoiceService.get(invoiceType, id));
 		
 		logger.info("InvoiceWs.close() <<< ");
 		return response;
@@ -271,7 +279,28 @@ public class InvoiceWs extends CyBssWebServiceAdapter
 		logger.info("InvoiceWs.getBillables() >>> id="+id);
 		InvoiceResponse response=new InvoiceResponse();
 		
+		// checkGrant
+		if (!checkGrant(response,securityToken,"getBillables",String.class,Long.class,String.class))
+			return response;
+		// end checkGrant 
 		
+		if (!invoiceType.equalsIgnoreCase(Invoice.TYPE_ACTIVE) &&
+				!invoiceType.equalsIgnoreCase(Invoice.TYPE_PASSIVE)){
+				setResult(response, ICyBssResultConst.RESULT_INVOICE_TYPE_INVALID, 
+						ICyBssResultConst.RESULT_D_INVOICE_TYPE_INVALID,response.getLanguageCode());
+				return response;
+			}
+		invoiceType=invoiceType.toUpperCase();
+		
+		Invoice invoice=invoiceService.get(invoiceType, id);
+		if (invoice==null){
+			setResult(response, ICyBssResultConst.RESULT_NOT_FOUND, 
+					ICyBssResultConst.RESULT_D_NOT_FOUND,response.getLanguageCode());
+			return response;
+		}
+		
+		response.setInvoice(invoiceService.get(invoiceType, id));
+		response.setBillables(invoiceService.getBillables(invoiceType, id));
 		
 		logger.info("InvoiceWs.getBillables() <<< ");
 		return response;
@@ -289,16 +318,44 @@ public class InvoiceWs extends CyBssWebServiceAdapter
 		logger.info("InvoiceWs.addBillable() >>> id="+id+";billableId="+billableId);
 		InvoiceResponse response=new InvoiceResponse();
 		
+		// checkGrant
+		if (!checkGrant(response,securityToken,"addBillable",String.class,Long.class,Long.class,String.class))
+			return response;
+		// end checkGrant 
 		
+		if (!invoiceType.equalsIgnoreCase(Invoice.TYPE_ACTIVE) &&
+				!invoiceType.equalsIgnoreCase(Invoice.TYPE_PASSIVE)){
+				setResult(response, ICyBssResultConst.RESULT_INVOICE_TYPE_INVALID, 
+						ICyBssResultConst.RESULT_D_INVOICE_TYPE_INVALID,response.getLanguageCode());
+				return response;
+			}
+		invoiceType=invoiceType.toUpperCase();
 		
+		Invoice invoice=invoiceService.get(invoiceType, id);
+		if (invoice==null){
+			setResult(response, ICyBssResultConst.RESULT_NOT_FOUND, 
+					ICyBssResultConst.RESULT_D_NOT_FOUND,response.getLanguageCode());
+			return response;
+		}
 		
+		if (invoice.getNumber()==0)
+			invoiceService.linkBillable(invoiceType, id, billableId);
+		
+		invoice=invoiceService.get(invoiceType, id);
+		if (invoice==null){
+			setResult(response, ICyBssResultConst.RESULT_NOT_FOUND, 
+					ICyBssResultConst.RESULT_D_NOT_FOUND,response.getLanguageCode());
+			return response;
+		}
+		
+		response.setInvoice(invoice);
 		
 		logger.info("InvoiceWs.addBillable() <<< ");
 		return response;
 	}
 	
 	@RequestMapping(value = "/{invoiceType}/{id}/removeBillable/{billableId}",method = RequestMethod.GET)
-	@CyBssOperation(name = "remveoBillable")
+	@CyBssOperation(name = "removeBillable")
 	public InvoiceResponse removeBillable(
 			@RequestHeader("Security-Token") String securityToken,
 			@PathVariable("id") Long id,
@@ -309,9 +366,38 @@ public class InvoiceWs extends CyBssWebServiceAdapter
 		logger.info("InvoiceWs.removeBillable() >>> id="+id+";billableId="+billableId);
 		InvoiceResponse response=new InvoiceResponse();
 		
+		// checkGrant
+		if (!checkGrant(response,securityToken,"removeBillable",String.class,Long.class,Long.class,String.class))
+			return response;
+		// end checkGrant 
 		
+		if (!invoiceType.equalsIgnoreCase(Invoice.TYPE_ACTIVE) &&
+				!invoiceType.equalsIgnoreCase(Invoice.TYPE_PASSIVE)){
+				setResult(response, ICyBssResultConst.RESULT_INVOICE_TYPE_INVALID, 
+						ICyBssResultConst.RESULT_D_INVOICE_TYPE_INVALID,response.getLanguageCode());
+				return response;
+			}
+		invoiceType=invoiceType.toUpperCase();
+
+		Invoice invoice=invoiceService.get(invoiceType, id);
+		if (invoice==null){
+			setResult(response, ICyBssResultConst.RESULT_NOT_FOUND, 
+					ICyBssResultConst.RESULT_D_NOT_FOUND,response.getLanguageCode());
+			return response;
+		}
+
+		if (invoice.getNumber()==0)
+			invoiceService.unLinkBillable(invoiceType, id, billableId);
 		
+		invoice=invoiceService.get(invoiceType, id);
+		if (invoice==null){
+			setResult(response, ICyBssResultConst.RESULT_NOT_FOUND, 
+					ICyBssResultConst.RESULT_D_NOT_FOUND,response.getLanguageCode());
+			return response;
+		}
 		
+		response.setInvoice(invoice);
+
 		
 		logger.info("InvoiceWs.removeBillable() <<< ");
 		return response;

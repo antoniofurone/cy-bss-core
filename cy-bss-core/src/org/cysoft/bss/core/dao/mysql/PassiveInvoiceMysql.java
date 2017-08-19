@@ -316,5 +316,33 @@ public class PassiveInvoiceMysql extends CyBssMysqlDao
 			        });
 		return maxNumber;
 	}
+
+	@Override
+	public void update(Invoice invoice) throws CyBssException {
+		// TODO Auto-generated method stub
+		logger.info("PassiveInvoiceMysql.update() >>>");
+		
+		String cmd="update BSST_PIN_PASSIVE_INVOICE set PIN_N_AMOUNT=?,PIN_N_VAT_AMOUNT=?,PIN_N_TOT_AMOUNT=?";
+		cmd+=" where PIN_N_INVOICE_ID=?";
+		
+		JdbcTemplate jdbcTemplate = new JdbcTemplate(tx.getDataSource());
+		logger.info(cmd+"["+invoice+"]");
+	
+		try {
+			jdbcTemplate.update(cmd, new Object[]{
+					invoice.getAmount(),
+					invoice.getVatAmount(),
+					invoice.getTotAmount(),
+					invoice.getId()
+				});
+		} catch (DataAccessException e) {
+			// TODO Auto-generated catch block
+			logger.error(e.toString());
+			throw new CyBssException(e);
+		} 
+		
+		logger.info("PassiveInvoiceMysql.update() <<<");
+		
+	}
 	
 }

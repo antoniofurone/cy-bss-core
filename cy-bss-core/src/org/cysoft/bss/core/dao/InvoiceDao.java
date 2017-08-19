@@ -8,6 +8,7 @@ import org.cysoft.bss.core.model.Invoice;
 public interface InvoiceDao {
 	
 	public long add(Invoice invoice) throws CyBssException;
+	public void update(Invoice invoice) throws CyBssException;
 	
 	public List<Invoice> find(long companyId, 
 			long tpCompanyId, String tpCompanyCode, String tpCompanyName,

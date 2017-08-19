@@ -52,6 +52,12 @@ public class InvoiceMysql extends CyBssMysqlDao
 		
 	}
 
+	@Override
+	public void update(Invoice invoice) throws CyBssException {
+		// TODO Auto-generated method stub
+		
+	}
+
 		
 		
 }

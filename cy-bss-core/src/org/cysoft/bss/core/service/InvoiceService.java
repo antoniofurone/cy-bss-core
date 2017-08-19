@@ -3,6 +3,7 @@ package org.cysoft.bss.core.service;
 import java.util.List;
 
 import org.cysoft.bss.core.common.CyBssException;
+import org.cysoft.bss.core.model.Billable;
 import org.cysoft.bss.core.model.Invoice;
 
 public interface InvoiceService {
@@ -15,4 +16,8 @@ public interface InvoiceService {
 	public Invoice get(String invoiceType,long id);
 	public void remove(String invoiceType,long id) throws CyBssException;
 	public void close(String invoiceType,long id) throws CyBssException;
+	public List<Billable> getBillables(String invoiceType,long id) throws CyBssException;
+	public void linkBillable(String invoiceType,long id,long billableId) throws CyBssException;
+	public void unLinkBillable(String invoiceType,long id,long billableId) throws CyBssException;
+	
 }
