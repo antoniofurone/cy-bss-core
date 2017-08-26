@@ -1,5 +1,6 @@
 package org.cysoft.bss.core.service.impl;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.cysoft.bss.core.common.CyBssException;
@@ -9,7 +10,9 @@ import org.cysoft.bss.core.dao.ObjectDao;
 import org.cysoft.bss.core.dao.PurchaseDao;
 import org.cysoft.bss.core.model.Billable;
 import org.cysoft.bss.core.model.BillableCost;
+import org.cysoft.bss.core.model.Invoice;
 import org.cysoft.bss.core.model.Purchase;
+import org.cysoft.bss.core.service.InvoiceService;
 import org.cysoft.bss.core.service.PurchaseService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -41,6 +44,13 @@ public class PurchaseServiceImpl extends CyBssServiceImpl
 	public void setObjectDao(ObjectDao objectDao){
 			this.objectDao=objectDao;
 	}
+	
+	protected InvoiceService invoiceService=null;
+	@Autowired
+	public void setInvoiceService(InvoiceService invoiceService){
+			this.invoiceService=invoiceService;
+	}
+	
 	
 	@Override
 	public long add(final Purchase purchase) throws CyBssException {
@@ -92,11 +102,24 @@ public class PurchaseServiceImpl extends CyBssServiceImpl
 			protected void doInTransactionWithoutResult(TransactionStatus txStatus) {
 				// TODO Auto-generated method stub
 				
-				billableCostDao.removeByPurchase(id);
-				List<Billable> billables=billableCostDao.getBilledByPurchase(id);
 				try {
 					
+					List<Billable> billables=billableCostDao.getByPurchase(id);
+					List<Long> invoiceIds=new ArrayList<Long>();
 					for(Billable billable:billables){
+						if (!billable.isBilled() && billable.isLinkedToInvoice())
+							if (invoiceIds.contains(billable.getInvoiceId()))
+								invoiceIds.add(billable.getInvoiceId());
+					}
+					for(long invoiceId:invoiceIds){
+						invoiceService.updateAmounts(Invoice.TYPE_PASSIVE, invoiceId);
+					}
+					
+					billableCostDao.removeByPurchase(id);
+					
+					List<Billable> billedBillables=billableCostDao.getBilledByPurchase(id);
+					
+					for(Billable billable:billedBillables){
 						
 						billable.setQty(billable.getQty()*-1);
 						billable.setAmount(billable.getAmount()*-1);
@@ -140,9 +163,28 @@ public class PurchaseServiceImpl extends CyBssServiceImpl
 			@Override
 			protected void doInTransactionWithoutResult(TransactionStatus txStatus) {
 				// TODO Auto-generated method stub
+					
+				try {
+					
+					List<Billable> billables=billableCostDao.getByPurchase(id);
+					List<Long> invoiceIds=new ArrayList<Long>();
+					for(Billable billable:billables){
+						if (!billable.isBilled() && billable.isLinkedToInvoice())
+							if (invoiceIds.contains(billable.getInvoiceId()))
+								invoiceIds.add(billable.getInvoiceId());
+					}
+					for(long invoiceId:invoiceIds){
+						invoiceService.updateAmounts(Invoice.TYPE_PASSIVE, invoiceId);
+					}
+				
 					billableCostDao.removeByPurchase(id);
 					objectDao.removeAttributeValues(id, Purchase.ENTITY_NAME);
 					purchaseDao.remove(id);
+				} catch (CyBssException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+					throw new RuntimeException(e);
+				}	
 			}
 		});
 	}

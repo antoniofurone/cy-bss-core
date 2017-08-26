@@ -1,14 +1,14 @@
 package org.cysoft.bss.core.service.impl;
 
+import org.cysoft.bss.core.common.CyBssMessageSource;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.MessageSource;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 
 public class CyBssServiceImpl{
 	
-	protected MessageSource msgSource;
+	protected CyBssMessageSource msgSource;
 	@Autowired
-	public void setMessageSource(MessageSource msgSource){
+	public void setMessageSource(CyBssMessageSource msgSource){
 		this.msgSource=msgSource;
 	}
 	

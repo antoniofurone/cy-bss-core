@@ -14,6 +14,8 @@ public interface ICyBssResultConst {
 	public final static String RESULT_STATUS_CANNOT="09";
 	public final static String RESULT_COMPANYCODE_USED="10";
 	public final static String RESULT_INVOICE_TYPE_INVALID="11";
+	public final static String RESULT_CURRENCY_DIFF="12";
+	
 	
 	public final static String RESULT_D_OK= "result.ok";
 	public final static String RESULT_D_LOGON_NOK= "result.logon.nok";
@@ -27,5 +29,6 @@ public interface ICyBssResultConst {
 	public final static String RESULT_D_STATUS_CANNOT="result.status.cannot";
 	public final static String RESULT_D_COMPANYCODE_USED="result.companycode.used";
 	public final static String RESULT_D_INVOICE_TYPE_INVALID="result.invoice.type.invalid";
+	public final static String RESULT_D_CURRENCY_DIFF="result.invoice.currency.diff";
 	
 }

@@ -63,4 +63,10 @@ implements BillableDao{
 		return null;
 	}
 
+	@Override
+	public List<Billable> getByPurchase(long purchaseId) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }

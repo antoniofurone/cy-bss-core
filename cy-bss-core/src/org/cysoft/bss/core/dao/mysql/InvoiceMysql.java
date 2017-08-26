@@ -21,7 +21,7 @@ public class InvoiceMysql extends CyBssMysqlDao
 	}
 
 	@Override
-	public List<Invoice> find(long companyId, long customerId, String customerCode, String customerName, long personId,
+	public List<Invoice> find(int number,int year,long companyId, long customerId, String customerCode, String customerName, long personId,
 			String personCode, String personName, String fromDate, String toDate)
 					throws CyBssException {
 		// TODO Auto-generated method stub

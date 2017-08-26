@@ -56,7 +56,7 @@ public class PassiveInvoiceMysql extends CyBssMysqlDao
 	}
 
 	@Override
-	public List<Invoice> find(long companyId, long supplierId, String supplierCode, String supplierName, long personId,
+	public List<Invoice> find(int number,int year,long companyId, long supplierId, String supplierCode, String supplierName, long personId,
 			String personCode, String personName,  String fromDate, String toDate)
 					throws CyBssException {
 		// TODO Auto-generated method stub
@@ -74,7 +74,7 @@ public class PassiveInvoiceMysql extends CyBssMysqlDao
 		query+="a.AMOUNT,a.VAT_AMOUNT,a.TOT_AMOUNT,";
 		query+="a.NOTE,a.CANCELLED,a.STRING_NUMBER";
 		query+=" from BSSV_PASSIVE_INVOICE a";
-		if (companyId!=0 || 
+		if (companyId!=0 || number!=0 || year!=0 || 
 			supplierId!=0 || !supplierCode.equals("") || !supplierName.equals("") ||
 			personId!=0 || !personCode.equals("") || !personName.equals("") ||
 			!fromDate.equals("") || !toDate.equals(""))
@@ -82,6 +82,16 @@ public class PassiveInvoiceMysql extends CyBssMysqlDao
 		
 		boolean insAnd=false;
 		List<Object> parms=new ArrayList<Object>();
+		if (number!=0){
+			query+=(insAnd?" AND":"")+" a.NUMBER=?";
+			insAnd=true;
+			parms.add(number);
+		}
+		if (year!=0){
+			query+=(insAnd?" AND":"")+" a.YEAR=?";
+			insAnd=true;
+			parms.add(year);
+		}
 		if (companyId!=0){
 			query+=(insAnd?" AND":"")+" a.COMPANY_ID=?";
 			insAnd=true;
@@ -156,7 +166,7 @@ public class PassiveInvoiceMysql extends CyBssMysqlDao
 
 		
 		JdbcTemplate jdbcTemplate = new JdbcTemplate(tx.getDataSource());
-		logger.info(query+"[companyId="+companyId
+		logger.info(query+"[number="+number+";year="+year+"companyId="+companyId
 				+";supplierId="+supplierId+";supplierCode="+supplierCode+";supplierName="+supplierName
 				+";personId="+personId+";personCode="+personCode+";personName="+personName
 				+";fromDate="+fromDate+";toDate="+toDate
@@ -322,7 +332,8 @@ public class PassiveInvoiceMysql extends CyBssMysqlDao
 		// TODO Auto-generated method stub
 		logger.info("PassiveInvoiceMysql.update() >>>");
 		
-		String cmd="update BSST_PIN_PASSIVE_INVOICE set PIN_N_AMOUNT=?,PIN_N_VAT_AMOUNT=?,PIN_N_TOT_AMOUNT=?";
+		String cmd="update BSST_PIN_PASSIVE_INVOICE set PIN_N_AMOUNT=?,PIN_N_VAT_AMOUNT=?,PIN_N_TOT_AMOUNT=?,";
+		cmd+="PIN_D_DATE=?,PIN_N_YEAR=?,PIN_S_NOTE=?";
 		cmd+=" where PIN_N_INVOICE_ID=?";
 		
 		JdbcTemplate jdbcTemplate = new JdbcTemplate(tx.getDataSource());
@@ -333,9 +344,12 @@ public class PassiveInvoiceMysql extends CyBssMysqlDao
 					invoice.getAmount(),
 					invoice.getVatAmount(),
 					invoice.getTotAmount(),
+					CyBssUtility.tryStringToDate(invoice.getDate()),
+					CyBssUtility.getYear(CyBssUtility.tryStringToDate(invoice.getDate())),
+					(invoice.getNote()==null || invoice.getNote().equals(""))?null:invoice.getNote(),
 					invoice.getId()
 				});
-		} catch (DataAccessException e) {
+		} catch (DataAccessException | ParseException e) {
 			// TODO Auto-generated catch block
 			logger.error(e.toString());
 			throw new CyBssException(e);

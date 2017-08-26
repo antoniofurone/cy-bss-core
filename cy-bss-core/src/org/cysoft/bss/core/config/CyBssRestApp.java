@@ -2,6 +2,7 @@ package org.cysoft.bss.core.config;
 
 
 import org.cysoft.bss.core.common.CyBssDataSource;
+import org.cysoft.bss.core.common.CyBssMessageSource;
 import org.cysoft.bss.core.dao.AppDao;
 import org.cysoft.bss.core.dao.BillableDao;
 import org.cysoft.bss.core.dao.CityDao;
@@ -48,13 +49,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
-import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Description;
 import org.springframework.context.annotation.PropertySource;
-import org.springframework.context.support.ReloadableResourceBundleMessageSource;
 import org.springframework.core.env.Environment;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.scheduling.annotation.EnableAsync;
@@ -80,8 +79,8 @@ public class CyBssRestApp {
 	
 	 @Bean
 	 @Description("Message Source Rest")
-	 public MessageSource messageSource(){
-		ReloadableResourceBundleMessageSource ms=new ReloadableResourceBundleMessageSource();
+	 public CyBssMessageSource messageSource(){
+		CyBssMessageSource ms=new CyBssMessageSource();
 		ms.setBasename("/WEB-INF/messages/messages");
 		ms.setDefaultEncoding("UTF-8");
 		return ms;

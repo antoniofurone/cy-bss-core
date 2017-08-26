@@ -315,4 +315,29 @@ public class BillableCostMysql extends CyBssMysqlDao
 		}
 	}
 
+	@Override
+	public List<Billable> getByPurchase(long purchaseId) {
+		// TODO Auto-generated method stub
+		String query="select ID,PURCHASE_ID,INVOICE_ID,";
+		query+="COMPANY_ID,COMPANY_CODE,COMPANY_NAME,";
+		query+="PRODUCT_ID,PRODUCT_NAME,";
+		query+="SUPPLIER_ID,SUPPLIER_CODE,SUPPLIER_NAME,";
+		query+="PERSON_ID,PERSON_CODE,PERSON_FIRST_NAME,PERSON_SECOND_NAME,";
+		query+="COMPONENT_ID,COMPONENT_CODE,COMPONENT_NAME,";
+		query+="COMPONENT_TYPE_CODE,COMPONENT_TYPE_NAME,";
+		query+="QTY_UM_ID,QTY_UM_SIMBOL,QTY,";
+		query+="CURRENCY_ID,CURRENCY_CODE,CURRENCY_NAME,";
+		query+="PRICE, AMOUNT,VAT,VAT_AMOUNT,TOT_AMOUNT,";
+		query+="DATE,DATE_START,DATE_END,TYPE,BILLED,UPDATE_DATE";
+		
+		query+=" from BSSV_BILLABLE_COST";
+		query+=" where PURCHASE_ID=?";
+		
+		JdbcTemplate jdbcTemplate = new JdbcTemplate(tx.getDataSource());
+		logger.info(query+"["+purchaseId+"]");
+		List<Billable> ret=jdbcTemplate.query(query, new Object[]{purchaseId},new RowMapperBillableCost());
+				
+		return ret;
+	}
+
 }

@@ -10,7 +10,7 @@ public interface InvoiceDao {
 	public long add(Invoice invoice) throws CyBssException;
 	public void update(Invoice invoice) throws CyBssException;
 	
-	public List<Invoice> find(long companyId, 
+	public List<Invoice> find(int number,int year,long companyId, 
 			long tpCompanyId, String tpCompanyCode, String tpCompanyName,
 			long personId, String personCode, String personName,
 			String fromDate,String toDate) throws CyBssException;

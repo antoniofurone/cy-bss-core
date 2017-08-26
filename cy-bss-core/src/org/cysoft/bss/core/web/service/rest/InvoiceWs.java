@@ -86,6 +86,8 @@ public class InvoiceWs extends CyBssWebServiceAdapter
 	public InvoiceListResponse find(
 			@RequestHeader("Security-Token") String securityToken,
 			@PathVariable("invoiceType") String invoiceType,
+			@RequestParam(value="number", required=false, defaultValue="0") Integer number,
+			@RequestParam(value="year", required=false, defaultValue="0") Integer year,
 			@RequestParam(value="companyId", required=false, defaultValue="0") Integer companyId,
 			@RequestParam(value="tpCompanyId", required=false, defaultValue="0") Integer tpCompanyId,
 			@RequestParam(value="tpCompanyCode", required=false, defaultValue="") String tpCompanyCode,
@@ -102,7 +104,7 @@ public class InvoiceWs extends CyBssWebServiceAdapter
 			) throws CyBssException{
 	
 		
-		logger.info("InvoiceWs.find() >>> compayId="+companyId+
+		logger.info("InvoiceWs.find() >>> number="+number+";year="+year+";companyId="+companyId+
 				";invoiceType="+invoiceType+
 				";tpCompanyId="+tpCompanyId+";tpCompanyCode="+tpCompanyCode+";tpCompanyName="+tpCompanyName+
 				";personId="+personId+";personCode="+personCode+";personName="+personName+
@@ -117,6 +119,8 @@ public class InvoiceWs extends CyBssWebServiceAdapter
 		if (!checkGrant(response,securityToken,"find",
 			String.class,
 			String.class,
+			Integer.class,
+			Integer.class,
 			Integer.class,
 			Integer.class,String.class,String.class,
 			Integer.class,String.class,String.class,
@@ -135,7 +139,7 @@ public class InvoiceWs extends CyBssWebServiceAdapter
 			}
 		
 		invoiceType=invoiceType.toUpperCase();
-		List<Invoice> invoices=invoiceService.find(invoiceType,companyId,
+		List<Invoice> invoices=invoiceService.find(invoiceType,number,year,companyId,
 				tpCompanyId,tpCompanyCode,tpCompanyName,
 				personId,personCode,personName,
 				attrName,attrValue,
@@ -190,6 +194,51 @@ public class InvoiceWs extends CyBssWebServiceAdapter
 		logger.info("InvoiceWs.get() <<< ");
 		return response;
 	}
+	
+	@RequestMapping(value = "/{invoiceType}/{id}/update",method = RequestMethod.POST)
+	@CyBssOperation(name = "update")
+	public InvoiceResponse update(
+			@RequestHeader("Security-Token") String securityToken,
+			@PathVariable("id") Long id,
+			@PathVariable("invoiceType") String invoiceType,
+			@RequestBody Invoice invoice
+			) throws CyBssException
+	{
+		InvoiceResponse response=new InvoiceResponse();
+		
+		logger.info("InvoiceWs.update() >>> id="+id);
+		
+		// checkGrant
+		if (!checkGrant(response,securityToken,"update",String.class,Long.class,String.class,Invoice.class))
+			return response;
+		// end checkGrant 
+		
+		if (!invoiceType.equalsIgnoreCase(Invoice.TYPE_ACTIVE) &&
+				!invoiceType.equalsIgnoreCase(Invoice.TYPE_PASSIVE)){
+				setResult(response, ICyBssResultConst.RESULT_INVOICE_TYPE_INVALID, 
+						ICyBssResultConst.RESULT_D_INVOICE_TYPE_INVALID,response.getLanguageCode());
+				return response;
+			}
+		invoice.setInvoiceType(invoiceType.toUpperCase());
+		
+		Invoice _invoice=invoiceService.get(invoice.getInvoiceType(), id);
+		if (_invoice==null || _invoice.getNumber()!=0){
+			setResult(response, ICyBssResultConst.RESULT_NOT_FOUND, 
+					ICyBssResultConst.RESULT_D_NOT_FOUND,response.getLanguageCode());
+			return response;
+		}
+		
+		if (invoice.getDate()==null || invoice.getDate().equals(""))
+			invoice.setDate(CyBssUtility.dateToString(CyBssUtility.getCurrentDate(),CyBssUtility.DATE_yyyy_MM_dd));
+		
+		invoiceService.update(id, invoice);
+		response.setInvoice(invoiceService.get(invoiceType, id));
+		
+		logger.info("InvoiceWs.update() <<<");
+		return response;
+	}
+
+	
 	
 	
 	@RequestMapping(value = "/{invoiceType}/{id}/remove",method = RequestMethod.GET)

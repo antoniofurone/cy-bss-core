@@ -25,6 +25,9 @@ public abstract class Billable {
 	public void setInvoiceId(long invoiceId) {
 		this.invoiceId = invoiceId;
 	}
+	public boolean isLinkedToInvoice(){
+		return invoiceId!=0?false:true;
+	}
 
 	private long companyId;
 	private String companyCode="";
@@ -287,6 +290,10 @@ public abstract class Billable {
 	public void setBilled(String billed) {
 		this.billed = billed;
 	}
+	public boolean isBilled(){
+		return billed.equalsIgnoreCase("Y")?true:false;
+	}
+	
 	
 	private PriceComponent component=null;
 	public PriceComponent getComponent() {

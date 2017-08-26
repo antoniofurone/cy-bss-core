@@ -9,7 +9,9 @@ import org.cysoft.bss.core.model.Invoice;
 public interface InvoiceService {
 	
 	public long add(Invoice invoice) throws CyBssException;
-	public List<Invoice> find(String invoiceType,long companyId, 
+	public void update(long id,Invoice invoice) throws CyBssException;
+	public void updateAmounts(String invoiceType,long id) throws CyBssException;
+	public List<Invoice> find(String invoiceType,int number,int year,long companyId, 
 			long tpCompanyId, String tpCompanyCode, String tpCompanyName,
 			long personId, String personCode, String personName,
 			String attrName, String attrValue,String fromDate,String toDate) throws CyBssException;
