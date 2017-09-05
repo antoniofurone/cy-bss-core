@@ -22,7 +22,7 @@ import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import org.springframework.transaction.support.TransactionTemplate;
 
 @Service
-public class PurchaseServiceImpl extends CyBssServiceImpl 
+public class PurchaseServiceImpl extends CyBssServiceBase 
 	implements PurchaseService 
 		
 {
@@ -167,19 +167,21 @@ public class PurchaseServiceImpl extends CyBssServiceImpl
 				try {
 					
 					List<Billable> billables=billableCostDao.getByPurchase(id);
+					
+					billableCostDao.removeByPurchase(id);
+					objectDao.removeAttributeValues(id, Purchase.ENTITY_NAME);
+					purchaseDao.remove(id);
+			
 					List<Long> invoiceIds=new ArrayList<Long>();
 					for(Billable billable:billables){
 						if (!billable.isBilled() && billable.isLinkedToInvoice())
-							if (invoiceIds.contains(billable.getInvoiceId()))
+							if (!invoiceIds.contains(billable.getInvoiceId()))
 								invoiceIds.add(billable.getInvoiceId());
 					}
 					for(long invoiceId:invoiceIds){
 						invoiceService.updateAmounts(Invoice.TYPE_PASSIVE, invoiceId);
 					}
 				
-					billableCostDao.removeByPurchase(id);
-					objectDao.removeAttributeValues(id, Purchase.ENTITY_NAME);
-					purchaseDao.remove(id);
 				} catch (CyBssException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -198,6 +200,7 @@ public class PurchaseServiceImpl extends CyBssServiceImpl
 		billableCost.setCompanyId(purchase.getCompanyId());
 		billableCost.setProductId(purchase.getProductId());
 		billableCost.setSupplierId(purchase.getSupplierId());
+		billableCost.setPersonId(purchase.getPersonId());
 		
 		billableCost.setQty(purchase.getQty());
 		billableCost.setQtyUmId(purchase.getQtyUmId());

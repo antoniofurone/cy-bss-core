@@ -1,4 +1,4 @@
-package org.cysoft.bss.core.dao;
+package org.cysoft.bss.core.service;
 
 import java.util.List;
 
@@ -8,10 +8,11 @@ import org.cysoft.bss.core.model.CompanyDept;
 import org.cysoft.bss.core.model.CompanyPerson;
 import org.cysoft.bss.core.model.PersonRole;
 
-public interface CompanyDao {
+public interface CompanyService {
+	
 	public long add(Company company) throws CyBssException;
 	public long addDept(CompanyDept dept) throws CyBssException;
-	public void addPerson(long personId,long deptId, long roleId); 
+	public void addPerson(CompanyPerson companyPerson,String languageCode) throws CyBssException; 
 	public void addSubs(long id,long subsId);
 	
 	public void update(long id,Company company) throws CyBssException;
@@ -24,13 +25,8 @@ public interface CompanyDao {
 	public List<Company> find(String code,String name);
 	
 	public void remove(long id) throws CyBssException;
-	
 	public void removeDept(long deptId) throws CyBssException;
-	public void removeDeptByCompany(long id) throws CyBssException;
-	
 	public void removePerson(long personId,long deptId);
-	public void removePersonByCompany(long id);
-	
 	public void removeSubs(long id,long subsId);
 		
 	public Company getByCode(String code);
@@ -46,4 +42,5 @@ public interface CompanyDao {
 	public Company getManaged(long id) throws CyBssException;
 	public List<Company> getManagedAll();
 	public void removeManaged(long id) throws CyBssException;	
+
 }

@@ -1,10 +1,11 @@
 package org.cysoft.bss.core.service.impl;
 
 import org.cysoft.bss.core.common.CyBssMessageSource;
+import org.cysoft.bss.core.dao.LanguageDao;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 
-public class CyBssServiceImpl{
+public abstract class CyBssServiceBase{
 	
 	protected CyBssMessageSource msgSource;
 	@Autowired
@@ -16,6 +17,12 @@ public class CyBssServiceImpl{
 	@Autowired
 	public void setTransactionManager(DataSourceTransactionManager tx){
 			this.tx=tx;
+	}
+	
+	protected LanguageDao languageDao=null;
+	@Autowired
+	public void setLanguageDao(LanguageDao languageDao){
+			this.languageDao=languageDao;
 	}
 	
 }

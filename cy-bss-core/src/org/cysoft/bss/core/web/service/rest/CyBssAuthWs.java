@@ -37,12 +37,12 @@ public class CyBssAuthWs extends CyBssWebServiceAdapter
 		
 		CyBssAuthLogOn auth=new CyBssAuthLogOn(); 
 		
-		if (authDao.logOn(pUser.getUserId(), pUser.getPwd())){
+		if (authService.logOn(pUser.getUserId(), pUser.getPwd())){
 			setResult(auth, ICyBssResultConst.RESULT_OK, ICyBssResultConst.RESULT_D_OK);
 			
 			String securityToken=CyBssUtility.genToken(pUser.getUserId());
-			User user=userDao.getByUserId(pUser.getUserId());
-			authDao.createSession(user.getId(),securityToken);
+			User user=userService.getByUserId(pUser.getUserId());
+			authService.createSession(user.getId(),securityToken);
 			
 			auth.setSecurityToken(securityToken);
 			auth.setUser(user);
@@ -73,7 +73,7 @@ public class CyBssAuthWs extends CyBssWebServiceAdapter
 				return response;
 		// end checkGrant 
 		
-		authDao.discardSession(securityToken);
+		authService.discardSession(securityToken);
 		
 		return response;
 	}

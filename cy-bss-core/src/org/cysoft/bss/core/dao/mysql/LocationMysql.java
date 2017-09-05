@@ -10,8 +10,6 @@ import org.cysoft.bss.core.common.CyBssException;
 import org.cysoft.bss.core.common.CyBssUtility;
 import org.cysoft.bss.core.dao.FileDao;
 import org.cysoft.bss.core.dao.LocationDao;
-import org.cysoft.bss.core.model.Company;
-import org.cysoft.bss.core.model.CyBssFile;
 import org.cysoft.bss.core.model.Location;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,9 +18,6 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallbackWithoutResult;
-import org.springframework.transaction.support.TransactionTemplate;
 
 public class LocationMysql extends CyBssMysqlDao
 	implements LocationDao{
@@ -42,7 +37,7 @@ public class LocationMysql extends CyBssMysqlDao
 		cmd+=" values ";
 		cmd+=" (?,now(),?,?,?,?,?,?,?,?,?)";
 	
-		JdbcTemplate jdbcTemplate = new JdbcTemplate(ds);
+		JdbcTemplate jdbcTemplate = new JdbcTemplate(tx.getDataSource());
 		logger.info(cmd+"["+location+"]");
 		
 		try {
@@ -69,62 +64,55 @@ public class LocationMysql extends CyBssMysqlDao
 	@Override
 	public void addUpdLang(final Location location) throws CyBssException {
 		// TODO Auto-generated method stub
+		Location loc0=get(location.getId(),location.getLangId()); 
+		if (loc0==null)
+			throw new RuntimeException("Loc<"+location.getId()+"> not found !");
+	
+		logger.info("l0.getLangId:"+loc0.getLangId()+";"+location.getLangId());
 		
-		TransactionTemplate txTemplate=new TransactionTemplate(tx);
-		txTemplate.execute(new TransactionCallbackWithoutResult(){
-
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus arg0) {
-				// TODO Auto-generated method stub
-				Location loc0=get(location.getId(),location.getLangId()); 
-				if (loc0==null)
-					throw new RuntimeException("Loc<"+location.getId()+"> not found !");
-			
-				if (loc0.getLangId()!=location.getLangId()){
-					String cmd="insert into BSST_LLA_LOCATION_LANG(LOC_N_LOCATION_ID,LAN_N_LANG_ID,LLA_S_NAME,LLA_S_DESC)";
-					cmd+=" values ";
-					cmd+=" (?,?,?,?)";
-				
-					JdbcTemplate jdbcTemplate = new JdbcTemplate(tx.getDataSource());
-					logger.info(cmd+"["+location+"]");
-				
-					try {
-						jdbcTemplate.update(cmd, new Object[]{
-								location.getId(),
-								location.getLangId(),
-								location.getName(),
-								location.getDescription()==null || location.getDescription().equals("") ?null:location.getDescription()  
-								});
-					} catch (DataAccessException e) {
-						// TODO Auto-generated catch block
-						logger.error(e.toString());
-						throw new RuntimeException(e);
-					}
-
-				}
-				else
-				{
-					String cmd="update BSST_LLA_LOCATION_LANG set LAN_N_LANG_ID=?,LLA_S_NAME=?,LLA_S_DESC=? where LOC_N_LOCATION_ID=?";
-					
-					JdbcTemplate jdbcTemplate = new JdbcTemplate(tx.getDataSource());
-					logger.info(cmd+"["+location+"]");
-				
-					try {
-						jdbcTemplate.update(cmd, new Object[]{
-								location.getLangId(),
-								location.getName(),
-								location.getDescription()==null || location.getDescription().equals("") ?null:location.getDescription(),
-								location.getId()
-								});
-					} catch (DataAccessException e) {
-						// TODO Auto-generated catch block
-						logger.error(e.toString());
-						throw new RuntimeException(e);
-					}
-				}
+		if (loc0.getLangId()!=location.getLangId()){
+			String cmd="insert into BSST_LLA_LOCATION_LANG(LOC_N_LOCATION_ID,LAN_N_LANG_ID,LLA_S_NAME,LLA_S_DESC)";
+			cmd+=" values ";
+			cmd+=" (?,?,?,?)";
+		
+			JdbcTemplate jdbcTemplate = new JdbcTemplate(tx.getDataSource());
+			logger.info(cmd+"["+location+"]");
+		
+			try {
+				jdbcTemplate.update(cmd, new Object[]{
+						location.getId(),
+						location.getLangId(),
+						location.getName(),
+						location.getDescription()==null || location.getDescription().equals("") ?null:location.getDescription()  
+						});
+			} catch (DataAccessException e) {
+				// TODO Auto-generated catch block
+				logger.error(e.toString());
+				throw new RuntimeException(e);
 			}
+
+		}
+		else
+		{
+			String cmd="update BSST_LLA_LOCATION_LANG set LAN_N_LANG_ID=?,LLA_S_NAME=?,LLA_S_DESC=? where LOC_N_LOCATION_ID=? and LAN_N_LANG_ID=?";
+			
+			JdbcTemplate jdbcTemplate = new JdbcTemplate(tx.getDataSource());
+			logger.info(cmd+"["+location+"]");
 		
-		});	
+			try {
+				jdbcTemplate.update(cmd, new Object[]{
+						location.getLangId(),
+						location.getName(),
+						location.getDescription()==null || location.getDescription().equals("") ?null:location.getDescription(),
+						location.getId(), 
+						location.getLangId()
+						});
+			} catch (DataAccessException e) {
+				// TODO Auto-generated catch block
+				logger.error(e.toString());
+				throw new RuntimeException(e);
+			}
+		}
 	}
 
 	@Override
@@ -133,7 +121,7 @@ public class LocationMysql extends CyBssMysqlDao
 		logger.info("LocationMysql.get() >>>");
 		
 		// TODO Auto-generated method stub
-		JdbcTemplate jdbcTemplate = new JdbcTemplate(ds);
+		JdbcTemplate jdbcTemplate = new JdbcTemplate(tx.getDataSource());
 		
 		
 		String query="select  a.LOC_N_LOCATION_ID,IFNULL(b.LLA_S_NAME,a.LOC_S_NAME) as LOC_S_NAME,LOC_D_CREATION_DATE,IFNULL(b.LLA_S_DESC,a.LOC_S_DESC) as LOC_S_DESC,LOC_S_TYPE,LOC_D_LAT,LOC_D_LNG,";
@@ -190,91 +178,26 @@ public class LocationMysql extends CyBssMysqlDao
 	@Override
 	public void remove(final long id) throws CyBssException {
 		// TODO Auto-generated method stub
-		
-		TransactionTemplate txTemplate=new TransactionTemplate(tx);
-		txTemplate.execute(new TransactionCallbackWithoutResult(){
-
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus arg0) {
-				// TODO Auto-generated method stub
-				JdbcTemplate jdbcTemplate = new JdbcTemplate(tx.getDataSource());
-				List<CyBssFile> files=fileDao.getByEntity(Location.ENTITY_NAME,id);
-				if (files!=null)
-					for(CyBssFile file:files){
-						String cmd="delete from BSST_FIL_FILE where FILE_N_FILE_ID=? ";
-						logger.info(cmd+"["+file.getId()+"]");
-						
-						jdbcTemplate.update(cmd, new Object[]{
-								file.getId()	
-							});
-						
-					}
-				
-				String cmd="delete from BSST_LLA_LOCATION_LANG where LOC_N_LOCATION_ID=?";
-				logger.info(cmd+"["+id+"]");
-				try {
-					jdbcTemplate.update(cmd, new Object[]{
-							id
-						});
-				} catch (DataAccessException e) {
-					// TODO Auto-generated catch block
-					logger.error(e.toString());
-					throw new RuntimeException(e);
-				}
-				
-				
-				cmd="delete from BSST_ATV_ATTR_VALUE where ATV_N_OBJ_INST_ID=? and ATT_N_ATTRIBUTE_ID in ";
-				cmd+="(select ATT_N_ATTRIBUTE_ID from BSST_ATT_ATTRIBUTE where OBJ_N_OBJECT_ID in (select OBJ_N_OBJECT_ID from BSST_OBJ_OBJECT where OBJ_S_ENTITY_NAME=?))";
-				logger.info(cmd+"["+id+","+Location.ENTITY_NAME+"]");
-				try {
-					jdbcTemplate.update(cmd, new Object[]{
-							id,Location.ENTITY_NAME
-						});
-				} catch (DataAccessException e) {
-					// TODO Auto-generated catch block
-					logger.error(e.toString());
-					throw new RuntimeException(e);
-				}
-				
-				
-				cmd="delete from BSST_ATV_ATTR_VALUE where ATV_N_OBJ_INST_ID=? and ATT_N_ATTRIBUTE_ID in ";
-				cmd+="(select ATT_N_ATTRIBUTE_ID from BSST_ATT_ATTRIBUTE where OBJ_N_OBJECT_ID in (select OBJ_N_OBJECT_ID from BSST_OBJ_OBJECT where OBJ_S_ENTITY_NAME=?))";
-				logger.info(cmd+"["+id+","+Location.ENTITY_NAME+"]");
-				try {
-					jdbcTemplate.update(cmd, new Object[]{
-							id,Company.ENTITY_NAME
-						});
-				} catch (DataAccessException e) {
-					// TODO Auto-generated catch block
-					logger.error(e.toString());
-					throw new RuntimeException(e);
-				}
-				
-
-				cmd="delete from BSST_LOC_LOCATION where LOC_N_LOCATION_ID=?";
-				logger.info(cmd+"["+id+"]");
-				try {
-					jdbcTemplate.update(cmd, new Object[]{
-							id
-						});
-				} catch (DataAccessException e) {
-					// TODO Auto-generated catch block
-					logger.error(e.toString());
-					throw new RuntimeException(e);
-				}
+		String cmd="delete from BSST_LOC_LOCATION where LOC_N_LOCATION_ID=?";
+		JdbcTemplate jdbcTemplate = new JdbcTemplate(tx.getDataSource());
+		logger.info(cmd+"["+id+"]");
+		try {
+			jdbcTemplate.update(cmd, new Object[]{
+					id
+				});
+		} catch (DataAccessException e) {
+			// TODO Auto-generated catch block
+			logger.error(e.toString());
+			throw new RuntimeException(e);
 			}
-		
-		});
-		
-		
-	}
+		}
 
 
 	@Override
 	public void removeLang(long id, long langId) throws CyBssException {
 		// TODO Auto-generated method stub
 		String cmd="delete from BSST_LLA_LOCATION_LANG where LOC_N_LOCATION_ID=? and LAN_N_LANG_ID=?";
-		JdbcTemplate jdbcTemplate = new JdbcTemplate(ds);
+		JdbcTemplate jdbcTemplate = new JdbcTemplate(tx.getDataSource());
 		logger.info(cmd+"["+id+","+langId+"]");
 		try {
 			jdbcTemplate.update(cmd, new Object[]{
@@ -288,10 +211,28 @@ public class LocationMysql extends CyBssMysqlDao
 	}
 
 	@Override
+	public void removeLang(long id) throws CyBssException {
+		// TODO Auto-generated method stub
+		String cmd="delete from BSST_LLA_LOCATION_LANG where LOC_N_LOCATION_ID=?";
+		JdbcTemplate jdbcTemplate = new JdbcTemplate(tx.getDataSource());
+		logger.info(cmd+"["+id+"]");
+		try {
+			jdbcTemplate.update(cmd, new Object[]{
+					id
+				});
+		} catch (DataAccessException e) {
+			// TODO Auto-generated catch block
+			logger.error(e.toString());
+			throw new CyBssException(e);
+		}
+	}
+	
+	
+	@Override
 	public List<Location> find(String name,String description,String locationType,long cityId,long personId,
 			String fromDate,String toDate,long langId) throws CyBssException {
 		// TODO Auto-generated method stub
-		JdbcTemplate jdbcTemplate = new JdbcTemplate(ds);
+		JdbcTemplate jdbcTemplate = new JdbcTemplate(tx.getDataSource());
 		
 		String query="select  a.LOC_N_LOCATION_ID,IFNULL(b.LLA_S_NAME,a.LOC_S_NAME) as LOC_S_NAME,LOC_D_CREATION_DATE,IFNULL(b.LLA_S_DESC,a.LOC_S_DESC) as LOC_S_DESC,LOC_S_TYPE,LOC_D_LAT,LOC_D_LNG,";
 		query+="a.LOC_S_ADDRESS,a.LOC_S_ZIP,a.CIT_N_CITY_ID,a.PER_N_PERSON_ID,PER_S_FIRST_NAME, PER_S_SECOND_NAME,a.USR_N_USER_ID,USR_S_USER_ID,IFNULL(b.LAN_N_LANG_ID,0) as LANG_ID";
@@ -382,7 +323,7 @@ public class LocationMysql extends CyBssMysqlDao
 		String cmd="update BSST_LOC_LOCATION set LOC_S_NAME=?,LOC_S_DESC=?,LOC_S_TYPE=?,LOC_D_LAT=?,LOC_D_LNG=?,LOC_S_ADDRESS=?,LOC_S_ZIP=?,CIT_N_CITY_ID=? ";
 		cmd+="where LOC_N_LOCATION_ID=?";
 		
-		JdbcTemplate jdbcTemplate = new JdbcTemplate(ds);
+		JdbcTemplate jdbcTemplate = new JdbcTemplate(tx.getDataSource());
 		logger.info(cmd+"["+id+","+location+"]");
 		
 		try {
@@ -402,6 +343,5 @@ public class LocationMysql extends CyBssMysqlDao
 			throw new CyBssException(e);
 		}
 	}
-
 	
 }

@@ -51,14 +51,14 @@ public class UserWs extends CyBssWebServiceAdapter
 				return response;
 		// end checkGrant 
 		
-		if (userDao.getByUserId(user.getUserId())!=null){
+		if (userService.getByUserId(user.getUserId())!=null){
 			setResult(response, ICyBssResultConst.RESULT_USERID_USED, 
 					ICyBssResultConst.RESULT_D_USERID_USED,response.getLanguageCode());
 			return response;
 		}
 		
-		userDao.add(user);
-		response.setUser(userDao.getByUserId(user.getUserId()));
+		userService.add(user);
+		response.setUser(userService.getByUserId(user.getUserId()));
 		
 		logger.info("UserWs.add() <<<");
 		
@@ -83,14 +83,14 @@ public class UserWs extends CyBssWebServiceAdapter
 			return response;
 		// end checkGrant 
 		
-		if (userDao.get(id)==null){
+		if (userService.get(id)==null){
 			setResult(response, ICyBssResultConst.RESULT_NOT_FOUND, 
 					ICyBssResultConst.RESULT_D_NOT_FOUND,response.getLanguageCode());
 			return response;
 			}
 		
-		userDao.update(id, user);
-		response.setUser(userDao.get(id));
+		userService.update(id, user);
+		response.setUser(userService.get(id));
 		
 		logger.info("UserWs.update() <<<");
 		
@@ -116,7 +116,7 @@ public class UserWs extends CyBssWebServiceAdapter
 		// end checkGrant 
 				
 		
-		User user=userDao.get(id);
+		User user=userService.get(id);
 		if (user!=null)
 			response.setUser(user);
 		else
@@ -144,7 +144,7 @@ public class UserWs extends CyBssWebServiceAdapter
 		// end checkGrant 
 				
 		
-		User user=userDao.getByUserId(userId);
+		User user=userService.getByUserId(userId);
 		if (user!=null)
 			response.setUser(user);
 		else
@@ -174,8 +174,8 @@ public class UserWs extends CyBssWebServiceAdapter
 			return response;
 		// end checkGrant 
 		
-		userDao.enableDisable(id,false);
-		response.setUser(userDao.get(id));
+		userService.enableDisable(id,false);
+		response.setUser(userService.get(id));
 		
 		logger.info("UserWs.disable() <<< ");
 		return response;
@@ -196,8 +196,8 @@ public class UserWs extends CyBssWebServiceAdapter
 			return response;
 		// end checkGrant 
 		
-		userDao.enableDisable(id,true);
-		response.setUser(userDao.get(id));
+		userService.enableDisable(id,true);
+		response.setUser(userService.get(id));
 		
 		logger.info("UserWs.enable() <<< ");
 		
@@ -220,7 +220,7 @@ public class UserWs extends CyBssWebServiceAdapter
 			return response;
 		// end checkGrant 
 		
-		userDao.remove(id);
+		userService.remove(id);
 		
 		logger.info("UserWs.remove() <<< ");
 		
@@ -243,8 +243,8 @@ public class UserWs extends CyBssWebServiceAdapter
 			return response;
 		// end checkGrant 
 		
-		userDao.updatePeson(id, 0);
-		User user=userDao.get(id);
+		userService.updatePeson(id, 0);
+		User user=userService.get(id);
 		if (user!=null)
 			response.setUser(user);
 		else
@@ -273,9 +273,9 @@ public class UserWs extends CyBssWebServiceAdapter
 			return response;
 		// end checkGrant 
 		
-		userDao.updatePeson(id, personId);
+		userService.updatePeson(id, personId);
 		
-		User user=userDao.get(id);
+		User user=userService.get(id);
 		if (user!=null)
 			response.setUser(user);
 		else
@@ -305,7 +305,7 @@ public class UserWs extends CyBssWebServiceAdapter
 			return response;
 		// end checkGrant 
 		
-		PwdEncrypted oldPwd=userDao.getPwd(id);
+		PwdEncrypted oldPwd=userService.getPwd(id);
 		
 		if (oldPwd==null){
 			setResult(response, ICyBssResultConst.RESULT_NOT_FOUND, 
@@ -319,7 +319,7 @@ public class UserWs extends CyBssWebServiceAdapter
 			return response;
 		}
 		
-		userDao.changPwd(id, changePwd.getNewPwd());
+		userService.changPwd(id, changePwd.getNewPwd());
 		
 		logger.info("UserWs.changePwd() <<< ");
 		
@@ -347,7 +347,7 @@ public class UserWs extends CyBssWebServiceAdapter
 			return response;
 		// end checkGrant 
 		
-		List<User> users=userDao.find(name);
+		List<User> users=userService.find(name);
 		int lsize=users.size();
 		
 		if (offset!=0){
@@ -380,7 +380,7 @@ public class UserWs extends CyBssWebServiceAdapter
 		// end checkGrant 
 		
 		
-		List<UserRole> roles=userDao.getRoleAll();
+		List<UserRole> roles=userService.getRoleAll();
 		response.setRoles(roles);
 		
 		logger.info("UserWs.getRoleAll() <<<");

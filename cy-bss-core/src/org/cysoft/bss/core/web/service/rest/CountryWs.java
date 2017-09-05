@@ -3,8 +3,8 @@ package org.cysoft.bss.core.web.service.rest;
 import java.util.List;
 
 import org.cysoft.bss.core.common.CyBssException;
-import org.cysoft.bss.core.dao.CountryDao;
 import org.cysoft.bss.core.model.Country;
+import org.cysoft.bss.core.service.CountryService;
 import org.cysoft.bss.core.web.annotation.CyBssOperation;
 import org.cysoft.bss.core.web.annotation.CyBssService;
 import org.cysoft.bss.core.web.response.ICyBssResultConst;
@@ -31,10 +31,10 @@ implements ICyBssWebService{
 	
 	private static final Logger logger = LoggerFactory.getLogger(CountryWs.class);
 	
-	protected CountryDao countryDao=null;
+	protected CountryService countryService=null;
 	@Autowired
-	public void setCountryDao(CountryDao countryDao){
-			this.countryDao=countryDao;
+	public void setCountryService(CountryService countryService){
+			this.countryService=countryService;
 	}
 	
 	@RequestMapping(value = "/add",method = RequestMethod.POST)
@@ -55,7 +55,7 @@ implements ICyBssWebService{
 				
 		logger.info(country.toString());
 		
-		long id=countryDao.add(country);
+		long id=countryService.add(country);
 		country.setId(id);
 		response.setCountry(country);
 			
@@ -74,7 +74,7 @@ implements ICyBssWebService{
 		logger.info("CountryWs.get() >>> id="+id);
 		CountryResponse response=new CountryResponse();
 		
-		Country country=countryDao.get(id);
+		Country country=countryService.get(id);
 		if (country!=null)
 			response.setCountry(country);
 		else
@@ -102,14 +102,14 @@ implements ICyBssWebService{
 			return response;
 		// end checkGrant 
 		
-		if (countryDao.get(id)==null){
+		if (countryService.get(id)==null){
 			setResult(response, ICyBssResultConst.RESULT_NOT_FOUND, 
 					ICyBssResultConst.RESULT_D_NOT_FOUND,response.getLanguageCode());
 			return response;
 			}
 		
-		countryDao.update(id, country);
-		response.setCountry(countryDao.get(id));
+		countryService.update(id, country);
+		response.setCountry(countryService.get(id));
 		
 		logger.info("CountryWs.update() <<<");
 		return response;
@@ -124,7 +124,7 @@ implements ICyBssWebService{
 		
 		logger.info("CountryWs.getCountryAll() >>>");
 		CountryListResponse response=new CountryListResponse(); 
-		response.setCountries(countryDao.getCountryAll());
+		response.setCountries(countryService.getCountryAll());
 		return response;
 	}
 	
@@ -138,7 +138,7 @@ implements ICyBssWebService{
 		logger.info("CountryWs.find() >>> name="+name);
 		CountryListResponse response=new CountryListResponse();
 		
-		List<Country> countries=countryDao.find(name);
+		List<Country> countries=countryService.find(name);
 		response.setCountries(countries);
 		
 		logger.info("CountryWs.find() <<< ");
@@ -161,7 +161,7 @@ implements ICyBssWebService{
 			return response;
 		// end checkGrant 
 		
-		countryDao.remove(id);
+		countryService.remove(id);
 	
 		logger.info("CountryWs.remove() <<< ");
 	

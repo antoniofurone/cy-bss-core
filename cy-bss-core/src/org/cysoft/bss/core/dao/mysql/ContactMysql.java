@@ -258,6 +258,29 @@ implements ContactDao{
 		logger.info("ContactMysql.remove() <<<");
 		
 	}
+	
+	@Override
+	public void removeByEntityId(long entityId,String entityName) throws CyBssException{
+		logger.info("ContactMysql.removeByEntityId() >>>");
+		
+		String cmd="delete from BSST_CON_CONTACT where CON_N_ENTITY_ID=? and CON_S_ENTITY_NAME=?";
+		JdbcTemplate jdbcTemplate = new JdbcTemplate(ds);
+		
+		logger.info(cmd+"["+entityId+","+entityName+"]");
+		
+		try {
+			jdbcTemplate.update(cmd, new Object[]{
+					entityId,entityName
+				});
+		} catch (DataAccessException e) {
+			// TODO Auto-generated catch block
+			logger.error(e.toString());
+			throw new CyBssException(e);
+		} 
+		
+		logger.info("ContactMysql.removeByEntityId() <<<");
+		
+	}
 
 
 	@Override

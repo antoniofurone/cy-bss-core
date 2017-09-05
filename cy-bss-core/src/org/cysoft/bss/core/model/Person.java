@@ -76,6 +76,14 @@ public class Person {
 		this.city = city;
 	}
 
+	private String country="";
+	public String getCountry() {
+		return country;
+	}
+	public void setCountry(String country) {
+		this.country = country;
+	}
+
 	private String fiscalCode="";
 	public String getFiscalCode() {
 		return fiscalCode;
@@ -107,13 +115,14 @@ public class Person {
 	public void setBirthCity(String birthCity) {
 		this.birthCity = birthCity;
 	}
-	
 	@Override
 	public String toString() {
 		return "Person [id=" + id + ", code=" + code + ", firstName=" + firstName + ", secondName=" + secondName
 				+ ", gender=" + gender + ", address=" + address + ", zipCode=" + zipCode + ", cityId=" + cityId
-				+ ", city=" + city + ", fiscalCode=" + fiscalCode + ", birtyDay=" + birthDay + ", birtyCityId="
-				+ birthCityId + ", birtyCity=" + birthCity + "]";
+				+ ", city=" + city + ", country=" + country + ", fiscalCode=" + fiscalCode + ", birthDay=" + birthDay
+				+ ", birthCityId=" + birthCityId + ", birthCity=" + birthCity + "]";
 	}
+	
+	
 	
 }

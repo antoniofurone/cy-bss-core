@@ -14,7 +14,7 @@ import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import org.springframework.transaction.support.TransactionTemplate;
 
 @Service
-public class ObjectServiceImpl extends CyBssServiceImpl 
+public class ObjectServiceImpl extends CyBssServiceBase 
 implements ObjectService {
 
 	protected ObjectDao objectDao=null;

@@ -27,7 +27,7 @@ public class CityMysql extends CyBssMysqlDao
 		
 		String query="select ID,NAME,CODE,STATE_REGION,LATITUDE,LONGITUDE,COUNTRY_ID,COUNTRY_CODE,COUNTRY_NAME from BSSV_CITY";
 		
-		JdbcTemplate jdbcTemplate = new JdbcTemplate(ds);
+		JdbcTemplate jdbcTemplate = new JdbcTemplate(tx.getDataSource());
 		logger.info(query);
 		
 		List<City> ret = jdbcTemplate.query(
@@ -70,7 +70,7 @@ public class CityMysql extends CyBssMysqlDao
 		
 		String cmd="insert into BSST_CIT_CITY(CIT_S_NAME,CIT_S_CODE,CIT_S_STATE_REGION,CIT_D_LOC_LAT,CIT_D_LOC_LNG,CON_N_COUNTRY_ID) ";
 		cmd+=" values (?,?,?,?,?,?)";
-		JdbcTemplate jdbcTemplate = new JdbcTemplate(ds);
+		JdbcTemplate jdbcTemplate = new JdbcTemplate(tx.getDataSource());
 		logger.info(cmd+"["+city+"]");
 		
 		try {
@@ -100,7 +100,7 @@ public class CityMysql extends CyBssMysqlDao
 		
 		String cmd="update BSST_CIT_CITY set CIT_S_NAME=?,CIT_S_CODE=?,CIT_S_STATE_REGION=?,CIT_D_LOC_LAT=?,CIT_D_LOC_LNG=?,CON_N_COUNTRY_ID=? ";
 		cmd+="where CIT_N_CITY_ID=?";
-		JdbcTemplate jdbcTemplate = new JdbcTemplate(ds);
+		JdbcTemplate jdbcTemplate = new JdbcTemplate(tx.getDataSource());
 		logger.info(cmd+"["+city+"]");
 		
 		try {
@@ -129,7 +129,7 @@ public class CityMysql extends CyBssMysqlDao
 		logger.info("CityMysql.get() >>>");
 		
 		// TODO Auto-generated method stub
-		JdbcTemplate jdbcTemplate = new JdbcTemplate(ds);
+		JdbcTemplate jdbcTemplate = new JdbcTemplate(tx.getDataSource());
 		
 		String query="select ID,NAME,CODE,STATE_REGION,LATITUDE,LONGITUDE,COUNTRY_ID,COUNTRY_CODE,COUNTRY_NAME from BSSV_CITY";
 		query+=" where ID=?";
@@ -154,7 +154,7 @@ public class CityMysql extends CyBssMysqlDao
 		logger.info("CityMysql.remove() >>>");
 		
 		String cmd="delete from BSST_CIT_CITY where CIT_N_CITY_ID=?";
-		JdbcTemplate jdbcTemplate = new JdbcTemplate(ds);
+		JdbcTemplate jdbcTemplate = new JdbcTemplate(tx.getDataSource());
 		logger.info(cmd+"["+id+"]");
 		
 		try {
@@ -203,7 +203,7 @@ public class CityMysql extends CyBssMysqlDao
 		}
 		query+=" order by NAME";
 		
-		JdbcTemplate jdbcTemplate = new JdbcTemplate(ds);
+		JdbcTemplate jdbcTemplate = new JdbcTemplate(tx.getDataSource());
 		logger.info(query+"[name="+name+";stateRegion="+stateRegion+";countryId="+countryId+"]");
 		
 		List<City> ret=jdbcTemplate.query(query, parms.toArray(),new RowMapperCity());

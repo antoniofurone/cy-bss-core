@@ -344,7 +344,7 @@ public class PurchaseMysql extends CyBssMysqlDao
 		String cmd="delete from BSST_PUR_PURCHASE where PUR_N_PURCHASE_ID=?";
 		logger.info(cmd+"["+id+"]");
 		jdbcTemplate.update(cmd, new Object[]{id});
-		logger.info("ProductMysql.remove() <<<");
+		logger.info("PurchaseMysql.remove() <<<");
 		
 	}
 	

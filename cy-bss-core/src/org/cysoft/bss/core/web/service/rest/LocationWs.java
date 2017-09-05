@@ -4,10 +4,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.cysoft.bss.core.common.CyBssException;
-import org.cysoft.bss.core.dao.FileDao;
-import org.cysoft.bss.core.dao.LocationDao;
 import org.cysoft.bss.core.model.Language;
 import org.cysoft.bss.core.model.Location;
+import org.cysoft.bss.core.service.FileService;
+import org.cysoft.bss.core.service.LocationService;
 import org.cysoft.bss.core.web.annotation.CyBssOperation;
 import org.cysoft.bss.core.web.annotation.CyBssService;
 import org.cysoft.bss.core.web.response.ICyBssResultConst;
@@ -35,16 +35,16 @@ implements ICyBssWebService{
 	
 	private static final Logger logger = LoggerFactory.getLogger(LocationWs.class);
 	
-	protected  LocationDao locationDao=null;
+	protected  LocationService locationService=null;
 	@Autowired
-	public void setLocationDao(LocationDao locationDao){
-			this.locationDao=locationDao;
+	public void setLocationService(LocationService locationService){
+			this.locationService=locationService;
 	}
 	
-	protected FileDao fileDao=null;
+	protected FileService fileService=null;
 	@Autowired
-	public void setFileDao(FileDao fileDao){
-			this.fileDao=fileDao;
+	public void setFileService(FileService fileService){
+			this.fileService=fileService;
 	}
 	
 	@RequestMapping(value = "/add",method = RequestMethod.POST)
@@ -64,7 +64,7 @@ implements ICyBssWebService{
 		// end checkGrant 
 		
 		location.setUserId(response.getUserId());
-		long locationId=locationDao.add(location);
+		long locationId=locationService.add(location);
 		location.setId(locationId);
 		response.setLocation(location);
 		
@@ -90,15 +90,15 @@ implements ICyBssWebService{
 			return response;
 		// end checkGrant 
 		
-		if (locationDao.get(id,0)==null){
+		if (locationService.get(id,0)==null){
 			setResult(response, ICyBssResultConst.RESULT_NOT_FOUND, 
 					ICyBssResultConst.RESULT_D_NOT_FOUND,response.getLanguageCode());
 			return response;
 			}
 		
 		
-		locationDao.update(id, location);
-		response.setLocation(locationDao.get(id,0));
+		locationService.update(id, location);
+		response.setLocation(locationService.get(id,0));
 		
 		logger.info("LocationWs.update() <<<");
 		
@@ -123,14 +123,14 @@ implements ICyBssWebService{
 				return response;
 		// end checkGrant 
 		
-		Location loc0=locationDao.get(id, location.getLangId());
+		Location loc0=locationService.get(id, location.getLangId());
 		if (loc0==null){
 			setResult(response, ICyBssResultConst.RESULT_NOT_FOUND, 
 					ICyBssResultConst.RESULT_D_NOT_FOUND,response.getLanguageCode());
 			return response;
 		}
 		location.setId(loc0.getId());
-		locationDao.addUpdLang(location);
+		locationService.addUpdLang(location);
 		
 		logger.info("LocationWs.addUpdLang() <<<");
 		
@@ -151,11 +151,11 @@ implements ICyBssWebService{
 		
 		Language language=null;
 		if (languageCode.equals(""))
-			language=languageDao.getLanguage(response.getLanguageCode());
+			language=languageService.getLanguage(response.getLanguageCode());
 		else	
-			language=languageDao.getLanguage(languageCode);
+			language=languageService.getLanguage(languageCode);
 		
-		Location location=locationDao.get(id,language.getId());
+		Location location=locationService.get(id,language.getId());
 		if (location!=null)
 			response.setLocation(location);
 		else
@@ -176,10 +176,10 @@ implements ICyBssWebService{
 		logger.info("LocationWs.getFiles() >>> id="+id);
 		FileListResponse response=new FileListResponse();
 		
-		Language language=languageDao.getLanguage(response.getLanguageCode());		
-		Location location=locationDao.get(id,language.getId());
+		Language language=languageService.getLanguage(response.getLanguageCode());		
+		Location location=locationService.get(id,language.getId());
 		if (location!=null){
-			response.setFiles(fileDao.getByEntity(Location.ENTITY_NAME, id));
+			response.setFiles(fileService.getByEntity(Location.ENTITY_NAME, id));
 		}
 		else
 			setResult(response, ICyBssResultConst.RESULT_NOT_FOUND, 
@@ -206,7 +206,7 @@ implements ICyBssWebService{
 			return response;
 		// end checkGrant 
 		
-		locationDao.remove(id);
+		locationService.remove(id);
 		
 		logger.info("LocationWs.remove() <<< ");
 		return response;
@@ -228,7 +228,7 @@ implements ICyBssWebService{
 			return response;
 		// end checkGrant 
 		
-		locationDao.removeLang(id,langId);
+		locationService.removeLang(id,langId);
 		
 		logger.info("LocationWs.removeLang() <<< ");
 		return response;
@@ -256,12 +256,12 @@ implements ICyBssWebService{
 		
 		Language language=null;
 		if (languageCode.equals(""))
-			language=languageDao.getLanguage(response.getLanguageCode());
+			language=languageService.getLanguage(response.getLanguageCode());
 		else	
-			language=languageDao.getLanguage(languageCode);
+			language=languageService.getLanguage(languageCode);
 		
 		
-		List<Location> locations=locationDao.find(name, description,locationType, cityId, personId, fromDate, toDate, language.getId());
+		List<Location> locations=locationService.find(name, description,locationType, cityId, personId, fromDate, toDate, language.getId());
 		int lsize=locations.size();
 		
 		if (offset!=0){

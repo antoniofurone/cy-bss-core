@@ -24,7 +24,7 @@ public class LanguageMysql extends CyBssMysqlDao
 		
 		String query="select LAN_N_LANG_ID,LAN_S_CODE,LAN_S_NAME from BSST_LAN_LANGUAGE";
 		
-		JdbcTemplate jdbcTemplate = new JdbcTemplate(ds);
+		JdbcTemplate jdbcTemplate = new JdbcTemplate(tx.getDataSource());
 		logger.info(query);
 		
 		List<Language> ret = jdbcTemplate.query(
@@ -57,7 +57,7 @@ public class LanguageMysql extends CyBssMysqlDao
 	
 		String query="select LAN_N_LANG_ID,LAN_S_CODE,LAN_S_NAME from BSST_LAN_LANGUAGE where LAN_S_CODE=?";
 		
-		JdbcTemplate jdbcTemplate = new JdbcTemplate(ds);
+		JdbcTemplate jdbcTemplate = new JdbcTemplate(tx.getDataSource());
 		logger.info(query+"["+languageCode+"]");
 		
 		Language ret=jdbcTemplate.queryForObject(query, new Object[] { languageCode },new RowMapper<Language>() {

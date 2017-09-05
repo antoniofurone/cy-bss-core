@@ -15,7 +15,7 @@ import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import org.springframework.transaction.support.TransactionTemplate;
 
 @Service
-public class InvoiceServiceImpl extends CyBssServiceImpl 
+public class InvoiceServiceImpl extends CyBssServiceBase 
 	implements InvoiceService 
 		
 {

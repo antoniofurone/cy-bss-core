@@ -5,14 +5,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.cysoft.bss.core.common.CyBssException;
-import org.cysoft.bss.core.dao.CompanyDao;
-import org.cysoft.bss.core.dao.ContactDao;
-import org.cysoft.bss.core.dao.PersonDao;
 import org.cysoft.bss.core.model.Company;
 import org.cysoft.bss.core.model.CompanyDept;
 import org.cysoft.bss.core.model.CompanyPerson;
 import org.cysoft.bss.core.model.Contact;
 import org.cysoft.bss.core.model.Language;
+import org.cysoft.bss.core.service.CompanyService;
+import org.cysoft.bss.core.service.ContactService;
+import org.cysoft.bss.core.service.PersonService;
 import org.cysoft.bss.core.web.annotation.CyBssOperation;
 import org.cysoft.bss.core.web.annotation.CyBssService;
 import org.cysoft.bss.core.web.response.ICyBssResultConst;
@@ -45,22 +45,22 @@ implements ICyBssWebService{
 	
 	private static final Logger logger = LoggerFactory.getLogger(CompanyWs.class);
 	
-	protected CompanyDao companyDao=null;
+	protected CompanyService companyService=null;
 	@Autowired
-	public void setCompanyDao(CompanyDao companyDao){
-			this.companyDao=companyDao;
+	public void setCompanyService(CompanyService companyService){
+			this.companyService=companyService;
 	}
 	
-	protected PersonDao personDao=null;
+	protected PersonService personService=null;
 	@Autowired
-	public void setPersonDao(PersonDao personDao){
-			this.personDao=personDao;
+	public void setPersonService(PersonService personService){
+			this.personService=personService;
 	}
 	
-	protected ContactDao contactDao=null;
+	protected ContactService contactService=null;
 	@Autowired
-	public void setContactDao(ContactDao contactDao){
-			this.contactDao=contactDao;
+	public void setContactService(ContactService contactService){
+			this.contactService=contactService;
 	}
 	
 	@RequestMapping(value = "/add",method = RequestMethod.POST)
@@ -86,20 +86,20 @@ implements ICyBssWebService{
 			logger.info("candidate code="+company.getCode());
 			
 			int suffix=0; 
-			while (companyDao.getByCode(company.getCode())!=null){
+			while (companyService.getByCode(company.getCode())!=null){
 				suffix++;
 				company.setCode(company.getCode()+suffix);
 			}
 			logger.info("code="+company.getCode());
 		}
 		
-		if (companyDao.getByCode(company.getCode())!=null){
+		if (companyService.getByCode(company.getCode())!=null){
 			setResult(response, ICyBssResultConst.RESULT_COMPANYCODE_USED, 
 					ICyBssResultConst.RESULT_D_COMPANYCODE_USED,response.getLanguageCode());
 			return response;
 		}
 		
-		long id=companyDao.add(company);
+		long id=companyService.add(company);
 		company.setId(id);
 		response.setCompany(company);
 		
@@ -132,7 +132,7 @@ implements ICyBssWebService{
 				
 		//logger.info(company.toString());
 		
-		CompanyDept parentDept=companyDao.getDept(dept.getParentId());
+		CompanyDept parentDept=companyService.getDept(dept.getParentId());
 		if (parentDept==null){
 			setResult(response, ICyBssResultConst.RESULT_NOT_FOUND, 
 					ICyBssResultConst.RESULT_D_NOT_FOUND,response.getLanguageCode());
@@ -140,7 +140,7 @@ implements ICyBssWebService{
 		}
 		
 		dept.setCompanyId(parentDept.getCompanyId());
-		long id=companyDao.addDept(dept);
+		long id=companyService.addDept(dept);
 		dept.setId(id);
 		response.setCompanyDept(dept);
 		
@@ -168,20 +168,20 @@ implements ICyBssWebService{
 				
 		//logger.info(company.toString());
 		
-		Company company=companyDao.get(id);
+		Company company=companyService.get(id);
 		if (company==null){
 			setResult(response, ICyBssResultConst.RESULT_NOT_FOUND, 
 					ICyBssResultConst.RESULT_D_NOT_FOUND,response.getLanguageCode());
 			return response;
 		}
-		company=companyDao.get(subsId);
+		company=companyService.get(subsId);
 		if (company==null){
 			setResult(response, ICyBssResultConst.RESULT_NOT_FOUND, 
 					ICyBssResultConst.RESULT_D_NOT_FOUND,response.getLanguageCode());
 			return response;
 		}
 		
-		companyDao.addSubs(id, subsId);
+		companyService.addSubs(id, subsId);
 		
 		logger.info("CompanyWs.addSubs() <<<");
 		return response;
@@ -205,7 +205,7 @@ implements ICyBssWebService{
 		// end checkGrant 
 				
 		//logger.info(company.toString());
-		companyDao.removeSubs(id, subsId);
+		companyService.removeSubs(id, subsId);
 		
 		logger.info("CompanyWs.removeSubs() <<<");
 		return response;
@@ -227,7 +227,7 @@ implements ICyBssWebService{
 			return response;
 		// end checkGrant 
 				
-		Company company=companyDao.get(id);
+		Company company=companyService.get(id);
 		if (company!=null)
 			response.setCompany(company);
 		else
@@ -254,7 +254,7 @@ implements ICyBssWebService{
 			return response;
 		// end checkGrant 
 				
-		Company company=companyDao.getByCode(code);
+		Company company=companyService.getByCode(code);
 		if (company!=null)
 			response.setCompany(company);
 		else
@@ -281,7 +281,7 @@ implements ICyBssWebService{
 			return response;
 		// end checkGrant 
 				
-		List<CompanyDept> depts=companyDao.getDeptAll(id);
+		List<CompanyDept> depts=companyService.getDeptAll(id);
 		response.setCompanyDepts(depts);
 		
 		logger.info("CompanyWs.getDeptAll() <<< ");
@@ -304,7 +304,7 @@ implements ICyBssWebService{
 			return response;
 		// end checkGrant 
 				
-		List<Contact> contacts=contactDao.getByEntity(deptId, CompanyDept.ENTITY_NAME);
+		List<Contact> contacts=contactService.getByEntity(deptId, CompanyDept.ENTITY_NAME);
 		response.setContacts(contacts);
 		
 		logger.info("CompanyWs.getDeptContactAll() <<< ");
@@ -328,7 +328,7 @@ implements ICyBssWebService{
 			return response;
 		// end checkGrant 
 				
-		List<Contact> contacts=contactDao.getByEntity(id, Company.ENTITY_NAME);
+		List<Contact> contacts=contactService.getByEntity(id, Company.ENTITY_NAME);
 		response.setContacts(contacts);
 		
 		logger.info("CompanyWs.getContactAll() <<< ");
@@ -355,11 +355,11 @@ implements ICyBssWebService{
 		
 		Language language=null;
 		if (languageCode.equals(""))
-			language=languageDao.getLanguage(response.getLanguageCode());
+			language=languageService.getLanguage(response.getLanguageCode());
 		else	
-			language=languageDao.getLanguage(languageCode);
+			language=languageService.getLanguage(languageCode);
 	
-		List<CompanyPerson> companyPersons=companyDao.getPersonAll(id, language.getId());
+		List<CompanyPerson> companyPersons=companyService.getPersonAll(id, language.getId());
 		response.setCompanyPersons(companyPersons);
 		
 		logger.info("CompanyWs.getPersonAll() <<< ");
@@ -383,7 +383,7 @@ implements ICyBssWebService{
 			return response;
 		// end checkGrant 
 		
-		List<CompanyDept> depts=companyDao.getSubDept(deptId);
+		List<CompanyDept> depts=companyService.getSubDept(deptId);
 		response.setCompanyDepts(depts);
 		
 		logger.info("CompanyWs.getSubDept() <<< ");
@@ -408,15 +408,15 @@ implements ICyBssWebService{
 			return response;
 		// end checkGrant 
 		
-		if (companyDao.get(id)==null){
+		if (companyService.get(id)==null){
 			setResult(response, ICyBssResultConst.RESULT_NOT_FOUND, 
 					ICyBssResultConst.RESULT_D_NOT_FOUND,response.getLanguageCode());
 			return response;
 			}
 		
 		
-		companyDao.update(id, company);
-		response.setCompany(companyDao.get(id));
+		companyService.update(id, company);
+		response.setCompany(companyService.get(id));
 		
 		logger.info("CompanyWs.update() <<<");
 		
@@ -442,22 +442,22 @@ implements ICyBssWebService{
 		// end checkGrant 
 		
 		
-		CompanyDept parentDept=companyDao.getDept(companyDept.getParentId());
+		CompanyDept parentDept=companyService.getDept(companyDept.getParentId());
 		if (parentDept==null){
 			setResult(response, ICyBssResultConst.RESULT_NOT_FOUND, 
 					ICyBssResultConst.RESULT_D_NOT_FOUND,response.getLanguageCode());
 			return response;
 		}
 		
-		if (companyDao.getDept(deptId)==null){
+		if (companyService.getDept(deptId)==null){
 			setResult(response, ICyBssResultConst.RESULT_NOT_FOUND, 
 					ICyBssResultConst.RESULT_D_NOT_FOUND,response.getLanguageCode());
 			return response;
 			}
 		
 		companyDept.setCompanyId(parentDept.getCompanyId());
-		companyDao.updateDept(companyDept);
-		response.setCompanyDept(companyDao.getDept(deptId));
+		companyService.updateDept(companyDept);
+		response.setCompanyDept(companyService.getDept(deptId));
 	
 		logger.info("CompanyWs.updateDept() <<<");
 		
@@ -483,28 +483,26 @@ implements ICyBssWebService{
 			return response;
 		// end checkGrant 
 		
-		if (companyDao.getDept(deptId)==null){
+		if (companyService.getDept(deptId)==null){
 			setResult(response, ICyBssResultConst.RESULT_NOT_FOUND, 
 					ICyBssResultConst.RESULT_D_NOT_FOUND,response.getLanguageCode());
 			return response;
 			}
-		if (personDao.get(companyPerson.getPersonId())==null){
-			setResult(response, ICyBssResultConst.RESULT_NOT_FOUND, 
-					ICyBssResultConst.RESULT_D_NOT_FOUND,response.getLanguageCode());
-			return response;
-			}
-		
-		if (companyDao.getPersonRole(companyPerson.getPersonId(),
-				languageDao.getLanguage(response.getLanguageCode()).getId())==null){
+		if (personService.get(companyPerson.getPersonId())==null){
 			setResult(response, ICyBssResultConst.RESULT_NOT_FOUND, 
 					ICyBssResultConst.RESULT_D_NOT_FOUND,response.getLanguageCode());
 			return response;
 			}
 		
+		if (companyService.getPersonRole(companyPerson.getPersonId(),
+				languageService.getLanguage(response.getLanguageCode()).getId())==null){
+			setResult(response, ICyBssResultConst.RESULT_NOT_FOUND, 
+					ICyBssResultConst.RESULT_D_NOT_FOUND,response.getLanguageCode());
+			return response;
+			}
 		
-		companyDao.addPerson(companyPerson.getPersonId(),
-				companyPerson.getDeptId(),companyPerson.getRoleId());
 		companyPerson.setDeptId(deptId);
+		companyService.addPerson(companyPerson, response.getLanguageCode());
 		response.setCompanyPerson(companyPerson);
 		logger.info("CompanyWs.addPerson() <<<");
 		
@@ -526,7 +524,7 @@ implements ICyBssWebService{
 		if (!checkGrant(response,securityToken,"remove",String.class,Long.class))
 			return response;
 		// end checkGrant 
-		companyDao.remove(id);
+		companyService.remove(id);
 		
 		logger.info("CompanyWs.remove() <<< ");
 		return response;
@@ -548,7 +546,7 @@ implements ICyBssWebService{
 			return response;
 		// end checkGrant 
 		
-		companyDao.removeDept(deptId);
+		companyService.removeDept(deptId);
 	
 		logger.info("CompanyWs.removeDept() <<< ");
 		return response;
@@ -571,7 +569,7 @@ implements ICyBssWebService{
 			return response;
 		// end checkGrant 
 		
-		companyDao.removePerson(personId,deptId);
+		companyService.removePerson(personId,deptId);
 	
 		logger.info("CompanyWs.removePerson() <<< ");
 		return response;
@@ -598,7 +596,7 @@ implements ICyBssWebService{
 		// end checkGrant 
 		
 		
-		List<Company> companies=companyDao.find(code,name);
+		List<Company> companies=companyService.find(code,name);
 		int lsize=companies.size();
 		if (offset!=0){
 			if (offset<=lsize)
@@ -631,11 +629,11 @@ implements ICyBssWebService{
 		
 		Language language=null;
 		if (languageCode.equals(""))
-			language=languageDao.getLanguage(response.getLanguageCode());
+			language=languageService.getLanguage(response.getLanguageCode());
 		else	
-			language=languageDao.getLanguage(languageCode);
+			language=languageService.getLanguage(languageCode);
 		
-		response.setPersonRoles(companyDao.getPersonRoleAll(language.getId()));
+		response.setPersonRoles(companyService.getPersonRoleAll(language.getId()));
 		return response;
 	}
 
@@ -657,8 +655,8 @@ implements ICyBssWebService{
 			return response;
 		// end checkGrant 
 		
-		companyDao.addManaged(company.getId(),company.getInvoiceLogoId());
-		response.setCompany(companyDao.getManaged(company.getId()));
+		companyService.addManaged(company.getId(),company.getInvoiceLogoId());
+		response.setCompany(companyService.getManaged(company.getId()));
 		
 		logger.info("CompanyWs.addManaged() <<<");
 		
@@ -674,7 +672,7 @@ implements ICyBssWebService{
 		
 		logger.info("CompanyWs.getManagedAll() >>>");
 		CompanyListResponse response=new CompanyListResponse(); 
-		response.setCompanies(companyDao.getManagedAll());
+		response.setCompanies(companyService.getManagedAll());
 		return response;
 	}
 	
@@ -689,7 +687,7 @@ implements ICyBssWebService{
 		logger.info("CompanyWs.getManaged() >>> id="+id);
 		CompanyResponse response=new CompanyResponse();
 		
-		Company company=companyDao.getManaged(id);
+		Company company=companyService.getManaged(id);
 		if (company!=null)
 			response.setCompany(company);
 		else
@@ -718,14 +716,14 @@ implements ICyBssWebService{
 			return response;
 		// end checkGrant 
 		
-		if (companyDao.getManaged(id)==null){
+		if (companyService.getManaged(id)==null){
 			setResult(response, ICyBssResultConst.RESULT_NOT_FOUND, 
 					ICyBssResultConst.RESULT_D_NOT_FOUND,response.getLanguageCode());
 			return response;
 			}
 		
-		companyDao.updateManaged(id, company.getInvoiceLogoId());
-		response.setCompany(companyDao.getManaged(id));
+		companyService.updateManaged(id, company.getInvoiceLogoId());
+		response.setCompany(companyService.getManaged(id));
 		
 		logger.info("CompanyWs.updateManaged() <<<");
 		return response;
@@ -747,7 +745,7 @@ implements ICyBssWebService{
 			return response;
 		// end checkGrant 
 		
-		companyDao.removeManaged(id);
+		companyService.removeManaged(id);
 	
 		logger.info("CompanyWs.removeManaged() <<< ");
 	

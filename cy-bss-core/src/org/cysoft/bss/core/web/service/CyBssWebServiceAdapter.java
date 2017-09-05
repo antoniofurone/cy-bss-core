@@ -7,12 +7,12 @@ import java.util.Locale;
 
 import org.cysoft.bss.core.common.CyBssException;
 import org.cysoft.bss.core.common.CyBssUtility;
-import org.cysoft.bss.core.dao.AppDao;
-import org.cysoft.bss.core.dao.CyBssAuthDao;
-import org.cysoft.bss.core.dao.LanguageDao;
-import org.cysoft.bss.core.dao.UserDao;
 import org.cysoft.bss.core.model.User;
 import org.cysoft.bss.core.model.UserRole;
+import org.cysoft.bss.core.service.AppService;
+import org.cysoft.bss.core.service.CyBssAuthService;
+import org.cysoft.bss.core.service.LanguageService;
+import org.cysoft.bss.core.service.UserService;
 import org.cysoft.bss.core.web.annotation.CyBssOperation;
 import org.cysoft.bss.core.web.annotation.CyBssService;
 import org.cysoft.bss.core.web.response.ICyBssResponse;
@@ -35,29 +35,28 @@ public abstract class CyBssWebServiceAdapter {
 		this.msgSource=msgSource;
 	}
 	
-	
-	protected CyBssAuthDao authDao=null;
+	protected CyBssAuthService authService=null;
 	@Autowired
-	public void setAuthDao(CyBssAuthDao authDao){
-			this.authDao=authDao;
+	public void setAuthService(CyBssAuthService authService){
+			this.authService=authService;
 	}
 	
-	protected UserDao userDao=null;
+	protected UserService userService=null;
 	@Autowired
-	public void setUserDao(UserDao userDao){
-			this.userDao=userDao;
+	public void setUserService(UserService userService){
+			this.userService=userService;
 	}
 	
-	protected LanguageDao languageDao=null;
+	protected LanguageService languageService=null;
 	@Autowired
-	public void setLanguageDao(LanguageDao languageDao){
-			this.languageDao=languageDao;
+	public void setLanguageService(LanguageService languageService){
+			this.languageService=languageService;
 	}
 	
-	protected AppDao appDao=null;
+	protected AppService appService=null;
 	@Autowired
-	public void setAppDao(AppDao appDao){
-			this.appDao=appDao;
+	public void setAppService(AppService appService){
+			this.appService=appService;
 	}
 	
 	protected void setResult(ICyBssResponse response,
@@ -79,14 +78,14 @@ public abstract class CyBssWebServiceAdapter {
 	protected boolean checkGrant(ICyBssResponse response,Method method, String securityToken, long id){
 		boolean ret=false;
 		
-		authDao.refreshSession(securityToken);
-		long userId=authDao.getUserIdByToken(securityToken);
+		authService.refreshSession(securityToken);
+		long userId=authService.getUserIdByToken(securityToken);
 		if (userId==0){
 			setResult(response,ICyBssResultConst.RESULT_SESSION_NOK,ICyBssResultConst.RESULT_D_SESSION_NOK);
 			return ret;
 		}
 		
-		User user=userDao.get(userId);
+		User user=userService.get(userId);
 		response.setUserId(user.getId());
 		response.setLanguageCode(user.getLanguageCode());
 		
@@ -94,7 +93,7 @@ public abstract class CyBssWebServiceAdapter {
 		if (response.getUserId()==id)
 			return true;
 		
-		List<UserRole> roles=userDao.getRoleAll(); 
+		List<UserRole> roles=userService.getRoleAll(); 
 		
 		List<UserRole> userRoles=new ArrayList<UserRole>();
 		long roleId=user.getRoleId();
@@ -112,7 +111,7 @@ public abstract class CyBssWebServiceAdapter {
 		String operationName=method.getAnnotation(CyBssOperation.class).name();
 		
 		for(UserRole role:userRoles){
-			if (authDao.checkGrant(role.getId(), serviceName, operationName)){
+			if (authService.checkGrant(role.getId(), serviceName, operationName)){
 				ret=true;
 				break;
 			}

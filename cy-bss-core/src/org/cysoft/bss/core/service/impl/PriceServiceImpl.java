@@ -11,7 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
-public class PriceServiceImpl extends CyBssServiceImpl 
+public class PriceServiceImpl extends CyBssServiceBase 
 implements PriceService {
 
 	protected PriceDao priceDao=null;

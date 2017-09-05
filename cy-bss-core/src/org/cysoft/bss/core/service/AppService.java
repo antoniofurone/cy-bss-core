@@ -5,6 +5,7 @@ import org.cysoft.bss.core.model.AppMessage;
 import org.cysoft.bss.core.model.AppParam;
 import org.cysoft.bss.core.model.AppVariable;
 
+
 public interface AppService {
 	
 	public void add(App app);

@@ -28,7 +28,7 @@ public class UserMysql extends CyBssMysqlDao
 		logger.info("UserMysql.getBy() >>>");
 		
 		// TODO Auto-generated method stub
-		JdbcTemplate jdbcTemplate = new JdbcTemplate(ds);
+		JdbcTemplate jdbcTemplate = new JdbcTemplate(tx.getDataSource());
 
 		String query="select  a.USR_N_USER_ID, a.USR_S_USER_ID, a.USR_S_NAME, a.URO_N_ROLE_ID, ";
 		query+="b.URO_S_NAME, a.LAN_N_LANG_ID, c.LAN_S_CODE, a.USR_C_ACTIVE,a.PER_N_PERSON_ID,PER_S_FIRST_NAME, PER_S_SECOND_NAME ";
@@ -100,7 +100,7 @@ public class UserMysql extends CyBssMysqlDao
 		String query="select URO_N_ROLE_ID, URO_S_NAME, URO_S_DESCRIPTION, URO_N_PARENT_ROLE_ID";
 		query+=" from BSST_URO_ROLE";
 		
-		JdbcTemplate jdbcTemplate = new JdbcTemplate(ds);
+		JdbcTemplate jdbcTemplate = new JdbcTemplate(tx.getDataSource());
 		logger.info(query);
 		
 		List<UserRole> ret = jdbcTemplate.query(
@@ -134,7 +134,7 @@ public class UserMysql extends CyBssMysqlDao
 		
 		String cmd="insert into BSST_USR_USER(USR_S_USER_ID,USR_B_PSW,USR_B_SALT,USR_S_NAME,URO_N_ROLE_ID,LAN_N_LANG_ID) ";
 		cmd+=" values (?,?,?,?,?,?)";
-		JdbcTemplate jdbcTemplate = new JdbcTemplate(ds);
+		JdbcTemplate jdbcTemplate = new JdbcTemplate(tx.getDataSource());
 		logger.info(cmd+"["+user+"]");
 		
 		byte[] salt=CyBssPwdEncryption.generateSalt();
@@ -165,7 +165,7 @@ public class UserMysql extends CyBssMysqlDao
 				query+=" where a.USR_S_NAME like ?";
 		query+=" order by a.USR_N_USER_ID";
 		
-		JdbcTemplate jdbcTemplate = new JdbcTemplate(ds);
+		JdbcTemplate jdbcTemplate = new JdbcTemplate(tx.getDataSource());
 		logger.info(query+"[name="+name+"]");
 		
 		List<User> ret=null;
@@ -210,7 +210,7 @@ public class UserMysql extends CyBssMysqlDao
 		String cmd="update BSST_USR_USER set USR_S_USER_ID=?,USR_S_NAME=?,URO_N_ROLE_ID=?,LAN_N_LANG_ID=? ";
 		cmd+=" where USR_N_USER_ID=?";
 		
-		JdbcTemplate jdbcTemplate = new JdbcTemplate(ds);
+		JdbcTemplate jdbcTemplate = new JdbcTemplate(tx.getDataSource());
 		logger.info(cmd+"["+id+","+user+"]");
 		
 		jdbcTemplate.update(cmd, new Object[]{
@@ -230,7 +230,7 @@ public class UserMysql extends CyBssMysqlDao
 		String cmd="update BSST_USR_USER set USR_C_ACTIVE=? ";
 		cmd+=" where USR_N_USER_ID=?";
 		
-		JdbcTemplate jdbcTemplate = new JdbcTemplate(ds);
+		JdbcTemplate jdbcTemplate = new JdbcTemplate(tx.getDataSource());
 		logger.info(cmd+"["+id+"]");
 		
 		jdbcTemplate.update(cmd, new Object[]{
@@ -249,7 +249,7 @@ public class UserMysql extends CyBssMysqlDao
 		
 		String cmd="delete from BSST_USR_USER where USR_N_USER_ID=?";
 		
-		JdbcTemplate jdbcTemplate = new JdbcTemplate(ds);
+		JdbcTemplate jdbcTemplate = new JdbcTemplate(tx.getDataSource());
 		logger.info(cmd+"["+id+"]");
 		
 		jdbcTemplate.update(cmd, new Object[]{
@@ -270,7 +270,7 @@ public class UserMysql extends CyBssMysqlDao
 		
 		String cmd="update BSST_USR_USER set USR_B_PSW=?,USR_B_SALT=? where USR_N_USER_ID=?";
 		
-		JdbcTemplate jdbcTemplate = new JdbcTemplate(ds);
+		JdbcTemplate jdbcTemplate = new JdbcTemplate(tx.getDataSource());
 		logger.info(cmd+"[***,"+id+"]");
 		
 		jdbcTemplate.update(cmd, new Object[]{
@@ -289,7 +289,7 @@ public class UserMysql extends CyBssMysqlDao
 		logger.info("UserMysql.getPwd() >>>");
 		
 		// TODO Auto-generated method stub
-		JdbcTemplate jdbcTemplate = new JdbcTemplate(ds);
+		JdbcTemplate jdbcTemplate = new JdbcTemplate(tx.getDataSource());
 
 		String query="select USR_B_PSW,USR_B_SALT from BSST_USR_USER";
 		query+=" where USR_N_USER_ID=?";
@@ -323,7 +323,7 @@ public class UserMysql extends CyBssMysqlDao
 		
 		String cmd="update BSST_USR_USER set PER_N_PERSON_ID=? where USR_N_USER_ID=?";
 		
-		JdbcTemplate jdbcTemplate = new JdbcTemplate(ds);
+		JdbcTemplate jdbcTemplate = new JdbcTemplate(tx.getDataSource());
 		logger.info(cmd+"["+id+","+personId+"]");
 		
 		jdbcTemplate.update(cmd, new Object[]{

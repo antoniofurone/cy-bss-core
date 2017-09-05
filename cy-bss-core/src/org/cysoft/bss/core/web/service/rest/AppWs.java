@@ -45,7 +45,7 @@ public class AppWs extends CyBssWebServiceAdapter
 				return response;
 		// end checkGrant 
 		
-		appDao.add(app);
+		appService.add(app);
 		response.setApp(app);
 		logger.info("AppWs.add() <<<");
 		
@@ -69,8 +69,8 @@ public class AppWs extends CyBssWebServiceAdapter
 			return response;
 		// end checkGrant
 		
-		appDao.update(id, app);
-		app=appDao.get(app.getId());
+		appService.update(id, app);
+		app=appService.get(app.getId());
 		if (app!=null)
 			response.setApp(app);
 		else
@@ -98,7 +98,7 @@ public class AppWs extends CyBssWebServiceAdapter
 			return response;
 		// end checkGrant
 				
-		response.setApp(appDao.get(id));
+		response.setApp(appService.get(id));
 		
 		logger.info("AppWs.get() <<< ");
 		
@@ -121,7 +121,7 @@ public class AppWs extends CyBssWebServiceAdapter
 			return response;
 		// end checkGrant
 		
-		response.setApp(appDao.getByName(name));
+		response.setApp(appService.getByName(name));
 		
 		logger.info("AppWs.getByName() <<< ");
 		
@@ -138,7 +138,7 @@ public class AppWs extends CyBssWebServiceAdapter
 		logger.info("AppWs.remove() >>> id="+id);
 		AppResponse response=new AppResponse();
 		
-		appDao.remove(id);
+		appService.remove(id);
 		
 		logger.info("AppWs.remove() <<< ");
 		
@@ -163,7 +163,7 @@ public class AppWs extends CyBssWebServiceAdapter
 				return response;
 		// end checkGrant 
 	
-		response.setAppParam(appDao.getParam(appId, paramName));
+		response.setAppParam(appService.getParam(appId, paramName));
 		
 		logger.info("AppWs.getParam() <<<");
 		
@@ -190,11 +190,11 @@ public class AppWs extends CyBssWebServiceAdapter
 	
 		Language language=null;
 		if (langCode.equals(""))
-			language=languageDao.getLanguage(response.getLanguageCode());
+			language=languageService.getLanguage(response.getLanguageCode());
 		else	
-			language=languageDao.getLanguage(langCode);
+			language=languageService.getLanguage(langCode);
 		
-		response.setAppMessage(appDao.getMessage(appId, language.getId(), id));
+		response.setAppMessage(appService.getMessage(appId, language.getId(), id));
 
 		logger.info("AppWs.getMessage() <<<");
 		
@@ -218,7 +218,7 @@ public class AppWs extends CyBssWebServiceAdapter
 			return response;
 		//end checkGrant 
 	
-		response.setAppVariable(appDao.getVariable(appId, name));
+		response.setAppVariable(appService.getVariable(appId, name));
 
 		logger.info("AppWs.getVariable() <<<");
 		
@@ -241,7 +241,7 @@ public class AppWs extends CyBssWebServiceAdapter
 			return response;
 		//end checkGrant 
 		
-		appDao.putVariable(appVariable.getAppId(), appVariable.getName(), appVariable.getValue(), appVariable.getType());
+		appService.putVariable(appVariable.getAppId(), appVariable.getName(), appVariable.getValue(), appVariable.getType());
 		response.setAppVariable(appVariable);
 		
 		logger.info("AppWs.putVariable() <<<");

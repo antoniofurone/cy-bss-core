@@ -33,7 +33,7 @@ public class ObjectWs extends CyBssWebServiceAdapter
 	
 	protected  ObjectService objectService=null;
 	@Autowired
-	public void setObjectServic(ObjectService objectService){
+	public void setObjectService(ObjectService objectService){
 			this.objectService=objectService;
 	}
 	

@@ -26,7 +26,7 @@ public abstract class Billable {
 		this.invoiceId = invoiceId;
 	}
 	public boolean isLinkedToInvoice(){
-		return invoiceId!=0?false:true;
+		return invoiceId!=0?true:false;
 	}
 
 	private long companyId;

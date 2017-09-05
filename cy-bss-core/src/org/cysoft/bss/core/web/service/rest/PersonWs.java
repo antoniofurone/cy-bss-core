@@ -5,10 +5,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.cysoft.bss.core.common.CyBssException;
-import org.cysoft.bss.core.dao.ContactDao;
-import org.cysoft.bss.core.dao.PersonDao;
 import org.cysoft.bss.core.model.Contact;
 import org.cysoft.bss.core.model.Person;
+import org.cysoft.bss.core.service.ContactService;
+import org.cysoft.bss.core.service.PersonService;
 import org.cysoft.bss.core.web.annotation.CyBssOperation;
 import org.cysoft.bss.core.web.annotation.CyBssService;
 import org.cysoft.bss.core.web.response.ICyBssResultConst;
@@ -37,16 +37,16 @@ public class PersonWs extends CyBssWebServiceAdapter
 	private static final Logger logger = LoggerFactory.getLogger(PersonWs.class);
 	
 	
-	protected PersonDao personDao=null;
+	protected PersonService personService=null;
 	@Autowired
-	public void setPersonDao(PersonDao personDao){
-			this.personDao=personDao;
+	public void setPersonService(PersonService personService){
+			this.personService=personService;
 	}
 	
-	protected ContactDao contactDao=null;
+	protected ContactService contactService=null;
 	@Autowired
-	public void setContactDao(ContactDao contactDao){
-			this.contactDao=contactDao;
+	public void setContactDao(ContactService contactService){
+			this.contactService=contactService;
 	}
 	
 	private String generateCode(Person p){
@@ -82,21 +82,21 @@ public class PersonWs extends CyBssWebServiceAdapter
 			logger.info("candidate code="+person.getCode());
 			
 			int suffix=0; 
-			while (personDao.getByCode(person.getCode())!=null){
+			while (personService.getByCode(person.getCode())!=null){
 				suffix++;
 				person.setCode(person.getCode()+suffix);
 			}
 			logger.info("code="+person.getCode());
 		}
 		
-		if (personDao.getByCode(person.getCode())!=null){
+		if (personService.getByCode(person.getCode())!=null){
 			setResult(response, ICyBssResultConst.RESULT_PERSCODE_USED, 
 					ICyBssResultConst.RESULT_D_PERSCODE_USED,response.getLanguageCode());
 			return response;
 		}
 		
-		personDao.add(person);
-		response.setPerson(personDao.getByCode(person.getCode()));
+		personService.add(person);
+		response.setPerson(personService.getByCode(person.getCode()));
 		
 		logger.info("PersonWs.add() <<<");
 		
@@ -121,15 +121,15 @@ public class PersonWs extends CyBssWebServiceAdapter
 		// end checkGrant 
 		
 		
-		if (personDao.get(id)==null){
+		if (personService.get(id)==null){
 			setResult(response, ICyBssResultConst.RESULT_NOT_FOUND, 
 					ICyBssResultConst.RESULT_D_NOT_FOUND,response.getLanguageCode());
 			return response;
 			}
 		
 		
-		personDao.update(id, person);
-		response.setPerson(personDao.get(id));
+		personService.update(id, person);
+		response.setPerson(personService.get(id));
 		
 		logger.info("PersonWs.update() <<<");
 		
@@ -153,7 +153,7 @@ public class PersonWs extends CyBssWebServiceAdapter
 			return response;
 		// end checkGrant 
 				
-		Person person=personDao.get(id);
+		Person person=personService.get(id);
 		if (person!=null)
 			response.setPerson(person);
 		else
@@ -180,7 +180,7 @@ public class PersonWs extends CyBssWebServiceAdapter
 			return response;
 		// end checkGrant 
 				
-		Person person=personDao.getByCode(code);
+		Person person=personService.getByCode(code);
 		if (person!=null)
 			response.setPerson(person);
 		else
@@ -207,7 +207,7 @@ public class PersonWs extends CyBssWebServiceAdapter
 		if (!checkGrant(response,securityToken,"remove",String.class,Long.class))
 			return response;
 		// end checkGrant 
-		personDao.remove(id);
+		personService.remove(id);
 		
 		logger.info("PersonWs.remove() <<< ");
 		return response;
@@ -228,7 +228,7 @@ public class PersonWs extends CyBssWebServiceAdapter
 			return response;
 		// end checkGrant 
 				
-		List<Contact> contacts=contactDao.getByEntity(id, Person.ENTITY_NAME);
+		List<Contact> contacts=contactService.getByEntity(id, Person.ENTITY_NAME);
 		response.setContacts(contacts);
 		
 		logger.info("PersonWs.getContactAll() <<< ");
@@ -258,7 +258,7 @@ public class PersonWs extends CyBssWebServiceAdapter
 		// end checkGrant 
 		
 		
-		List<Person> persons=personDao.find(code,firstName,secondName);
+		List<Person> persons=personService.find(code,firstName,secondName);
 		int lsize=persons.size();
 		
 		if (offset!=0){

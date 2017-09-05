@@ -1,9 +1,9 @@
 package org.cysoft.bss.core.web.service.rest;
 
 import org.cysoft.bss.core.common.CyBssException;
-import org.cysoft.bss.core.dao.ContactDao;
 import org.cysoft.bss.core.model.Contact;
 import org.cysoft.bss.core.model.ContactType;
+import org.cysoft.bss.core.service.ContactService;
 import org.cysoft.bss.core.web.annotation.CyBssOperation;
 import org.cysoft.bss.core.web.annotation.CyBssService;
 import org.cysoft.bss.core.web.response.ICyBssResultConst;
@@ -30,10 +30,10 @@ implements ICyBssWebService{
 	
 	private static final Logger logger = LoggerFactory.getLogger(ContactWs.class);
 	
-	protected ContactDao contactDao=null;
+	protected ContactService contactService=null;
 	@Autowired
-	public void setContactDao(ContactDao contactDao){
-			this.contactDao=contactDao;
+	public void setContactService(ContactService contactService){
+			this.contactService=contactService;
 	}
 	
 	@RequestMapping(value = "/getContactTypeAll",method = RequestMethod.GET)
@@ -44,7 +44,7 @@ implements ICyBssWebService{
 		
 		logger.info("ContactWs.getContactTypeAll() >>>");
 		ContactTypeListResponse response=new ContactTypeListResponse(); 
-		response.setContactTypes(contactDao.getContactTypeAll());
+		response.setContactTypes(contactService.getContactTypeAll());
 		return response;
 	}
 	
@@ -65,7 +65,7 @@ implements ICyBssWebService{
 		// end checkGrant 
 				
 		//logger.info(company.toString());
-		long id=contactDao.addType(contactType);
+		long id=contactService.addType(contactType);
 		contactType.setId(id);
 		response.setContactType(contactType);
 		
@@ -91,13 +91,13 @@ implements ICyBssWebService{
 			return response;
 		// end checkGrant 
 		
-		if (contactDao.getType(id)==null){
+		if (contactService.getType(id)==null){
 			setResult(response, ICyBssResultConst.RESULT_NOT_FOUND, 
 					ICyBssResultConst.RESULT_D_NOT_FOUND,response.getLanguageCode());
 			return response;
 			}
 		
-		contactDao.updateType(id, contactType);
+		contactService.updateType(id, contactType);
 		response.setContactType(contactType);
 	
 		logger.info("CompanyWs.updateType() <<<");
@@ -115,7 +115,7 @@ implements ICyBssWebService{
 		logger.info("ContactWs.getType() >>> id="+id);
 		ContactTypeResponse response=new ContactTypeResponse();
 		
-		ContactType contactType=contactDao.getType(id);
+		ContactType contactType=contactService.getType(id);
 		if (contactType!=null)
 			response.setContactType(contactType);
 		else
@@ -143,7 +143,7 @@ implements ICyBssWebService{
 			return response;
 		// end checkGrant 
 		
-		contactDao.removeType(id);
+		contactService.removeType(id);
 		
 		logger.info("ContactWs.removeType() <<< ");
 		return response;
@@ -167,13 +167,13 @@ implements ICyBssWebService{
 			return response;
 		// end checkGrant 
 		
-		if (contactDao.getType(contact.getContactTypeId())==null){
+		if (contactService.getType(contact.getContactTypeId())==null){
 			setResult(response, ICyBssResultConst.RESULT_NOT_FOUND, 
 					ICyBssResultConst.RESULT_D_NOT_FOUND,response.getLanguageCode());
 			return response;
 			}
 		
-		long contactId=contactDao.add(contact);
+		long contactId=contactService.add(contact);
 		contact.setId(contactId);
 		
 		response.setContanct(contact);
@@ -200,19 +200,19 @@ implements ICyBssWebService{
 			return response;
 		// end checkGrant 
 		
-		if (contactDao.getType(contact.getContactTypeId())==null){
+		if (contactService.getType(contact.getContactTypeId())==null){
 			setResult(response, ICyBssResultConst.RESULT_NOT_FOUND, 
 					ICyBssResultConst.RESULT_D_NOT_FOUND,response.getLanguageCode());
 			return response;
 			}
 		
-		if (contactDao.get(id)==null){
+		if (contactService.get(id)==null){
 			setResult(response, ICyBssResultConst.RESULT_NOT_FOUND, 
 					ICyBssResultConst.RESULT_D_NOT_FOUND,response.getLanguageCode());
 			return response;
 			}
 		
-		contactDao.update(id, contact);
+		contactService.update(id, contact);
 		
 		logger.info("CompanyWs.update() <<<");
 		
@@ -234,7 +234,7 @@ implements ICyBssWebService{
 			return response;
 		// end checkGrant 
 		
-		contactDao.remove(id);
+		contactService.remove(id);
 	
 		logger.info("ContactWs.remove() <<< ");
 	

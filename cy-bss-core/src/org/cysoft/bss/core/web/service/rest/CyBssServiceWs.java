@@ -2,9 +2,9 @@ package org.cysoft.bss.core.web.service.rest;
 
 import java.util.List;
 
-import org.cysoft.bss.core.dao.CyBssServiceDao;
 import org.cysoft.bss.core.model.CyBssServOperation;
 import org.cysoft.bss.core.model.CyBssService;
+import org.cysoft.bss.core.service.CyBssServiceService;
 import org.cysoft.bss.core.web.service.CyBssWebServiceAdapter;
 import org.cysoft.bss.core.web.service.ICyBssWebService;
 import org.slf4j.Logger;
@@ -23,12 +23,10 @@ public class CyBssServiceWs extends CyBssWebServiceAdapter
 	
 	private static final Logger logger = LoggerFactory.getLogger(CyBssServiceWs.class);
 	
-	
-	private CyBssServiceDao serviceDao=null;
-	
+	private CyBssServiceService serviceService=null;
 	@Autowired
-	public void setServiceDao(CyBssServiceDao serviceDao){
-			this.serviceDao=serviceDao;
+	public void setServiceService(CyBssServiceService serviceService){
+			this.serviceService=serviceService;
 	}
 	
 	
@@ -37,7 +35,7 @@ public class CyBssServiceWs extends CyBssWebServiceAdapter
 		
 		logger.info("CyBssServiceWs.getAll() >>>");
 		
-		return serviceDao.getAll();
+		return serviceService.getAll();
 	}
 	
 	
@@ -46,8 +44,8 @@ public class CyBssServiceWs extends CyBssWebServiceAdapter
 		
 		logger.info("CyBssServiceWs.get() >>> id="+id);
 		
-		CyBssService serv=serviceDao.get(id);
-		serv.setOperations(serviceDao.getServOperations(id));
+		CyBssService serv=serviceService.get(id);
+		serv.setOperations(serviceService.getServOperations(id));
 		return serv;
 	}
 
@@ -56,7 +54,7 @@ public class CyBssServiceWs extends CyBssWebServiceAdapter
 		
 		logger.info("CyBssServiceWs.getServOperations() >>> id="+id);
 		
-		return serviceDao.getServOperations(id);
+		return serviceService.getServOperations(id);
 	}
 
 	@RequestMapping(value = "/{opId}/getOperation",method = RequestMethod.GET)
@@ -64,8 +62,8 @@ public class CyBssServiceWs extends CyBssWebServiceAdapter
 		
 		logger.info("CyBssServiceWs.getOperation() >>> id="+id);
 		
-		CyBssServOperation op=serviceDao.getOperation(id);
-		op.setParams(serviceDao.getOpParams(id));
+		CyBssServOperation op=serviceService.getOperation(id);
+		op.setParams(serviceService.getOpParams(id));
 		return op;
 	}
 	

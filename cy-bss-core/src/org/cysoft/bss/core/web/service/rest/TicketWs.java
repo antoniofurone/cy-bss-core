@@ -98,7 +98,7 @@ public class TicketWs extends CyBssWebServiceAdapter
 		logger.info("TicketWs.getFiles() >>> id="+id);
 		FileListResponse response=new FileListResponse();
 		
-		Language language=languageDao.getLanguage(response.getLanguageCode());		
+		Language language=languageService.getLanguage(response.getLanguageCode());		
 		Ticket ticket=ticketDao.get(id,language.getId());
 		if (ticket!=null){
 			response.setFiles(fileDao.getByEntity(Ticket.ENTITY_NAME, id));
@@ -127,9 +127,9 @@ public class TicketWs extends CyBssWebServiceAdapter
 		
 		Language language=null;
 		if (languageCode.equals(""))
-			language=languageDao.getLanguage(response.getLanguageCode());
+			language=languageService.getLanguage(response.getLanguageCode());
 		else	
-			language=languageDao.getLanguage(languageCode);
+			language=languageService.getLanguage(languageCode);
 		
 		Ticket ticket=ticketDao.get(id,language.getId());
 		if (ticket!=null){
@@ -161,9 +161,9 @@ public class TicketWs extends CyBssWebServiceAdapter
 		
 		Language language=null;
 		if (languageCode.equals(""))
-			language=languageDao.getLanguage(response.getLanguageCode());
+			language=languageService.getLanguage(response.getLanguageCode());
 		else	
-			language=languageDao.getLanguage(languageCode);
+			language=languageService.getLanguage(languageCode);
 			
 		List<TicketCategory> categories=ticketDao.getCategoryAll(language.getId());
 		response.setTicketCategories(categories);
@@ -187,9 +187,9 @@ public class TicketWs extends CyBssWebServiceAdapter
 		
 		Language language=null;
 		if (languageCode.equals(""))
-			language=languageDao.getLanguage(response.getLanguageCode());
+			language=languageService.getLanguage(response.getLanguageCode());
 		else	
-			language=languageDao.getLanguage(languageCode);
+			language=languageService.getLanguage(languageCode);
 			
 		List<TicketStatus> states=ticketDao.getStatusAll(language.getId());
 		response.setTicketStates(states);
@@ -217,9 +217,9 @@ public class TicketWs extends CyBssWebServiceAdapter
 		
 		Language language=null;
 		if (languageCode.equals(""))
-			language=languageDao.getLanguage(response.getLanguageCode());
+			language=languageService.getLanguage(response.getLanguageCode());
 		else	
-			language=languageDao.getLanguage(languageCode);
+			language=languageService.getLanguage(languageCode);
 		
 		response.setStatusTraces(ticketDao.getStatusTrace(id,language.getId()));
 		
@@ -250,9 +250,9 @@ public class TicketWs extends CyBssWebServiceAdapter
 		
 		Language language=null;
 		if (languageCode.equals(""))
-			language=languageDao.getLanguage(response.getLanguageCode());
+			language=languageService.getLanguage(response.getLanguageCode());
 		else	
-			language=languageDao.getLanguage(languageCode);
+			language=languageService.getLanguage(languageCode);
 		
 		
 		List<TicketStatus> states=ticketDao.getNextStates(statusId, language.getId());
@@ -282,9 +282,9 @@ public class TicketWs extends CyBssWebServiceAdapter
 	
 	Language language=null;
 	if (languageCode.equals(""))
-		language=languageDao.getLanguage(response.getLanguageCode());
+		language=languageService.getLanguage(response.getLanguageCode());
 	else	
-		language=languageDao.getLanguage(languageCode);
+		language=languageService.getLanguage(languageCode);
 	
 	Ticket ticket=ticketDao.get(id, language.getId());
 	if (ticket==null){
@@ -329,9 +329,9 @@ public class TicketWs extends CyBssWebServiceAdapter
 		
 		Language language=null;
 		if (languageCode.equals(""))
-			language=languageDao.getLanguage(response.getLanguageCode());
+			language=languageService.getLanguage(response.getLanguageCode());
 		else	
-			language=languageDao.getLanguage(languageCode);
+			language=languageService.getLanguage(languageCode);
 		
 		Ticket ticket=ticketDao.get(id,language.getId());
 		if (ticket==null){
@@ -380,9 +380,9 @@ public class TicketWs extends CyBssWebServiceAdapter
 		
 		Language language=null;
 		if (languageCode.equals(""))
-			language=languageDao.getLanguage(response.getLanguageCode());
+			language=languageService.getLanguage(response.getLanguageCode());
 		else	
-			language=languageDao.getLanguage(languageCode);
+			language=languageService.getLanguage(languageCode);
 		
 		if (ticketDao.get(id,language.getId())==null){
 			setResult(response, ICyBssResultConst.RESULT_NOT_FOUND, 
@@ -415,7 +415,7 @@ public class TicketWs extends CyBssWebServiceAdapter
 			return response;
 		// end checkGrant 
 		
-		Language language=languageDao.getLanguage(response.getLanguageCode());
+		Language language=languageService.getLanguage(response.getLanguageCode());
 		ticketDao.remove(id,language.getId());
 		
 		logger.info("TicketWs.remove() <<< ");
@@ -444,9 +444,9 @@ public class TicketWs extends CyBssWebServiceAdapter
 		
 		Language language=null;
 		if (languageCode.equals(""))
-			language=languageDao.getLanguage(response.getLanguageCode());
+			language=languageService.getLanguage(response.getLanguageCode());
 		else	
-			language=languageDao.getLanguage(languageCode);
+			language=languageService.getLanguage(languageCode);
 		
 		
 		List<Ticket> tickets=ticketDao.find(text, categoryId, statusId, personId, fromDate, toDate,language.getId());

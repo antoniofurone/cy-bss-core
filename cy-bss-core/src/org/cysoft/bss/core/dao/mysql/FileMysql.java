@@ -32,7 +32,7 @@ public class FileMysql extends CyBssMysqlDao
 		
 		String cmd="insert into BSST_FIL_FILE(FILE_S_NAME,FILE_S_TYPE,FILE_N_SIZE,FILE_S_CONTENT_TYPE,FILE_B_CONTENT,FILE_S_ENTITY_NAME,FILE_N_ENTITY_ID,FILE_S_NOTE,FILE_S_VISIBILITY) ";
 		cmd+=" values (?,?,?,?,?,?,?,?,?)";
-		JdbcTemplate jdbcTemplate = new JdbcTemplate(ds);
+		JdbcTemplate jdbcTemplate = new JdbcTemplate(tx.getDataSource());
 		logger.info(cmd+"[name="+name+",fileType="+fileType+",entityName="+entityName+",entityId="+entityId+",note="+note+"]");
 		
 		try {
@@ -58,7 +58,7 @@ public class FileMysql extends CyBssMysqlDao
 		logger.info("FileMysql.download() >>>");
 		
 		// TODO Auto-generated method stub
-		JdbcTemplate jdbcTemplate = new JdbcTemplate(ds);
+		JdbcTemplate jdbcTemplate = new JdbcTemplate(tx.getDataSource());
 
 		String query="select  FILE_S_NAME, FILE_S_CONTENT_TYPE, FILE_S_VISIBILITY, FILE_B_CONTENT from BSST_FIL_FILE where FILE_N_FILE_ID=? ";
 		logger.info(query+"["+fileId+"]");
@@ -91,7 +91,7 @@ public class FileMysql extends CyBssMysqlDao
 		logger.info("FileMysql.remove() >>>");
 		
 		String cmd="delete from BSST_FIL_FILE where FILE_N_FILE_ID=? ";
-		JdbcTemplate jdbcTemplate = new JdbcTemplate(ds);
+		JdbcTemplate jdbcTemplate = new JdbcTemplate(tx.getDataSource());
 		logger.info(cmd+"["+fileId+"]");
 		
 		jdbcTemplate.update(cmd, new Object[]{
@@ -113,7 +113,7 @@ public class FileMysql extends CyBssMysqlDao
 		query+="where FILE_S_ENTITY_NAME=? and FILE_N_ENTITY_ID=?";
 		
 		
-		JdbcTemplate jdbcTemplate = new JdbcTemplate(ds);
+		JdbcTemplate jdbcTemplate = new JdbcTemplate(tx.getDataSource());
 		logger.info(query+"[entityName="+entityName+";entityId="+id+"]");
 		
 		List<CyBssFile> ret=jdbcTemplate.query(query, new Object[] { entityName, id },new RowMapperFile());
@@ -180,7 +180,7 @@ public class FileMysql extends CyBssMysqlDao
 		query+="from BSST_FIL_FILE ";
 		query+="where FILE_N_FILE_ID=?";
 		
-		JdbcTemplate jdbcTemplate = new JdbcTemplate(ds);
+		JdbcTemplate jdbcTemplate = new JdbcTemplate(tx.getDataSource());
 		
 		logger.info(query+"["+fileId+"]");
 		CyBssFile ret=null;

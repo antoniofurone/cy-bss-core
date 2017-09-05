@@ -3,8 +3,8 @@ package org.cysoft.bss.core.web.service.rest;
 import java.util.List;
 
 import org.cysoft.bss.core.common.CyBssException;
-import org.cysoft.bss.core.dao.CityDao;
 import org.cysoft.bss.core.model.City;
+import org.cysoft.bss.core.service.CityService;
 import org.cysoft.bss.core.web.annotation.CyBssOperation;
 import org.cysoft.bss.core.web.annotation.CyBssService;
 import org.cysoft.bss.core.web.response.ICyBssResultConst;
@@ -31,10 +31,10 @@ implements ICyBssWebService{
 	
 	private static final Logger logger = LoggerFactory.getLogger(CityWs.class);
 	
-	protected CityDao cityDao=null;
+	protected CityService cityService=null;
 	@Autowired
-	public void setCityDao(CityDao cityDao){
-			this.cityDao=cityDao;
+	public void setCityService(CityService cityService){
+			this.cityService=cityService;
 	}
 	
 	@RequestMapping(value = "/add",method = RequestMethod.POST)
@@ -55,7 +55,7 @@ implements ICyBssWebService{
 				
 		logger.info(city.toString());
 		
-		long id=cityDao.add(city);
+		long id=cityService.add(city);
 		city.setId(id);
 		response.setCity(city);
 			
@@ -74,7 +74,7 @@ implements ICyBssWebService{
 		logger.info("CityWs.get() >>> id="+id);
 		CityResponse response=new CityResponse();
 		
-		City city=cityDao.get(id);
+		City city=cityService.get(id);
 		if (city!=null)
 			response.setCity(city);
 		else
@@ -102,14 +102,14 @@ implements ICyBssWebService{
 			return response;
 		// end checkGrant 
 		
-		if (cityDao.get(id)==null){
+		if (cityService.get(id)==null){
 			setResult(response, ICyBssResultConst.RESULT_NOT_FOUND, 
 					ICyBssResultConst.RESULT_D_NOT_FOUND,response.getLanguageCode());
 			return response;
 			}
 		
-		cityDao.update(id, city);
-		response.setCity(cityDao.get(id));
+		cityService.update(id, city);
+		response.setCity(cityService.get(id));
 		
 		logger.info("CityWs.update() <<<");
 		return response;
@@ -124,7 +124,7 @@ implements ICyBssWebService{
 		
 		logger.info("CityWs.getCityAll() >>>");
 		CityListResponse response=new CityListResponse(); 
-		response.setCities(cityDao.getCityAll());
+		response.setCities(cityService.getCityAll());
 		return response;
 	}
 	
@@ -140,7 +140,7 @@ implements ICyBssWebService{
 		logger.info("CityWs.find() >>> name="+name+";stateRegion="+stateRegion+";countryId="+countryId);
 		CityListResponse response=new CityListResponse();
 		
-		List<City> cities=cityDao.find(name,stateRegion,countryId);
+		List<City> cities=cityService.find(name,stateRegion,countryId);
 		response.setCities(cities);
 		
 		logger.info("CityWs.find() <<< ");
@@ -163,7 +163,7 @@ implements ICyBssWebService{
 			return response;
 		// end checkGrant 
 		
-		cityDao.remove(id);
+		cityService.remove(id);
 	
 		logger.info("CityWs.remove() <<< ");
 	

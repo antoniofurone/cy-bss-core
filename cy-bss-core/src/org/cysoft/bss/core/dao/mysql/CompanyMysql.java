@@ -18,10 +18,6 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallback;
-import org.springframework.transaction.support.TransactionCallbackWithoutResult;
-import org.springframework.transaction.support.TransactionTemplate;
 
 public class CompanyMysql extends CyBssMysqlDao
 implements CompanyDao{
@@ -32,56 +28,23 @@ implements CompanyDao{
 		// TODO Auto-generated method stub
 		logger.info("CompanyMysql.add() >>>");
 		
-		TransactionTemplate txTemplate=new TransactionTemplate(tx);
-		Long id=txTemplate.execute(new TransactionCallback<Long>(){
-
-			@Override
-			public Long doInTransaction(TransactionStatus txStatus) {
-				// TODO Auto-generated method stub
-				String cmd="insert into BSST_COM_COMPANY(COM_S_CODE,COM_S_NAME,COM_S_ADDRESS,COM_S_ZIP,CIT_N_CITY_ID,COM_S_FISCAL_CODE,COM_S_VAT_CODE) ";
-				cmd+=" values (?,?,?,?,?,?,?)";
-				JdbcTemplate jdbcTemplate = new JdbcTemplate(tx.getDataSource());
-				logger.info(cmd+"["+company+"]");
+		String cmd="insert into BSST_COM_COMPANY(COM_S_CODE,COM_S_NAME,COM_S_ADDRESS,COM_S_ZIP,CIT_N_CITY_ID,COM_S_FISCAL_CODE,COM_S_VAT_CODE) ";
+		cmd+=" values (?,?,?,?,?,?,?)";
+		JdbcTemplate jdbcTemplate = new JdbcTemplate(tx.getDataSource());
+		logger.info(cmd+"["+company+"]");
 				
-				jdbcTemplate.update(cmd, new Object[]{
-						company.getCode(), company.getName(), 
-						(company.getAddress()==null || company.getAddress().equals(""))?null:company.getAddress(),
-						(company.getZipCode()==null || company.getZipCode().equals(""))?null:company.getZipCode(),
-						(company.getCityId()==0)?null:company.getCityId(),
-						(company.getFiscalCode()==null || company.getFiscalCode().equals(""))?null:company.getFiscalCode(),
-						(company.getVatCode()==null || company.getVatCode().equals(""))?null:company.getVatCode()		
-					});
-			 
-			
-				Long id=getLastInsertId(jdbcTemplate);
-				
-				CompanyDept companyDept=new CompanyDept();
-				companyDept.setCode(company.getCode());
-				companyDept.setCompanyId(id);
-				companyDept.setName(company.getName());
-				companyDept.setAddress(company.getAddress());
-				companyDept.setZipCode(company.getZipCode());
-				companyDept.setCityId(company.getCityId());
-				
-				try {
-					addDept(companyDept);
-				} catch (CyBssException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-					throw new RuntimeException(e);
-				}
-				
-				Long headDeptId=getLastInsertId(jdbcTemplate);
-				company.setHeadDeptId(headDeptId);
-				
-				//txStatus.setRollbackOnly();
-				//throw new RuntimeException();
-				return id;
-			}
-			
-		});
+		jdbcTemplate.update(cmd, new Object[]{
+				company.getCode(), company.getName(), 
+				(company.getAddress()==null || company.getAddress().equals(""))?null:company.getAddress(),
+				(company.getZipCode()==null || company.getZipCode().equals(""))?null:company.getZipCode(),
+				(company.getCityId()==0)?null:company.getCityId(),
+				(company.getFiscalCode()==null || company.getFiscalCode().equals(""))?null:company.getFiscalCode(),
+				(company.getVatCode()==null || company.getVatCode().equals(""))?null:company.getVatCode()		
+			});
+	 
+		
 		logger.info("CompanyMysql.add() <<<");
-		return id;
+		return getLastInsertId(jdbcTemplate);
 	}
 
 	@Override
@@ -125,7 +88,7 @@ implements CompanyDao{
 		logger.info("CompanyMysql.getBy() >>>");
 		
 		// TODO Auto-generated method stub
-		JdbcTemplate jdbcTemplate = new JdbcTemplate(ds);
+		JdbcTemplate jdbcTemplate = new JdbcTemplate(tx.getDataSource());
 		
 		
 		String query="select ID,CODE,NAME,ADDRESS,ZIP,CITY_ID,CITY,COUNTRY,FISCAL_CODE,VAT_CODE,HEAD_DEPT_ID,";
@@ -197,58 +160,30 @@ implements CompanyDao{
 		// TODO Auto-generated method stub
 		logger.info("CompanyMysql.update() >>>");
 		
-		TransactionTemplate txTemplate=new TransactionTemplate(tx);
-		txTemplate.execute(new TransactionCallbackWithoutResult(){
-
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus arg0) {
-				// TODO Auto-generated method stub
-				String cmd="update BSST_COM_COMPANY set COM_S_CODE=?,COM_S_NAME=?,COM_S_ADDRESS=?,";
-				cmd+="COM_S_ZIP=?,CIT_N_CITY_ID=?,COM_S_FISCAL_CODE=?,COM_S_VAT_CODE=?";
-				cmd+=" where COM_N_COMPANY_ID=?";
-				
-				JdbcTemplate jdbcTemplate = new JdbcTemplate(tx.getDataSource());
-				logger.info(cmd+"["+id+","+company+"]");
-				
-				try {
-					jdbcTemplate.update(cmd, new Object[]{
-							company.getCode(), company.getName(),  
-							(company.getAddress()==null || company.getAddress().equals(""))?null:company.getAddress(),
-							(company.getZipCode()==null || company.getZipCode().equals(""))?null:company.getZipCode(),
-							(company.getCityId()==0)?null:company.getCityId(),
-							(company.getFiscalCode()==null || company.getFiscalCode().equals(""))?null:company.getFiscalCode(),
-							(company.getVatCode()==null || company.getVatCode().equals(""))?null:company.getVatCode(),
-							id		
-						});
-				} catch (DataAccessException e) {
-					// TODO Auto-generated catch block
-					logger.error(e.toString());
-					throw new RuntimeException(e);
-				}
-				
-				Company company=get(id);
-				
-				CompanyDept dept=new CompanyDept();
-				dept.setCode(company.getCode());
-				dept.setCompanyId(id);
-				dept.setName(company.getName());
-				dept.setAddress(company.getAddress());
-				dept.setZipCode(company.getZipCode());
-				dept.setCityId(company.getCityId());
-				dept.setParentId(0);
-				dept.setId(company.getHeadDeptId());
-				
-				try {
-					updateDept(dept);
-				} catch (CyBssException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-					throw new RuntimeException(e);
-				}
-				
-			}
+		// TODO Auto-generated method stub
+		String cmd="update BSST_COM_COMPANY set COM_S_CODE=?,COM_S_NAME=?,COM_S_ADDRESS=?,";
+		cmd+="COM_S_ZIP=?,CIT_N_CITY_ID=?,COM_S_FISCAL_CODE=?,COM_S_VAT_CODE=?";
+		cmd+=" where COM_N_COMPANY_ID=?";
+		
+		JdbcTemplate jdbcTemplate = new JdbcTemplate(tx.getDataSource());
+		logger.info(cmd+"["+id+","+company+"]");
 			
-		});
+		try {
+			jdbcTemplate.update(cmd, new Object[]{
+					company.getCode(), company.getName(),  
+					(company.getAddress()==null || company.getAddress().equals(""))?null:company.getAddress(),
+					(company.getZipCode()==null || company.getZipCode().equals(""))?null:company.getZipCode(),
+					(company.getCityId()==0)?null:company.getCityId(),
+					(company.getFiscalCode()==null || company.getFiscalCode().equals(""))?null:company.getFiscalCode(),
+					(company.getVatCode()==null || company.getVatCode().equals(""))?null:company.getVatCode(),
+					id		
+				});
+		} catch (DataAccessException e) {
+			// TODO Auto-generated catch block
+			logger.error(e.toString());
+			throw new CyBssException(e);
+		}
+		
 		logger.info("CompanyMysql.update() <<<");
 	}
 
@@ -285,82 +220,21 @@ implements CompanyDao{
 		// TODO Auto-generated method stub
 		logger.info("CompanyMysql.update() >>>");
 		
-		TransactionTemplate txTemplate=new TransactionTemplate(tx);
-		txTemplate.execute(new TransactionCallbackWithoutResult(){
-
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus arg0) {
-				// TODO Auto-generated method stub
+		
+		String cmd="delete from BSST_COM_COMPANY where COM_N_COMPANY_ID=?";
+		logger.info(cmd+"["+id+"]");
+		JdbcTemplate jdbcTemplate = new JdbcTemplate(tx.getDataSource());
+		try {
+			jdbcTemplate.update(cmd, new Object[]{
+					id
+				});
+		} catch (DataAccessException e) {
+			// TODO Auto-generated catch block
+			logger.error(e.toString());
+			throw new RuntimeException(e);
+		}
 				
-				String cmd="delete from BSST_CPE_COMPANY_PERS where CDE_N_DEPT_ID in ";
-				cmd+="(select CDE_N_DEPT_ID from BSST_CDE_COMPANY_DEPT where COM_N_COMPANY_ID=?)";
-				JdbcTemplate jdbcTemplate = new JdbcTemplate(tx.getDataSource());
-				logger.info(cmd+"["+id+"]");
-				
-				try {
-					jdbcTemplate.update(cmd, new Object[]{
-							id
-						});
-				} catch (DataAccessException e) {
-					// TODO Auto-generated catch block
-					logger.error(e.toString());
-					throw new RuntimeException(e);
-				}
-				
-				cmd="delete from BSST_CDE_COMPANY_DEPT where COM_N_COMPANY_ID=?";
-				logger.info(cmd+"["+id+"]");
-				
-				try {
-					jdbcTemplate.update(cmd, new Object[]{
-							id
-						});
-				} catch (DataAccessException e) {
-					// TODO Auto-generated catch block
-					logger.error(e.toString());
-					throw new RuntimeException(e);
-				}
-				
-				cmd="delete from BSST_CON_CONTACT where CON_N_ENTITY_ID=? and CON_S_ENTITY_NAME=?";
-				logger.info(cmd+"["+id+","+Company.ENTITY_NAME+"]");
-				try {
-					jdbcTemplate.update(cmd, new Object[]{
-							id,Company.ENTITY_NAME
-						});
-				} catch (DataAccessException e) {
-					// TODO Auto-generated catch block
-					logger.error(e.toString());
-					throw new RuntimeException(e);
-				}
-				
-				cmd="delete from BSST_ATV_ATTR_VALUE where ATV_N_OBJ_INST_ID=? and ATT_N_ATTRIBUTE_ID in ";
-				cmd+="(select ATT_N_ATTRIBUTE_ID from BSST_ATT_ATTRIBUTE where OBJ_N_OBJECT_ID in (select OBJ_N_OBJECT_ID from BSST_OBJ_OBJECT where OBJ_S_ENTITY_NAME=?))";
-				logger.info(cmd+"["+id+","+Company.ENTITY_NAME+"]");
-				try {
-					jdbcTemplate.update(cmd, new Object[]{
-							id,Company.ENTITY_NAME
-						});
-				} catch (DataAccessException e) {
-					// TODO Auto-generated catch block
-					logger.error(e.toString());
-					throw new RuntimeException(e);
-				}
-				
-				
-				cmd="delete from BSST_COM_COMPANY where COM_N_COMPANY_ID=?";
-				logger.info(cmd+"["+id+"]");
-				
-				try {
-					jdbcTemplate.update(cmd, new Object[]{
-							id
-						});
-				} catch (DataAccessException e) {
-					// TODO Auto-generated catch block
-					logger.error(e.toString());
-					throw new RuntimeException(e);
-				}
-				
-			}
-		});	
+			
 	}
 
 	@Override
@@ -395,7 +269,7 @@ implements CompanyDao{
 		}
 		query+=" order by ID";
 		
-		JdbcTemplate jdbcTemplate = new JdbcTemplate(ds);
+		JdbcTemplate jdbcTemplate = new JdbcTemplate(tx.getDataSource());
 		logger.info(query+"[code="+code+";name="+name+"]");
 		
 		List<Company> ret=jdbcTemplate.query(query, parms.toArray(),new RowMapperCompany());
@@ -410,7 +284,7 @@ implements CompanyDao{
 		String query="select  a.CRO_N_ROLE_ID,IFNULL(b.CRL_S_NAME,a.CRO_S_NAME) as CRO_S_NAME,IFNULL(b.CRL_S_DESC,a.CRO_S_DESC) as CRO_S_DESC  from BSST_CRO_COMPANY_PERS_ROLE a";
 		query+=" left join BSST_CRL_COMPANY_PERS_ROLE_LANG b on a.CRO_N_ROLE_ID=b.CRO_N_ROLE_ID AND b.LAN_N_LANG_ID=?";
 		
-		JdbcTemplate jdbcTemplate = new JdbcTemplate(ds);
+		JdbcTemplate jdbcTemplate = new JdbcTemplate(tx.getDataSource());
 		logger.info(query+"["+langId+"]");
 		
 		List<PersonRole> ret = jdbcTemplate.query(
@@ -440,7 +314,7 @@ implements CompanyDao{
 		query+="PARENT_DEPT_ID,PARENT_DEPT_CODE,PARENT_DEPT,COMPANY_ID,COMPANY_CODE,COMPANY ";
 		query+="from BSSV_COMPANY_DEPT where COMPANY_ID=?";
 		
-		JdbcTemplate jdbcTemplate = new JdbcTemplate(ds);
+		JdbcTemplate jdbcTemplate = new JdbcTemplate(tx.getDataSource());
 		logger.info(query+"[companyId="+companyId);
 		
 		List<CompanyDept> ret=jdbcTemplate.query(query, new Object[] {companyId},new RowMapperCompanyDept());
@@ -479,7 +353,7 @@ implements CompanyDao{
 		query+="PARENT_DEPT_ID,PARENT_DEPT_CODE,PARENT_DEPT,COMPANY_ID,COMPANY_CODE,COMPANY ";
 		query+="from BSSV_COMPANY_DEPT where PARENT_DEPT_ID=?";
 		
-		JdbcTemplate jdbcTemplate = new JdbcTemplate(ds);
+		JdbcTemplate jdbcTemplate = new JdbcTemplate(tx.getDataSource());
 		logger.info(query+"[deptId="+deptId);
 		
 		List<CompanyDept> ret=jdbcTemplate.query(query, new Object[] {deptId},new RowMapperCompanyDept());
@@ -495,7 +369,7 @@ implements CompanyDao{
 		cmd+=" where CDE_N_DEPT_ID=?";
 		
 		logger.info(cmd+"["+id+"]");
-		JdbcTemplate jdbcTemplate = new JdbcTemplate(ds);
+		JdbcTemplate jdbcTemplate = new JdbcTemplate(tx.getDataSource());
 		
 		jdbcTemplate.update(cmd, new Object[]{
 				id
@@ -505,13 +379,27 @@ implements CompanyDao{
 	}
 
 	@Override
+	public void removeDeptByCompany(long id) throws CyBssException{
+		logger.info("CompanyMysql.removeDeptByCompany() >>>");
+		String cmd="delete from BSST_CDE_COMPANY_DEPT where COM_N_COMPANY_ID=?";
+		logger.info(cmd+"["+id+"]");
+		JdbcTemplate jdbcTemplate = new JdbcTemplate(tx.getDataSource());
+		jdbcTemplate.update(cmd, new Object[]{
+				id
+				});
+		
+		logger.info("CompanyMysql.removeDeptByCompany() <<");
+	}
+	
+	
+	@Override
 	public CompanyDept getDept(long deptId) {
 		// TODO Auto-generated method stub
 		String query="select ID,CODE,NAME,ADDRESS,ZIP,CITY_ID,CITY,COUNTRY,";
 		query+="PARENT_DEPT_ID,PARENT_DEPT_CODE,PARENT_DEPT,COMPANY_ID,COMPANY_CODE,COMPANY ";
 		query+="from BSSV_COMPANY_DEPT where ID=?";
 		
-		JdbcTemplate jdbcTemplate = new JdbcTemplate(ds);
+		JdbcTemplate jdbcTemplate = new JdbcTemplate(tx.getDataSource());
 		logger.info(query+"[deptId="+deptId);
 		
 		CompanyDept ret=null;
@@ -534,7 +422,7 @@ implements CompanyDao{
 		cmd+=" values (?,?,?)";
 		logger.info(cmd+"["+personId+","+deptId+","+roleId+"]");
 		
-		JdbcTemplate jdbcTemplate = new JdbcTemplate(ds);
+		JdbcTemplate jdbcTemplate = new JdbcTemplate(tx.getDataSource());
 		jdbcTemplate.update(cmd, new Object[]{
 				personId,roleId,deptId
 				});
@@ -552,7 +440,7 @@ implements CompanyDao{
 		cmd+=" where PER_N_PERSON_ID=? and CDE_N_DEPT_ID=?";
 		
 		logger.info(cmd+"["+personId+","+deptId+"]");
-		JdbcTemplate jdbcTemplate = new JdbcTemplate(ds);
+		JdbcTemplate jdbcTemplate = new JdbcTemplate(tx.getDataSource());
 		
 		jdbcTemplate.update(cmd, new Object[]{
 				personId,deptId
@@ -562,6 +450,23 @@ implements CompanyDao{
 	}
 
 	@Override
+	public void removePersonByCompany(long id){
+		
+		logger.info("CompanyMysql.removePersonByCompany() >>>");
+		String cmd="delete from BSST_CPE_COMPANY_PERS where CDE_N_DEPT_ID in ";
+		cmd+="(select CDE_N_DEPT_ID from BSST_CDE_COMPANY_DEPT where COM_N_COMPANY_ID=?)";
+		logger.info(cmd+"["+id+"]");
+		JdbcTemplate jdbcTemplate = new JdbcTemplate(tx.getDataSource());
+		
+		jdbcTemplate.update(cmd, new Object[]{
+				id
+				});
+		
+		logger.info("CompanyMysql.removePersonByCompany() <<<");
+	}
+	
+	
+	@Override
 	public PersonRole getPersonRole(long roleId,long langId) {
 		// TODO Auto-generated method stub
 		String query="select  a.CRO_N_ROLE_ID,IFNULL(b.CRL_S_NAME,a.CRO_S_NAME) as CRO_S_NAME,IFNULL(b.CRL_S_DESC,a.CRO_S_DESC) as CRO_S_DESC  from BSST_CRO_COMPANY_PERS_ROLE a";
@@ -569,7 +474,7 @@ implements CompanyDao{
 		query+=" where a.CRO_N_ROLE_ID=?";
 		logger.info(query+"["+langId+","+roleId+"]");
 
-		JdbcTemplate jdbcTemplate = new JdbcTemplate(ds);
+		JdbcTemplate jdbcTemplate = new JdbcTemplate(tx.getDataSource());
 
 		PersonRole ret=null;
 		try {
@@ -604,7 +509,7 @@ implements CompanyDao{
 		query+="left join BSST_CRL_COMPANY_PERS_ROLE_LANG b on a.ROLE_ID=b.CRO_N_ROLE_ID AND b.LAN_N_LANG_ID=? ";
 		query+="where COMPANY_ID=?";
 		
-		JdbcTemplate jdbcTemplate = new JdbcTemplate(ds);
+		JdbcTemplate jdbcTemplate = new JdbcTemplate(tx.getDataSource());
 		logger.info(query+"[companyId="+companyId+","+langId+"]");
 		
 		List<CompanyPerson> ret=jdbcTemplate.query(query, new Object[] {langId,companyId},new RowMapperCompanyPerson());
@@ -645,7 +550,7 @@ implements CompanyDao{
 		cmd+=" values (?,?)";
 		logger.info(cmd+"["+id+","+subsId+"]");
 		
-		JdbcTemplate jdbcTemplate = new JdbcTemplate(ds);
+		JdbcTemplate jdbcTemplate = new JdbcTemplate(tx.getDataSource());
 		jdbcTemplate.update(cmd, new Object[]{
 				id,subsId
 				});
@@ -661,7 +566,7 @@ implements CompanyDao{
 		String cmd="delete from BSST_CGR_COMPANY_GROUP where CGR_N_GROUP_ID=? and CGR_N_COMPANY_ID=? ";
 		logger.info(cmd+"["+id+","+subsId+"]");
 		
-		JdbcTemplate jdbcTemplate = new JdbcTemplate(ds);
+		JdbcTemplate jdbcTemplate = new JdbcTemplate(tx.getDataSource());
 		jdbcTemplate.update(cmd, new Object[]{
 				id,subsId
 				});
@@ -697,7 +602,7 @@ implements CompanyDao{
 		
 		String cmd="update BSST_MNC_MANAGED_COMPANY set MNC_N_INVOICE_LOGO=? ";
 		cmd+="where MNC_N_COMPANY_ID=?";
-		JdbcTemplate jdbcTemplate = new JdbcTemplate(ds);
+		JdbcTemplate jdbcTemplate = new JdbcTemplate(tx.getDataSource());
 		logger.info(cmd+"["+id+","+invoiceLogoId+"]");
 		
 		try {
@@ -720,7 +625,7 @@ implements CompanyDao{
 		logger.info("CompanyMysql.getManaged() >>>");
 		
 		// TODO Auto-generated method stub
-		JdbcTemplate jdbcTemplate = new JdbcTemplate(ds);
+		JdbcTemplate jdbcTemplate = new JdbcTemplate(tx.getDataSource());
 		
 		String query="select a.ID,a.CODE,a.NAME,a.ADDRESS,a.ZIP,a.CITY_ID,a.CITY,a.COUNTRY,a.FISCAL_CODE,a.VAT_CODE,a.HEAD_DEPT_ID,";
 		query+="a.HEAD_DEPT_CODE,a.HEAD_DEPT_NAME,a.GROUP_ID,a.GROUP_CODE,a.GROUP_NAME,b.MNC_N_INVOICE_LOGO ";
@@ -753,7 +658,7 @@ implements CompanyDao{
 		query+="from BSSV_COMPANY a ";
 		query+="join BSST_MNC_MANAGED_COMPANY b on a.ID=b.MNC_N_COMPANY_ID ";
 		
-		JdbcTemplate jdbcTemplate = new JdbcTemplate(ds);
+		JdbcTemplate jdbcTemplate = new JdbcTemplate(tx.getDataSource());
 		logger.info(query);
 		
 		List<Company> ret = jdbcTemplate.query(
@@ -771,7 +676,7 @@ implements CompanyDao{
 		logger.info("CompanyMysql.removeManaged() >>>");
 		
 		String cmd="delete from BSST_MNC_MANAGED_COMPANY where MNC_N_COMPANY_ID=?";
-		JdbcTemplate jdbcTemplate = new JdbcTemplate(ds);
+		JdbcTemplate jdbcTemplate = new JdbcTemplate(tx.getDataSource());
 		logger.info(cmd+"["+id+"]");
 		
 		try {

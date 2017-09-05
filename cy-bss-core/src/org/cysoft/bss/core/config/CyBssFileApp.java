@@ -14,6 +14,14 @@ import org.cysoft.bss.core.dao.mysql.CyBssAuthMysql;
 import org.cysoft.bss.core.dao.mysql.FileMysql;
 import org.cysoft.bss.core.dao.mysql.LanguageMysql;
 import org.cysoft.bss.core.dao.mysql.UserMysql;
+import org.cysoft.bss.core.service.AppService;
+import org.cysoft.bss.core.service.CyBssAuthService;
+import org.cysoft.bss.core.service.LanguageService;
+import org.cysoft.bss.core.service.UserService;
+import org.cysoft.bss.core.service.impl.AppServiceImpl;
+import org.cysoft.bss.core.service.impl.CyBssAuthServiceImpl;
+import org.cysoft.bss.core.service.impl.LanguageServiceImpl;
+import org.cysoft.bss.core.service.impl.UserServiceImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,7 +49,7 @@ private static final Logger logger = LoggerFactory.getLogger(CyBssFileApp.class)
 	
 	
 	@Bean
-	 @Description("Message Source Rest")
+	@Description("Message Source File")
 	 public CyBssMessageSource messageSource(){
 		CyBssMessageSource ms=new CyBssMessageSource();
 		ms.setBasename("/WEB-INF/messages/messages");
@@ -86,6 +94,33 @@ private static final Logger logger = LoggerFactory.getLogger(CyBssFileApp.class)
 			return userDao;
 		 }
 	 
+	 @Bean
+	 @Description("App Service File")
+	 public AppService appService(){
+		 	AppService appService=new AppServiceImpl();
+			return appService;
+		 }
+	 
+	 @Bean
+	 @Description("Auth Service File")
+	 public CyBssAuthService authService(){
+		 	CyBssAuthService authService=new CyBssAuthServiceImpl();
+			return authService;
+		 }
+	 
+	 @Bean
+	 @Description("User Service File")
+	 public UserService userService(){
+		 	UserService userService=new UserServiceImpl();
+			return userService;
+		 }
+	 
+	 @Bean
+	 @Description("Language Service File")
+	 public LanguageService languageService(){
+		 	LanguageService languageService=new LanguageServiceImpl();
+			return languageService;
+		 }
 	 
 	 @Bean
 	 @Description("MySql Data Source File ")
