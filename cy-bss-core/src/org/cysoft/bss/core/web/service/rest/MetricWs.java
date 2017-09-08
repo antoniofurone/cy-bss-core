@@ -2,10 +2,10 @@ package org.cysoft.bss.core.web.service.rest;
 
 
 import org.cysoft.bss.core.common.CyBssException;
-import org.cysoft.bss.core.dao.MetricDao;
 import org.cysoft.bss.core.model.Currency;
 import org.cysoft.bss.core.model.Metric;
 import org.cysoft.bss.core.model.MetricScale;
+import org.cysoft.bss.core.service.MetricService;
 import org.cysoft.bss.core.web.annotation.CyBssOperation;
 import org.cysoft.bss.core.web.annotation.CyBssService;
 import org.cysoft.bss.core.web.response.ICyBssResultConst;
@@ -36,10 +36,10 @@ implements ICyBssWebService{
 	
 	private static final Logger logger = LoggerFactory.getLogger(MetricWs.class);
 	
-	protected MetricDao metricDao=null;
+	protected MetricService metricService=null;
 	@Autowired
-	public void setMetricDao(MetricDao metricDao){
-			this.metricDao=metricDao;
+	public void setMetricService(MetricService metricService){
+			this.metricService=metricService;
 	}
 	
 	// Metric
@@ -61,7 +61,7 @@ implements ICyBssWebService{
 		// end checkGrant 
 		
 		logger.info(metric.toString());
-		long id=metricDao.addMetric(metric);
+		long id=metricService.addMetric(metric);
 		metric.setId(id);
 		response.setMetric(metric);
 		
@@ -81,7 +81,7 @@ implements ICyBssWebService{
 		logger.info("MetricWs.getMetric() >>> id="+id);
 		MetricResponse response=new MetricResponse();
 		
-		Metric metric=metricDao.getMetric(id);
+		Metric metric=metricService.getMetric(id);
 		if (metric!=null)
 			response.setMetric(metric);
 		else
@@ -110,14 +110,14 @@ implements ICyBssWebService{
 			return response;
 		// end checkGrant 
 		
-		if (metricDao.getMetric(id)==null){
+		if (metricService.getMetric(id)==null){
 			setResult(response, ICyBssResultConst.RESULT_NOT_FOUND, 
 					ICyBssResultConst.RESULT_D_NOT_FOUND,response.getLanguageCode());
 			return response;
 			}
 		
-		metricDao.updateMetric(id, metric);
-		response.setMetric(metricDao.getMetric(id));
+		metricService.updateMetric(id, metric);
+		response.setMetric(metricService.getMetric(id));
 		
 		logger.info("MetricWs.updateMetric() <<<");
 		return response;
@@ -138,7 +138,7 @@ implements ICyBssWebService{
 			return response;
 		// end checkGrant 
 		
-		metricDao.removeMetric(id);
+		metricService.removeMetric(id);
 	
 		logger.info("MetricWs.removeMetric() <<< ");
 	
@@ -154,7 +154,7 @@ implements ICyBssWebService{
 		
 		logger.info("MetricWs.getMetricAll() >>>");
 		MetricListResponse response=new MetricListResponse(); 
-		response.setMetrics(metricDao.getMetricAll());
+		response.setMetrics(metricService.getMetricAll());
 		return response;
 	}
 	
@@ -177,7 +177,7 @@ implements ICyBssWebService{
 		// end checkGrant 
 		
 		logger.info(currency.toString());
-		long id=metricDao.addCurrency(currency);
+		long id=metricService.addCurrency(currency);
 		currency.setId(id);
 		response.setCurrency(currency);
 		
@@ -197,7 +197,7 @@ implements ICyBssWebService{
 		logger.info("MetricWs.getCurrency() >>> id="+id);
 		CurrencyResponse response=new CurrencyResponse();
 		
-		Currency currency=metricDao.getCurrency(id);
+		Currency currency=metricService.getCurrency(id);
 		if (currency!=null)
 			response.setCurrency(currency);
 		else
@@ -226,14 +226,14 @@ implements ICyBssWebService{
 			return response;
 		// end checkGrant 
 		
-		if (metricDao.getCurrency(id)==null){
+		if (metricService.getCurrency(id)==null){
 			setResult(response, ICyBssResultConst.RESULT_NOT_FOUND, 
 					ICyBssResultConst.RESULT_D_NOT_FOUND,response.getLanguageCode());
 			return response;
 			}
 		
-		metricDao.updateCurrency(id, currency);
-		response.setCurrency(metricDao.getCurrency(id));
+		metricService.updateCurrency(id, currency);
+		response.setCurrency(metricService.getCurrency(id));
 		
 		logger.info("MetricWs.updateCurrency() <<<");
 		return response;
@@ -254,7 +254,7 @@ implements ICyBssWebService{
 			return response;
 		// end checkGrant 
 		
-		metricDao.removeCurrency(id);
+		metricService.removeCurrency(id);
 	
 		logger.info("MetricWs.removeCurrency() <<< ");
 	
@@ -270,7 +270,7 @@ implements ICyBssWebService{
 		
 		logger.info("MetricWs.getCurrencyAll() >>>");
 		CurrencyListResponse response=new CurrencyListResponse(); 
-		response.setCurrencies(metricDao.getCurrencyAll());
+		response.setCurrencies(metricService.getCurrencyAll());
 		return response;
 	}
 	
@@ -294,7 +294,7 @@ implements ICyBssWebService{
 		// end checkGrant 
 		
 		logger.info(scale.toString());
-		long id=metricDao.addMetricScale(scale);
+		long id=metricService.addMetricScale(scale);
 		scale.setId(id);
 		response.setMetricScale(scale);
 		
@@ -314,7 +314,7 @@ implements ICyBssWebService{
 		logger.info("MetricWs.getMetricScale() >>> id="+id);
 		MetricScaleResponse response=new MetricScaleResponse();
 		
-		MetricScale scale=metricDao.getMetricScale(id);
+		MetricScale scale=metricService.getMetricScale(id);
 		if (scale!=null)
 			response.setMetricScale(scale);
 		else
@@ -343,14 +343,14 @@ implements ICyBssWebService{
 			return response;
 		// end checkGrant 
 		
-		if (metricDao.getMetricScale(id)==null){
+		if (metricService.getMetricScale(id)==null){
 			setResult(response, ICyBssResultConst.RESULT_NOT_FOUND, 
 					ICyBssResultConst.RESULT_D_NOT_FOUND,response.getLanguageCode());
 			return response;
 			}
 		
-		metricDao.updateMetricScale(id, scale);
-		response.setMetricScale(metricDao.getMetricScale(id));
+		metricService.updateMetricScale(id, scale);
+		response.setMetricScale(metricService.getMetricScale(id));
 		
 		logger.info("MetricWs.updateMetricScale() <<<");
 		return response;
@@ -371,7 +371,7 @@ implements ICyBssWebService{
 			return response;
 		// end checkGrant 
 		
-		metricDao.removeMetricScale(id);
+		metricService.removeMetricScale(id);
 	
 		logger.info("MetricWs.removeMetricScale() <<< ");
 	
@@ -388,7 +388,7 @@ implements ICyBssWebService{
 		
 		logger.info("MetricWs.getMetricScaleAll() >>>");
 		MetricScaleListResponse response=new MetricScaleListResponse(); 
-		response.setMetricScales(metricDao.getMetricScaleAll(id));
+		response.setMetricScales(metricService.getMetricScaleAll(id));
 		return response;
 	}
 	

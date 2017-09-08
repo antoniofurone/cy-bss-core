@@ -26,7 +26,7 @@ implements ContactDao{
 		
 		String query="select  CTY_N_TYPE_ID, CTY_S_NAME, CTY_S_DESC, CTY_S_TYPE  from BSST_CTY_CONTACT_TYPE";
 		
-		JdbcTemplate jdbcTemplate = new JdbcTemplate(ds);
+		JdbcTemplate jdbcTemplate = new JdbcTemplate(tx.getDataSource());
 		logger.info(query);
 		
 		List<ContactType> ret=jdbcTemplate.query(query,new RowMapperContactType());
@@ -81,7 +81,7 @@ implements ContactDao{
 		
 		String cmd="insert into BSST_CTY_CONTACT_TYPE(CTY_S_NAME,CTY_S_DESC,CTY_S_TYPE) ";
 		cmd+=" values (?,?,?)";
-		JdbcTemplate jdbcTemplate = new JdbcTemplate(ds);
+		JdbcTemplate jdbcTemplate = new JdbcTemplate(tx.getDataSource());
 		logger.info(cmd+"["+contactType+"]");
 		
 		try {
@@ -110,7 +110,7 @@ implements ContactDao{
 		String cmd="update BSST_CTY_CONTACT_TYPE set CTY_S_NAME=?,CTY_S_DESC=?,CTY_S_TYPE=?";
 		cmd+=" where CTY_N_TYPE_ID=?";
 		
-		JdbcTemplate jdbcTemplate = new JdbcTemplate(ds);
+		JdbcTemplate jdbcTemplate = new JdbcTemplate(tx.getDataSource());
 		logger.info(cmd+"["+id+","+contactType+"]");
 		
 		try {
@@ -136,7 +136,7 @@ implements ContactDao{
 		logger.info("ContactMysql.removeType() >>>");
 		
 		String cmd="delete from BSST_CTY_CONTACT_TYPE where CTY_N_TYPE_ID=?";
-		JdbcTemplate jdbcTemplate = new JdbcTemplate(ds);
+		JdbcTemplate jdbcTemplate = new JdbcTemplate(tx.getDataSource());
 		logger.info(cmd+"["+id+"]");
 		
 		try {
@@ -159,7 +159,7 @@ implements ContactDao{
 		logger.info("ContactMysql.getType() >>>");
 		
 		// TODO Auto-generated method stub
-		JdbcTemplate jdbcTemplate = new JdbcTemplate(ds);
+		JdbcTemplate jdbcTemplate = new JdbcTemplate(tx.getDataSource());
 		
 		String query="select CTY_N_TYPE_ID,CTY_S_NAME,CTY_S_DESC,CTY_S_TYPE";
 		query+=" from BSST_CTY_CONTACT_TYPE";
@@ -188,7 +188,7 @@ implements ContactDao{
 		
 		String cmd="insert into BSST_CON_CONTACT(CON_S_CONTACT,CON_S_ENTITY_NAME,CON_N_ENTITY_ID,CTY_N_TYPE_ID) ";
 		cmd+=" values (?,?,?,?)";
-		JdbcTemplate jdbcTemplate = new JdbcTemplate(ds);
+		JdbcTemplate jdbcTemplate = new JdbcTemplate(tx.getDataSource());
 		logger.info(cmd+"["+contact+"]");
 		
 		try {
@@ -216,7 +216,7 @@ implements ContactDao{
 		String cmd="update BSST_CON_CONTACT set CON_S_CONTACT=?,CON_S_ENTITY_NAME=?,CON_N_ENTITY_ID=?,CTY_N_TYPE_ID=?";
 		cmd+=" where CON_N_CONTACT_ID=?";
 		
-		JdbcTemplate jdbcTemplate = new JdbcTemplate(ds);
+		JdbcTemplate jdbcTemplate = new JdbcTemplate(tx.getDataSource());
 		logger.info(cmd+"["+id+","+contact+"]");
 		
 		try {
@@ -242,7 +242,7 @@ implements ContactDao{
 		logger.info("ContactMysql.remove() >>>");
 		
 		String cmd="delete from BSST_CON_CONTACT where CON_N_CONTACT_ID=?";
-		JdbcTemplate jdbcTemplate = new JdbcTemplate(ds);
+		JdbcTemplate jdbcTemplate = new JdbcTemplate(tx.getDataSource());
 		logger.info(cmd+"["+id+"]");
 		
 		try {
@@ -264,7 +264,7 @@ implements ContactDao{
 		logger.info("ContactMysql.removeByEntityId() >>>");
 		
 		String cmd="delete from BSST_CON_CONTACT where CON_N_ENTITY_ID=? and CON_S_ENTITY_NAME=?";
-		JdbcTemplate jdbcTemplate = new JdbcTemplate(ds);
+		JdbcTemplate jdbcTemplate = new JdbcTemplate(tx.getDataSource());
 		
 		logger.info(cmd+"["+entityId+","+entityName+"]");
 		
@@ -289,7 +289,7 @@ implements ContactDao{
 		logger.info("ContactMysql.getByEntity() >>>");
 		
 		// TODO Auto-generated method stub
-		JdbcTemplate jdbcTemplate = new JdbcTemplate(ds);
+		JdbcTemplate jdbcTemplate = new JdbcTemplate(tx.getDataSource());
 				
 		String query="select a.CON_N_CONTACT_ID,a.CON_S_CONTACT,a.CON_S_ENTITY_NAME,a.CON_N_ENTITY_ID,a.CTY_N_TYPE_ID,b.CTY_S_NAME";
 		query+=" from BSST_CON_CONTACT a";
@@ -309,7 +309,7 @@ implements ContactDao{
 		logger.info("ContactMysql.get() >>>");
 		
 		// TODO Auto-generated method stub
-		JdbcTemplate jdbcTemplate = new JdbcTemplate(ds);
+		JdbcTemplate jdbcTemplate = new JdbcTemplate(tx.getDataSource());
 		
 		String query="select a.CON_N_CONTACT_ID,a.CON_S_CONTACT,a.CON_S_ENTITY_NAME,a.CON_N_ENTITY_ID,a.CTY_N_TYPE_ID,b.CTY_S_NAME";
 		query+=" from BSST_CON_CONTACT a";

@@ -4,15 +4,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.cysoft.bss.core.common.CyBssException;
-import org.cysoft.bss.core.dao.FileDao;
-import org.cysoft.bss.core.dao.LocationDao;
-import org.cysoft.bss.core.dao.TicketDao;
 import org.cysoft.bss.core.model.Language;
 import org.cysoft.bss.core.model.Location;
 import org.cysoft.bss.core.model.Ticket;
 import org.cysoft.bss.core.model.TicketCategory;
 import org.cysoft.bss.core.model.TicketChangeStatus;
 import org.cysoft.bss.core.model.TicketStatus;
+import org.cysoft.bss.core.service.FileService;
+import org.cysoft.bss.core.service.LocationService;
+import org.cysoft.bss.core.service.TicketService;
 import org.cysoft.bss.core.web.annotation.CyBssOperation;
 import org.cysoft.bss.core.web.annotation.CyBssService;
 import org.cysoft.bss.core.web.response.ICyBssResultConst;
@@ -42,24 +42,23 @@ public class TicketWs extends CyBssWebServiceAdapter
 	
 	private static final Logger logger = LoggerFactory.getLogger(TicketWs.class);
 	
-	protected TicketDao ticketDao=null;
+	protected TicketService ticketService=null;
 	@Autowired
-	public void setPersonDao(TicketDao ticketDao){
-			this.ticketDao=ticketDao;
+	public void setTicketService(TicketService ticketService){
+			this.ticketService=ticketService;
 	}
 	
-	protected  LocationDao locationDao=null;
+	protected  LocationService locationService=null;
 	@Autowired
-	public void setLocationDao(LocationDao locationDao){
-			this.locationDao=locationDao;
+	public void setLocationService(LocationService locationService){
+			this.locationService=locationService;
 	}
 	
-	protected FileDao fileDao=null;
+	protected FileService fileService=null;
 	@Autowired
-	public void setFileDao(FileDao fileDao){
-			this.fileDao=fileDao;
+	public void setFileService(FileService fileService){
+			this.fileService=fileService;
 	}
-	
 	
 	
 	@RequestMapping(value = "/add",method = RequestMethod.POST)
@@ -79,7 +78,7 @@ public class TicketWs extends CyBssWebServiceAdapter
 		// end checkGrant 
 		
 		ticket.setUserId(response.getUserId());
-		long ticketId=ticketDao.add(ticket);
+		long ticketId=ticketService.add(ticket);
 		ticket.setId(ticketId);
 		response.setTicket(ticket);
 		
@@ -99,9 +98,9 @@ public class TicketWs extends CyBssWebServiceAdapter
 		FileListResponse response=new FileListResponse();
 		
 		Language language=languageService.getLanguage(response.getLanguageCode());		
-		Ticket ticket=ticketDao.get(id,language.getId());
+		Ticket ticket=ticketService.get(id,language.getId());
 		if (ticket!=null){
-			response.setFiles(fileDao.getByEntity(Ticket.ENTITY_NAME, id));
+			response.setFiles(fileService.getByEntity(Ticket.ENTITY_NAME, id));
 		}
 		else
 			setResult(response, ICyBssResultConst.RESULT_NOT_FOUND, 
@@ -131,11 +130,11 @@ public class TicketWs extends CyBssWebServiceAdapter
 		else	
 			language=languageService.getLanguage(languageCode);
 		
-		Ticket ticket=ticketDao.get(id,language.getId());
+		Ticket ticket=ticketService.get(id,language.getId());
 		if (ticket!=null){
 			response.setTicket(ticket);
 			if (ticket.getLocationId()!=0)
-				ticket.setLocation(locationDao.get(ticket.getLocationId(),language.getId()));
+				ticket.setLocation(locationService.get(ticket.getLocationId(),language.getId()));
 		}
 		else
 			setResult(response, ICyBssResultConst.RESULT_NOT_FOUND, 
@@ -165,7 +164,7 @@ public class TicketWs extends CyBssWebServiceAdapter
 		else	
 			language=languageService.getLanguage(languageCode);
 			
-		List<TicketCategory> categories=ticketDao.getCategoryAll(language.getId());
+		List<TicketCategory> categories=ticketService.getCategoryAll(language.getId());
 		response.setTicketCategories(categories);
 		
 		logger.info("TicketWs.getCategoryAll() <<< ");
@@ -191,7 +190,7 @@ public class TicketWs extends CyBssWebServiceAdapter
 		else	
 			language=languageService.getLanguage(languageCode);
 			
-		List<TicketStatus> states=ticketDao.getStatusAll(language.getId());
+		List<TicketStatus> states=ticketService.getStatusAll(language.getId());
 		response.setTicketStates(states);
 		
 		logger.info("TicketWs.getStatusAll() <<< ");
@@ -221,7 +220,7 @@ public class TicketWs extends CyBssWebServiceAdapter
 		else	
 			language=languageService.getLanguage(languageCode);
 		
-		response.setStatusTraces(ticketDao.getStatusTrace(id,language.getId()));
+		response.setStatusTraces(ticketService.getStatusTrace(id,language.getId()));
 		
 		logger.info("TicketWs.getStatusTrace() <<< ");
 		
@@ -255,7 +254,7 @@ public class TicketWs extends CyBssWebServiceAdapter
 			language=languageService.getLanguage(languageCode);
 		
 		
-		List<TicketStatus> states=ticketDao.getNextStates(statusId, language.getId());
+		List<TicketStatus> states=ticketService.getNextStates(statusId, language.getId());
 		response.setTicketStates(states);
 		
 		logger.info("TicketWs.getStatusNext() <<< ");
@@ -286,14 +285,14 @@ public class TicketWs extends CyBssWebServiceAdapter
 	else	
 		language=languageService.getLanguage(languageCode);
 	
-	Ticket ticket=ticketDao.get(id, language.getId());
+	Ticket ticket=ticketService.get(id, language.getId());
 	if (ticket==null){
 		setResult(response, ICyBssResultConst.RESULT_NOT_FOUND, 
 				ICyBssResultConst.RESULT_D_NOT_FOUND,response.getLanguageCode());
 		return response;
 	}
 	
-	List<TicketStatus> nextStates=ticketDao.getNextStates(ticket.getStatusId(), language.getId());
+	List<TicketStatus> nextStates=ticketService.getNextStates(ticket.getStatusId(), language.getId());
 	TicketStatus newState=new TicketStatus();
 	newState.setId(changeStatus.getStatusId());
 	if (nextStates==null || !nextStates.contains(newState)){
@@ -302,8 +301,8 @@ public class TicketWs extends CyBssWebServiceAdapter
 		return response;
 	}
 	
-	ticketDao.changeStatus(ticket,changeStatus.getStatusId(),response.getUserId(),changeStatus.getNote(),language.getId());
-	response.setTicket(ticketDao.get(id, language.getId()));
+	ticketService.changeStatus(ticket,changeStatus.getStatusId(),response.getUserId(),changeStatus.getNote(),language.getId());
+	response.setTicket(ticketService.get(id, language.getId()));
 	
 	logger.info("TicketWs.changeStatus() <<< ");
 	return response;
@@ -333,7 +332,7 @@ public class TicketWs extends CyBssWebServiceAdapter
 		else	
 			language=languageService.getLanguage(languageCode);
 		
-		Ticket ticket=ticketDao.get(id,language.getId());
+		Ticket ticket=ticketService.get(id,language.getId());
 		if (ticket==null){
 			setResult(response, ICyBssResultConst.RESULT_NOT_FOUND, 
 					ICyBssResultConst.RESULT_D_NOT_FOUND,response.getLanguageCode());
@@ -348,9 +347,9 @@ public class TicketWs extends CyBssWebServiceAdapter
 		
 		ticket.setLocation(location);
 		
-		ticketDao.update(id, ticket,language.getId());
-		ticket=ticketDao.get(id, language.getId());
-		ticket.setLocation(locationDao.get(ticket.getLocationId(),language.getId()));
+		ticketService.update(id, ticket,language.getId());
+		ticket=ticketService.get(id, language.getId());
+		ticket.setLocation(locationService.get(ticket.getLocationId(),language.getId()));
 		
 		response.setTicket(ticket);
 		
@@ -384,15 +383,15 @@ public class TicketWs extends CyBssWebServiceAdapter
 		else	
 			language=languageService.getLanguage(languageCode);
 		
-		if (ticketDao.get(id,language.getId())==null){
+		if (ticketService.get(id,language.getId())==null){
 			setResult(response, ICyBssResultConst.RESULT_NOT_FOUND, 
 					ICyBssResultConst.RESULT_D_NOT_FOUND,response.getLanguageCode());
 			return response;
 			}
 		
-		ticketDao.update(id, ticket,language.getId());
-		ticket=ticketDao.get(id, language.getId());
-		ticket.setLocation(locationDao.get(ticket.getLocationId(),language.getId()));
+		ticketService.update(id, ticket,language.getId());
+		ticket=ticketService.get(id, language.getId());
+		ticket.setLocation(locationService.get(ticket.getLocationId(),language.getId()));
 		
 		response.setTicket(ticket);
 		
@@ -416,7 +415,7 @@ public class TicketWs extends CyBssWebServiceAdapter
 		// end checkGrant 
 		
 		Language language=languageService.getLanguage(response.getLanguageCode());
-		ticketDao.remove(id,language.getId());
+		ticketService.remove(id,language.getId());
 		
 		logger.info("TicketWs.remove() <<< ");
 		return response;
@@ -449,7 +448,7 @@ public class TicketWs extends CyBssWebServiceAdapter
 			language=languageService.getLanguage(languageCode);
 		
 		
-		List<Ticket> tickets=ticketDao.find(text, categoryId, statusId, personId, fromDate, toDate,language.getId());
+		List<Ticket> tickets=ticketService.find(text, categoryId, statusId, personId, fromDate, toDate,language.getId());
 		int lsize=tickets.size();
 		
 		if (offset!=0){

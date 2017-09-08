@@ -18,7 +18,9 @@ public interface InvoiceDao {
 	public Invoice get(long id);
 	public void remove(long id) throws CyBssException;
 	public void cancel(long id) throws CyBssException;
-	public void close(long id) throws CyBssException;
-
+	public void lock(long id) throws CyBssException;
+	public void unlock(long id) throws CyBssException;
+	public void updateNumber(long id, int invoiceNumber) throws CyBssException;
+	
 }
 

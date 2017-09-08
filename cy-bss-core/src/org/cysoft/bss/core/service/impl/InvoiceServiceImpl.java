@@ -9,6 +9,7 @@ import org.cysoft.bss.core.model.Invoice;
 import org.cysoft.bss.core.service.InvoiceService;
 import org.cysoft.bss.core.web.response.ICyBssResultConst;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
@@ -33,12 +34,14 @@ public class InvoiceServiceImpl extends CyBssServiceBase
 	
 	protected BillableDao billableCostDao=null;
 	@Autowired
+	@Qualifier("billableCostDao")
 	public void setBillableCostDao(BillableDao billableCostDao){
 			this.billableCostDao=billableCostDao;
 	}
 	
 	protected BillableDao billableRevenueDao=null;
 	@Autowired
+	@Qualifier("billableRevenueDao")
 	public void setBillableRevenueDao(BillableDao billableRevenueDao){
 			this.billableRevenueDao=billableRevenueDao;
 	}
@@ -96,7 +99,7 @@ public class InvoiceServiceImpl extends CyBssServiceBase
 			@Override
 			protected void doInTransactionWithoutResult(TransactionStatus txStatus) {
 				// TODO Auto-generated method stub
-				_billableDao.unbill(id);
+				_billableDao.unbill(id,true);
 				
 				try {
 				if (invoice.isClosed())
@@ -117,7 +120,7 @@ public class InvoiceServiceImpl extends CyBssServiceBase
 
 
 	@Override
-	public void close(String invoiceType, final long id) throws CyBssException {
+	public void lock(String invoiceType, final long id) throws CyBssException {
 		// TODO Auto-generated method stub
 		final InvoiceDao _invoiceDao=invoiceType.equals(Invoice.TYPE_PASSIVE)?passiveInvoiceDao:invoiceDao;
 		final BillableDao _billableDao=invoiceType.equals(Invoice.TYPE_PASSIVE)?billableCostDao:billableRevenueDao;
@@ -133,7 +136,7 @@ public class InvoiceServiceImpl extends CyBssServiceBase
 				// TODO Auto-generated method stub
 				_billableDao.bill(id);
 				try {
-					_invoiceDao.close(id);
+					_invoiceDao.lock(id);
 				} catch (CyBssException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -144,6 +147,33 @@ public class InvoiceServiceImpl extends CyBssServiceBase
 
 	}
 
+	@Override
+	public void unlock(String invoiceType, final long id) throws CyBssException {
+		// TODO Auto-generated method stub
+		final InvoiceDao _invoiceDao=invoiceType.equals(Invoice.TYPE_PASSIVE)?passiveInvoiceDao:invoiceDao;
+		final BillableDao _billableDao=invoiceType.equals(Invoice.TYPE_PASSIVE)?billableCostDao:billableRevenueDao;
+		
+		final Invoice invoice=_invoiceDao.get(id);
+		if (invoice==null)
+			throw new CyBssException(msgSource.getMessage(ICyBssResultConst.RESULT_D_NOT_FOUND));
+		
+		TransactionTemplate txTemplate=new TransactionTemplate(tx);
+		txTemplate.execute(new TransactionCallbackWithoutResult(){
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus txStatus) {
+				// TODO Auto-generated method stub
+				_billableDao.unbill(id,false);
+				try {
+					_invoiceDao.unlock(id);
+				} catch (CyBssException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+					throw new RuntimeException(e);
+				}
+			}
+		});
+	}
+	
 
 	@Override
 	public List<Billable> getBillables(String invoiceType, long id) throws CyBssException {
@@ -261,6 +291,17 @@ public class InvoiceServiceImpl extends CyBssServiceBase
 		
 		_update(invoiceType,invoice);
 	}
-	
+
+
+	@Override
+	public void updateNumber(String invoiceType,long id,int invoiceNumber) throws CyBssException {
+		// TODO Auto-generated method stub
+		final InvoiceDao _invoiceDao=invoiceType.equals(Invoice.TYPE_PASSIVE)?passiveInvoiceDao:invoiceDao;
+		final Invoice invoice=_invoiceDao.get(id);
+		if (invoice==null)
+			throw new CyBssException(msgSource.getMessage(ICyBssResultConst.RESULT_D_NOT_FOUND));
+		
+		_invoiceDao.updateNumber(id, invoiceNumber);
+	}
 	
 }

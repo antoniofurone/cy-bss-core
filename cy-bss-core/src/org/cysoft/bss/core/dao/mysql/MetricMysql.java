@@ -29,7 +29,7 @@ public class MetricMysql extends CyBssMysqlDao
 		
 		String cmd="insert into BSST_MET_METRIC(MET_S_NAME) ";
 		cmd+=" values (?)";
-		JdbcTemplate jdbcTemplate = new JdbcTemplate(ds);
+		JdbcTemplate jdbcTemplate = new JdbcTemplate(tx.getDataSource());
 		logger.info(cmd+"["+metric+"]");
 		
 		try {
@@ -54,7 +54,7 @@ public class MetricMysql extends CyBssMysqlDao
 		logger.info("MetricMysql.removeMetric() >>>");
 		
 		String cmd="delete from BSST_MET_METRIC where MET_N_METRIC_ID=?";
-		JdbcTemplate jdbcTemplate = new JdbcTemplate(ds);
+		JdbcTemplate jdbcTemplate = new JdbcTemplate(tx.getDataSource());
 		logger.info(cmd+"["+id+"]");
 		
 		try {
@@ -79,7 +79,7 @@ public class MetricMysql extends CyBssMysqlDao
 		
 		String cmd="update BSST_MET_METRIC set MET_S_NAME=? ";
 		cmd+="where MET_N_METRIC_ID=?";
-		JdbcTemplate jdbcTemplate = new JdbcTemplate(ds);
+		JdbcTemplate jdbcTemplate = new JdbcTemplate(tx.getDataSource());
 		logger.info(cmd+"["+metric+"]");
 		
 		try {
@@ -103,7 +103,7 @@ public class MetricMysql extends CyBssMysqlDao
 		logger.info("MetricMysql.getMetric() >>>");
 		
 		// TODO Auto-generated method stub
-		JdbcTemplate jdbcTemplate = new JdbcTemplate(ds);
+		JdbcTemplate jdbcTemplate = new JdbcTemplate(tx.getDataSource());
 		
 		String query="select MET_N_METRIC_ID,MET_S_NAME from BSST_MET_METRIC";
 		query+=" where MET_N_METRIC_ID=?";
@@ -130,7 +130,7 @@ public class MetricMysql extends CyBssMysqlDao
 			
 		String query="select MET_N_METRIC_ID,MET_S_NAME from BSST_MET_METRIC";
 			
-		JdbcTemplate jdbcTemplate = new JdbcTemplate(ds);
+		JdbcTemplate jdbcTemplate = new JdbcTemplate(tx.getDataSource());
 		logger.info(query);
 			
 		List<Metric> ret = jdbcTemplate.query(
@@ -164,7 +164,7 @@ public class MetricMysql extends CyBssMysqlDao
 		
 		String cmd="insert into BSST_MES_METRIC_SCALE(MET_N_METRIC_ID,MES_S_NAME,MES_S_SIMBOL,MES_N_SCALE) ";
 		cmd+=" values (?,?,?,?)";
-		JdbcTemplate jdbcTemplate = new JdbcTemplate(ds);
+		JdbcTemplate jdbcTemplate = new JdbcTemplate(tx.getDataSource());
 		logger.info(cmd+"["+scale+"]");
 		
 		try {
@@ -193,7 +193,7 @@ public class MetricMysql extends CyBssMysqlDao
 		logger.info("MetricMysql.removeMetricScale() >>>");
 		
 		String cmd="delete from BSST_MES_METRIC_SCALE where MES_N_METRIC_SCALE_ID=?";
-		JdbcTemplate jdbcTemplate = new JdbcTemplate(ds);
+		JdbcTemplate jdbcTemplate = new JdbcTemplate(tx.getDataSource());
 		logger.info(cmd+"["+id+"]");
 		
 		try {
@@ -218,7 +218,7 @@ public class MetricMysql extends CyBssMysqlDao
 		
 		String cmd="update BSST_MES_METRIC_SCALE set MET_N_METRIC_ID=?, MES_S_NAME=?, MES_S_SIMBOL=?, MES_N_SCALE=? ";
 		cmd+="where MES_N_METRIC_SCALE_ID=?";
-		JdbcTemplate jdbcTemplate = new JdbcTemplate(ds);
+		JdbcTemplate jdbcTemplate = new JdbcTemplate(tx.getDataSource());
 		logger.info(cmd+"["+scale+"]");
 		
 		try {
@@ -246,7 +246,7 @@ public class MetricMysql extends CyBssMysqlDao
 		logger.info("MetricMysql.getMetricScale() >>>");
 		
 		// TODO Auto-generated method stub
-		JdbcTemplate jdbcTemplate = new JdbcTemplate(ds);
+		JdbcTemplate jdbcTemplate = new JdbcTemplate(tx.getDataSource());
 		
 		String query="select ID,NAME,METRIC_ID,METRIC_NAME,SIMBOL,SCALE";
 		query+=" from BSSV_METRIC_SCALE ";
@@ -277,7 +277,7 @@ public class MetricMysql extends CyBssMysqlDao
 		query+="from BSSV_METRIC_SCALE ";
 		query+=" where METRIC_ID=?";
 			
-		JdbcTemplate jdbcTemplate = new JdbcTemplate(ds);
+		JdbcTemplate jdbcTemplate = new JdbcTemplate(tx.getDataSource());
 		logger.info(query);
 			
 		List<MetricScale> ret = jdbcTemplate.query(
@@ -318,7 +318,7 @@ public class MetricMysql extends CyBssMysqlDao
 		
 		String cmd="insert into BSST_CUR_CURRENCY(CUR_S_CODE,CUR_S_NAME) ";
 		cmd+=" values (?,?)";
-		JdbcTemplate jdbcTemplate = new JdbcTemplate(ds);
+		JdbcTemplate jdbcTemplate = new JdbcTemplate(tx.getDataSource());
 		logger.info(cmd+"["+currency+"]");
 		
 		try {
@@ -343,7 +343,7 @@ public class MetricMysql extends CyBssMysqlDao
 		logger.info("MetricMysql.removeCurrency() >>>");
 		
 		String cmd="delete from BSST_CUR_CURRENCY where CUR_N_CURRENCY_ID=?";
-		JdbcTemplate jdbcTemplate = new JdbcTemplate(ds);
+		JdbcTemplate jdbcTemplate = new JdbcTemplate(tx.getDataSource());
 		logger.info(cmd+"["+id+"]");
 		
 		try {
@@ -369,7 +369,7 @@ public class MetricMysql extends CyBssMysqlDao
 		
 		String cmd="update BSST_CUR_CURRENCY set CUR_S_CODE=?, CUR_S_NAME=? ";
 		cmd+="where CUR_N_CURRENCY_ID=?";
-		JdbcTemplate jdbcTemplate = new JdbcTemplate(ds);
+		JdbcTemplate jdbcTemplate = new JdbcTemplate(tx.getDataSource());
 		logger.info(cmd+"["+currency+"]");
 		
 		try {
@@ -395,7 +395,7 @@ public class MetricMysql extends CyBssMysqlDao
 		logger.info("MetricMysql.getCurrency() >>>");
 		
 		// TODO Auto-generated method stub
-		JdbcTemplate jdbcTemplate = new JdbcTemplate(ds);
+		JdbcTemplate jdbcTemplate = new JdbcTemplate(tx.getDataSource());
 		
 		String query="select CUR_N_CURRENCY_ID,CUR_S_CODE,CUR_S_NAME from BSST_CUR_CURRENCY";
 		query+=" where CUR_N_CURRENCY_ID=?";
@@ -423,7 +423,7 @@ public class MetricMysql extends CyBssMysqlDao
 		
 		String query="select CUR_N_CURRENCY_ID,CUR_S_CODE,CUR_S_NAME from BSST_CUR_CURRENCY";
 			
-		JdbcTemplate jdbcTemplate = new JdbcTemplate(ds);
+		JdbcTemplate jdbcTemplate = new JdbcTemplate(tx.getDataSource());
 		logger.info(query);
 			
 		List<Currency> ret = jdbcTemplate.query(

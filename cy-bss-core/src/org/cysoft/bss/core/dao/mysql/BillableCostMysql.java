@@ -69,7 +69,7 @@ public class BillableCostMysql extends CyBssMysqlDao
 	}
 	
 	@Override
-	public void removeByPurchase(long purchaseId) {
+	public void removeByParent(long purchaseId) {
 		// TODO Auto-generated method stub
 		JdbcTemplate jdbcTemplate = new JdbcTemplate(tx.getDataSource());
 		String cmd="delete from BSST_BIC_BILLABLE_COST where PUR_N_PURCHASE_ID=? and BIC_C_BILLED='N'";
@@ -166,10 +166,16 @@ public class BillableCostMysql extends CyBssMysqlDao
 	}
 
 	@Override
-	public void unbill(long invoiceId) {
+	public void unbill(long invoiceId, boolean unlink) {
 		// TODO Auto-generated method stub
 		JdbcTemplate jdbcTemplate = new JdbcTemplate(tx.getDataSource());
-		String cmd="update BSST_BIC_BILLABLE_COST set PIN_N_INVOICE_ID=NULL,BIC_C_BILLED='N' where PIN_N_INVOICE_ID=?";
+		
+		String cmd="";
+		if (unlink)
+			cmd+="update BSST_BIC_BILLABLE_COST set PIN_N_INVOICE_ID=NULL,BIC_C_BILLED='N' where PIN_N_INVOICE_ID=?";
+		else
+			cmd+="update BSST_BIC_BILLABLE_COST set BIC_C_BILLED='N' where PIN_N_INVOICE_ID=?";
+
 		logger.info(cmd+"["+invoiceId+"]");
 				
 		jdbcTemplate.update(cmd, new Object[]{
@@ -192,7 +198,7 @@ public class BillableCostMysql extends CyBssMysqlDao
 	@Override
 	public List<Billable> getNotLinked(long companyId, long tpCompanyId, long personId, long currencyId) {
 		// TODO Auto-generated method stub
-		logger.info("BillableCostMysql.getNotAssocToInvoice() >>>");
+		logger.info("BillableCostMysql.getNotLinked() >>>");
 		
 		String query="select ID,PURCHASE_ID,INVOICE_ID,";
 		query+="COMPANY_ID,COMPANY_CODE,COMPANY_NAME,";
@@ -235,7 +241,7 @@ public class BillableCostMysql extends CyBssMysqlDao
 		
 		List<Billable> ret=jdbcTemplate.query(query, parms.toArray(),new RowMapperBillableCost());
 		
-		logger.info("BillableCostMysql.getNotAssocToInvoice() <<<");
+		logger.info("BillableCostMysql.getNotLinked() <<<");
 		return ret;
 	}
 
@@ -264,9 +270,9 @@ public class BillableCostMysql extends CyBssMysqlDao
 	}
 
 	@Override
-	public List<Billable> getBilledByPurchase(long purchaseId) {
+	public List<Billable> getBilledByParent(long purchaseId) {
 		// TODO Auto-generated method stub
-		logger.info("BillableCostMysql.getBilledByPurchase() >>>");
+		logger.info("BillableCostMysql.getBilledByParent() >>>");
 		
 		String query="select ";
 		query+="PURCHASE_ID,COMPANY_ID,PRODUCT_ID,SUPPLIER_ID,";
@@ -283,7 +289,7 @@ public class BillableCostMysql extends CyBssMysqlDao
 		List<Billable> ret=jdbcTemplate.query(query, new Object[]{purchaseId},new RowMapperBillableCostAggr());
 		
 		
-		logger.info("BillableCostMysql.getBilledByPurchase() <<<");
+		logger.info("BillableCostMysql.getBilledByParent() <<<");
 		
 		return ret;
 	}
@@ -316,7 +322,7 @@ public class BillableCostMysql extends CyBssMysqlDao
 	}
 
 	@Override
-	public List<Billable> getByPurchase(long purchaseId) {
+	public List<Billable> getByParent(long purchaseId) {
 		// TODO Auto-generated method stub
 		String query="select ID,PURCHASE_ID,INVOICE_ID,";
 		query+="COMPANY_ID,COMPANY_CODE,COMPANY_NAME,";

@@ -149,7 +149,7 @@ public class FileMysql extends CyBssMysqlDao
 	public void makePublic(long fileId) {
 		// TODO Auto-generated method stub
 		String cmd="update BSST_FIL_FILE set FILE_S_VISIBILITY=? where FILE_N_FILE_ID=? ";
-		JdbcTemplate jdbcTemplate = new JdbcTemplate(ds);
+		JdbcTemplate jdbcTemplate = new JdbcTemplate(tx.getDataSource());
 		logger.info(cmd+"["+fileId+","+CyBssFile.VISIBILITY_PUBLIC+"]");
 		
 		jdbcTemplate.update(cmd, new Object[]{
@@ -162,7 +162,7 @@ public class FileMysql extends CyBssMysqlDao
 	public void makeReserved(long fileId) {
 		// TODO Auto-generated method stub
 		String cmd="update BSST_FIL_FILE set FILE_S_VISIBILITY=? where FILE_N_FILE_ID=? ";
-		JdbcTemplate jdbcTemplate = new JdbcTemplate(ds);
+		JdbcTemplate jdbcTemplate = new JdbcTemplate(tx.getDataSource());
 		logger.info(cmd+"["+fileId+","+CyBssFile.VISIBILITY_RESERVED+"]");
 		
 		jdbcTemplate.update(cmd, new Object[]{
@@ -240,7 +240,7 @@ public class FileMysql extends CyBssMysqlDao
 		}
 		query+=" order by FILE_N_FILE_ID";
 		
-		JdbcTemplate jdbcTemplate = new JdbcTemplate(ds);
+		JdbcTemplate jdbcTemplate = new JdbcTemplate(tx.getDataSource());
 		logger.info(query+"[name="+name+";type="+type+";entityName="+entityName+";visibility="+visibility+"]");
 		
 		List<CyBssFile> ret=jdbcTemplate.query(query, parms.toArray(),new RowMapperFile());

@@ -16,9 +16,7 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallbackWithoutResult;
-import org.springframework.transaction.support.TransactionTemplate;
+
 
 public class ProductMysql extends CyBssMysqlDao
 	implements ProductDao{
@@ -33,7 +31,7 @@ public class ProductMysql extends CyBssMysqlDao
 		
 		String cmd="insert into BSST_PCA_PRODUCT_CATEGORY(PCA_S_NAME,PCA_N_VAT,MET_N_METRIC_ID,PCA_S_DESC) ";
 		cmd+=" values (?,?,?,?)";
-		JdbcTemplate jdbcTemplate = new JdbcTemplate(ds);
+		JdbcTemplate jdbcTemplate = new JdbcTemplate(tx.getDataSource());
 		logger.info(cmd+"["+category+"]");
 		
 		try {
@@ -60,7 +58,7 @@ public class ProductMysql extends CyBssMysqlDao
 		logger.info("ProductMysql.removeCategory() >>>");
 		
 		String cmd="delete from BSST_PCA_PRODUCT_CATEGORY where PCA_N_PRODUCT_CATEGORY_ID=?";
-		JdbcTemplate jdbcTemplate = new JdbcTemplate(ds);
+		JdbcTemplate jdbcTemplate = new JdbcTemplate(tx.getDataSource());
 		logger.info(cmd+"["+id+"]");
 		
 		try {
@@ -84,7 +82,7 @@ public class ProductMysql extends CyBssMysqlDao
 		
 		String query="select ID,NAME,VAT,METRIC_ID,METRIC_NAME,DESCRIPTION from BSSV_PRODUCT_CATEGORY";
 		
-		JdbcTemplate jdbcTemplate = new JdbcTemplate(ds);
+		JdbcTemplate jdbcTemplate = new JdbcTemplate(tx.getDataSource());
 		logger.info(query);
 		
 		List<ProductCategory> ret = jdbcTemplate.query(
@@ -123,7 +121,7 @@ public class ProductMysql extends CyBssMysqlDao
 		logger.info("ProductMysql.getCategory() >>>");
 		
 		// TODO Auto-generated method stub
-		JdbcTemplate jdbcTemplate = new JdbcTemplate(ds);
+		JdbcTemplate jdbcTemplate = new JdbcTemplate(tx.getDataSource());
 		
 		String query="select ID,NAME,VAT,METRIC_ID,METRIC_NAME,DESCRIPTION from BSSV_PRODUCT_CATEGORY";
 		query+=" where ID=?";
@@ -149,7 +147,7 @@ public class ProductMysql extends CyBssMysqlDao
 		
 		String cmd="update BSST_PCA_PRODUCT_CATEGORY set PCA_S_NAME=?,PCA_N_VAT=?,MET_N_METRIC_ID=?,PCA_S_DESC=? ";
 		cmd+="where PCA_N_PRODUCT_CATEGORY_ID=?";
-		JdbcTemplate jdbcTemplate = new JdbcTemplate(ds);
+		JdbcTemplate jdbcTemplate = new JdbcTemplate(tx.getDataSource());
 		logger.info(cmd+"["+category+"]");
 		
 		try {
@@ -177,7 +175,7 @@ public class ProductMysql extends CyBssMysqlDao
 		
 		String cmd="insert into BSST_PTY_PRODUCT_TYPE(PTY_S_NAME,PTY_S_DESC) ";
 		cmd+=" values (?,?)";
-		JdbcTemplate jdbcTemplate = new JdbcTemplate(ds);
+		JdbcTemplate jdbcTemplate = new JdbcTemplate(tx.getDataSource());
 		logger.info(cmd+"["+productType+"]");
 		
 		try {
@@ -203,7 +201,7 @@ public class ProductMysql extends CyBssMysqlDao
 		logger.info("ProductMysql.removeType() >>>");
 		
 		String cmd="delete from BSST_PTY_PRODUCT_TYPE where PTY_N_PRODUCT_TYPE_ID=?";
-		JdbcTemplate jdbcTemplate = new JdbcTemplate(ds);
+		JdbcTemplate jdbcTemplate = new JdbcTemplate(tx.getDataSource());
 		logger.info(cmd+"["+id+"]");
 		
 		try {
@@ -226,7 +224,7 @@ public class ProductMysql extends CyBssMysqlDao
 		
 		String query="select PTY_N_PRODUCT_TYPE_ID,PTY_S_NAME,PTY_S_DESC from BSST_PTY_PRODUCT_TYPE";
 		
-		JdbcTemplate jdbcTemplate = new JdbcTemplate(ds);
+		JdbcTemplate jdbcTemplate = new JdbcTemplate(tx.getDataSource());
 		logger.info(query);
 		
 		List<ProductType> ret = jdbcTemplate.query(
@@ -262,7 +260,7 @@ public class ProductMysql extends CyBssMysqlDao
 		logger.info("ProductMysql.getType() >>>");
 		
 		// TODO Auto-generated method stub
-		JdbcTemplate jdbcTemplate = new JdbcTemplate(ds);
+		JdbcTemplate jdbcTemplate = new JdbcTemplate(tx.getDataSource());
 		
 		String query="select PTY_N_PRODUCT_TYPE_ID,PTY_S_NAME,PTY_S_DESC from BSST_PTY_PRODUCT_TYPE where PTY_N_PRODUCT_TYPE_ID=?";
 		
@@ -288,7 +286,7 @@ public class ProductMysql extends CyBssMysqlDao
 		
 		String cmd="update BSST_PTY_PRODUCT_TYPE set PTY_S_NAME=?,PTY_S_DESC=? ";
 		cmd+="where PTY_N_PRODUCT_TYPE_ID=?";
-		JdbcTemplate jdbcTemplate = new JdbcTemplate(ds);
+		JdbcTemplate jdbcTemplate = new JdbcTemplate(tx.getDataSource());
 		logger.info(cmd+"["+type+"]");
 		
 		try {
@@ -315,7 +313,7 @@ public class ProductMysql extends CyBssMysqlDao
 		
 		String cmd="insert into BSST_PRO_PRODUCT(PRO_S_NAME,PRO_S_DESC,PRO_S_CODE,PCA_N_PRODUCT_CATEGORY_ID,PTY_N_PRODUCT_TYPE_ID,PRO_N_PRODUCT_PARENT_ID,PRO_N_PRODUCER_ID) ";
 		cmd+=" values (?,?,?,?,?,?,?)";
-		JdbcTemplate jdbcTemplate = new JdbcTemplate(ds);
+		JdbcTemplate jdbcTemplate = new JdbcTemplate(tx.getDataSource());
 		logger.info(cmd+"["+product+"]");
 		
 		try {
@@ -390,7 +388,7 @@ public class ProductMysql extends CyBssMysqlDao
 		query+=" order by ID";
 		
 		
-		JdbcTemplate jdbcTemplate = new JdbcTemplate(ds);
+		JdbcTemplate jdbcTemplate = new JdbcTemplate(tx.getDataSource());
 		logger.info(query+"[name="+name+";categoryId="+categoryId+";typeId="+typeId
 				+";attrName="+attrName+";attrValue="+attrValue+"]");
 		
@@ -441,7 +439,7 @@ public class ProductMysql extends CyBssMysqlDao
 		logger.info("ProductMysql.get() >>>");
 		
 		// TODO Auto-generated method stub
-		JdbcTemplate jdbcTemplate = new JdbcTemplate(ds);
+		JdbcTemplate jdbcTemplate = new JdbcTemplate(tx.getDataSource());
 		
 		String query="select a.ID,a.NAME,a.DESCRIPTION,a.CODE,a.CATEGORY_ID,a.CATEGORY_NAME,a.METRIC_ID,a.METRIC_NAME,a.VAT,a.TYPE_ID,a.TYPE_NAME,";
 		query+="a.PARENT_ID,a.PARENT_NAME,a.PRODUCER_ID,a.PRODUCER_CODE,a.PRODUCER_NAME ";
@@ -471,7 +469,7 @@ public class ProductMysql extends CyBssMysqlDao
 		cmd+="PTY_N_PRODUCT_TYPE_ID=?,PRO_N_PRODUCT_PARENT_ID=?,PRO_N_PRODUCER_ID=? ";
 		cmd+="where PRO_N_PRODUCT_ID=?";
 		
-		JdbcTemplate jdbcTemplate = new JdbcTemplate(ds);
+		JdbcTemplate jdbcTemplate = new JdbcTemplate(tx.getDataSource());
 		logger.info(cmd+"["+product+"]");
 	
 		try {
@@ -498,46 +496,19 @@ public class ProductMysql extends CyBssMysqlDao
 	public void remove(final long id) throws CyBssException {
 		// TODO Auto-generated method stub
 		logger.info("ProductMysql.remove() >>>");
+		String cmd="delete from BSST_PRO_PRODUCT where PRO_N_PRODUCT_ID=?";
+		logger.info(cmd+"["+id+"]");
+		JdbcTemplate jdbcTemplate = new JdbcTemplate(tx.getDataSource());
 		
-		TransactionTemplate txTemplate=new TransactionTemplate(tx);
-		txTemplate.execute(new TransactionCallbackWithoutResult(){
-
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus arg0) {
-				// TODO Auto-generated method stub
-				
-				String cmd="delete from BSST_ATV_ATTR_VALUE where ATV_N_OBJ_INST_ID=? and ATT_N_ATTRIBUTE_ID in ";
-				cmd+="(select ATT_N_ATTRIBUTE_ID from BSST_ATT_ATTRIBUTE where OBJ_N_OBJECT_ID in (select OBJ_N_OBJECT_ID from BSST_OBJ_OBJECT where OBJ_S_ENTITY_NAME=?))";
-				JdbcTemplate jdbcTemplate = new JdbcTemplate(tx.getDataSource());
-				
-				logger.info(cmd+"["+id+","+Product.ENTITY_NAME+"]");
-				try {
-					jdbcTemplate.update(cmd, new Object[]{
-							id,Product.ENTITY_NAME
-						});
-				} catch (DataAccessException e) {
-					// TODO Auto-generated catch block
-					logger.error(e.toString());
-					throw new RuntimeException(e);
-				}
-				
-				
-				cmd="delete from BSST_PRO_PRODUCT where PRO_N_PRODUCT_ID=?";
-				logger.info(cmd+"["+id+"]");
-				
-				try {
-					jdbcTemplate.update(cmd, new Object[]{
-							id
-						});
-				} catch (DataAccessException e) {
-					// TODO Auto-generated catch block
-					logger.error(e.toString());
-					throw new RuntimeException(e);
-				}
-				
-			}
-		});	
-
+		try {
+			jdbcTemplate.update(cmd, new Object[]{
+					id
+				});
+		} catch (DataAccessException e) {
+			// TODO Auto-generated catch block
+			logger.error(e.toString());
+			throw new RuntimeException(e);
+		}
 		logger.info("ProductMysql.remove() <<<");
 	}
 

@@ -285,9 +285,9 @@ public class PassiveInvoiceMysql extends CyBssMysqlDao
 	}
 
 	@Override
-	public void close(long id) throws CyBssException {
+	public void lock(long id) throws CyBssException {
 		// TODO Auto-generated method stub
-		Invoice invoice=this.get(id);
+		Invoice invoice=get(id);
 		
 		int invoiceMaxNumber=this.getInvoiceMaxNumber(invoice.getYear());
 		invoiceMaxNumber++;
@@ -304,10 +304,50 @@ public class PassiveInvoiceMysql extends CyBssMysqlDao
 		});
 		
 		if (rowUpdated==0){
-			throw new CyBssException("Passive Invoice <"+id+"> not updated in close().");
+			throw new CyBssException("Passive Invoice <"+id+"> not updated in lock().");
 		}
 	}
 	
+	@Override
+	public void updateNumber(long id, int invoiceNumber) throws CyBssException {
+		// TODO Auto-generated method stub
+		Invoice invoice=this.get(id);
+		
+		String stringNumber=invoice.getYear()+"/"+invoiceNumber;
+		
+		JdbcTemplate jdbcTemplate = new JdbcTemplate(tx.getDataSource());
+		String cmd="update BSST_PIN_PASSIVE_INVOICE set PIN_N_NUMBER=?,PIN_S_NUMBER=?";
+		cmd+=" where PIN_N_INVOICE_ID=? AND PIN_N_NUMBER IS NOT NULL";
+		
+		logger.info(cmd+"["+id+","+invoiceNumber+","+stringNumber+"]");
+		
+		long rowUpdated=jdbcTemplate.update(cmd, new Object[]{
+				invoiceNumber,stringNumber,id		
+		});
+		
+		if (rowUpdated==0){
+			throw new CyBssException("Passive Invoice <"+id+"> not updated in updateNumber().");
+		}
+	}
+	
+	
+	@Override
+	public void unlock(long id) throws CyBssException {
+		// TODO Auto-generated method stub
+
+		JdbcTemplate jdbcTemplate = new JdbcTemplate(tx.getDataSource());
+		String cmd="update BSST_PIN_PASSIVE_INVOICE set PIN_N_NUMBER=NULL,PIN_S_NUMBER=NULL";
+		cmd+=" where PIN_N_INVOICE_ID=?";
+		logger.info(cmd+"["+id+"]");
+				
+		long rowUpdated=jdbcTemplate.update(cmd, new Object[]{
+				id		
+		});
+		
+		if (rowUpdated==0){
+			throw new CyBssException("Passive Invoice <"+id+"> not updated in unlock().");
+		}
+	}
 	
 	private int getInvoiceMaxNumber(int year){
 		// TODO Auto-generated method stub
@@ -358,5 +398,6 @@ public class PassiveInvoiceMysql extends CyBssMysqlDao
 		logger.info("PassiveInvoiceMysql.update() <<<");
 		
 	}
+	
 	
 }

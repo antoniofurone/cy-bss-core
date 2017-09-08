@@ -4,10 +4,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.cysoft.bss.core.common.CyBssException;
-import org.cysoft.bss.core.dao.ProductDao;
 import org.cysoft.bss.core.model.Product;
 import org.cysoft.bss.core.model.ProductCategory;
 import org.cysoft.bss.core.model.ProductType;
+import org.cysoft.bss.core.service.ProductService;
 import org.cysoft.bss.core.web.annotation.CyBssOperation;
 import org.cysoft.bss.core.web.annotation.CyBssService;
 import org.cysoft.bss.core.web.response.ICyBssResultConst;
@@ -38,10 +38,10 @@ public class ProductWs extends CyBssWebServiceAdapter
 
 	private static final Logger logger = LoggerFactory.getLogger(ProductWs.class);
 	
-	protected ProductDao productDao=null;
+	protected ProductService productService=null;
 	@Autowired
-	public void setProductDao(ProductDao productDao){
-			this.productDao=productDao;
+	public void setProductService(ProductService productService){
+			this.productService=productService;
 	}
 	
 	// Category
@@ -63,7 +63,7 @@ public class ProductWs extends CyBssWebServiceAdapter
 		// end checkGrant 
 		
 		logger.info(category.toString());
-		long id=productDao.addCategory(category);
+		long id=productService.addCategory(category);
 		category.setId(id);
 		response.setCategory(category);
 		
@@ -80,7 +80,7 @@ public class ProductWs extends CyBssWebServiceAdapter
 		
 		logger.info("ProductWs.getCategoryAll() >>>");
 		ProductCategoryListResponse response=new ProductCategoryListResponse(); 
-		response.setCategories(productDao.getCategoryAll());
+		response.setCategories(productService.getCategoryAll());
 		return response;
 	}
 	
@@ -95,7 +95,7 @@ public class ProductWs extends CyBssWebServiceAdapter
 		logger.info("ProductWs.getCategory() >>> id="+id);
 		ProductCategoryResponse response=new ProductCategoryResponse();
 		
-		ProductCategory category=productDao.getCategory(id);
+		ProductCategory category=productService.getCategory(id);
 		if (category!=null)
 			response.setCategory(category);
 		else
@@ -124,14 +124,14 @@ public class ProductWs extends CyBssWebServiceAdapter
 			return response;
 		// end checkGrant 
 		
-		if (productDao.getCategory(id)==null){
+		if (productService.getCategory(id)==null){
 			setResult(response, ICyBssResultConst.RESULT_NOT_FOUND, 
 					ICyBssResultConst.RESULT_D_NOT_FOUND,response.getLanguageCode());
 			return response;
 			}
 		
-		productDao.updateCategory(id, category);
-		response.setCategory(productDao.getCategory(id));
+		productService.updateCategory(id, category);
+		response.setCategory(productService.getCategory(id));
 		
 		logger.info("ProductWs.updateCategory() <<<");
 		return response;
@@ -152,7 +152,7 @@ public class ProductWs extends CyBssWebServiceAdapter
 			return response;
 		// end checkGrant 
 		
-		productDao.removeCategory(id);
+		productService.removeCategory(id);
 	
 		logger.info("ProductWs.removeCategory() <<< ");
 	
@@ -178,7 +178,7 @@ public class ProductWs extends CyBssWebServiceAdapter
 		// end checkGrant 
 		
 		logger.info(type.toString());
-		long id=productDao.addType(type);
+		long id=productService.addType(type);
 		type.setId(id);
 		response.setType(type);
 		
@@ -195,7 +195,7 @@ public class ProductWs extends CyBssWebServiceAdapter
 		
 		logger.info("ProductWs.getCategoryAll() >>>");
 		ProductTypeListResponse response=new ProductTypeListResponse(); 
-		response.setTypes(productDao.getTypeAll());
+		response.setTypes(productService.getTypeAll());
 		return response;
 	}
 	
@@ -210,7 +210,7 @@ public class ProductWs extends CyBssWebServiceAdapter
 		logger.info("ProductWs.getType() >>> id="+id);
 		ProductTypeResponse response=new ProductTypeResponse();
 		
-		ProductType type=productDao.getType(id);
+		ProductType type=productService.getType(id);
 		if (type!=null)
 			response.setType(type);
 		else
@@ -239,14 +239,14 @@ public class ProductWs extends CyBssWebServiceAdapter
 			return response;
 		// end checkGrant 
 		
-		if (productDao.getType(id)==null){
+		if (productService.getType(id)==null){
 			setResult(response, ICyBssResultConst.RESULT_NOT_FOUND, 
 					ICyBssResultConst.RESULT_D_NOT_FOUND,response.getLanguageCode());
 			return response;
 			}
 		
-		productDao.updateType(id, type);
-		response.setType(productDao.getType(id));
+		productService.updateType(id, type);
+		response.setType(productService.getType(id));
 		
 		logger.info("ProductWs.updateType() <<<");
 		return response;
@@ -267,7 +267,7 @@ public class ProductWs extends CyBssWebServiceAdapter
 			return response;
 		// end checkGrant 
 		
-		productDao.removeType(id);
+		productService.removeType(id);
 	
 		logger.info("ProductWs.removeType() <<< ");
 	
@@ -293,7 +293,7 @@ public class ProductWs extends CyBssWebServiceAdapter
 		// end checkGrant 
 		
 		logger.info(product.toString());
-		long id=productDao.add(product);
+		long id=productService.add(product);
 		product.setId(id);
 		response.setProduct(product);
 		
@@ -329,7 +329,7 @@ public class ProductWs extends CyBssWebServiceAdapter
 		// end checkGrant 
 		
 		
-		List<Product> products=productDao.find(name,categoryId,productTypeId,attrName,attrValue);
+		List<Product> products=productService.find(name,categoryId,productTypeId,attrName,attrValue);
 		int lsize=products.size();
 		
 		if (offset!=0){
@@ -356,7 +356,7 @@ public class ProductWs extends CyBssWebServiceAdapter
 		logger.info("Product.get() >>> id="+id);
 		ProductResponse response=new ProductResponse();
 		
-		Product product=productDao.get(id);
+		Product product=productService.get(id);
 		if (product!=null)
 			response.setProduct(product);
 		else
@@ -384,14 +384,14 @@ public class ProductWs extends CyBssWebServiceAdapter
 			return response;
 		// end checkGrant 
 		
-		if (productDao.get(id)==null){
+		if (productService.get(id)==null){
 			setResult(response, ICyBssResultConst.RESULT_NOT_FOUND, 
 					ICyBssResultConst.RESULT_D_NOT_FOUND,response.getLanguageCode());
 			return response;
 			}
 		
-		productDao.update(id, product);
-		response.setProduct(productDao.get(id));
+		productService.update(id, product);
+		response.setProduct(productService.get(id));
 		
 		logger.info("ProductWs.update() <<<");
 		return response;
@@ -412,7 +412,7 @@ public class ProductWs extends CyBssWebServiceAdapter
 			return response;
 		// end checkGrant 
 		
-		productDao.remove(id);
+		productService.remove(id);
 	
 		logger.info("ProductWs.remove() <<< ");
 	

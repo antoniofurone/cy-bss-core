@@ -27,7 +27,7 @@ public class CyBssServiceMysql extends CyBssMysqlDao
 		
 		String query="select BSV_N_SERVICE_ID,BSV_S_SERVICE_NAME,BSV_S_SERVICE_URL from BSST_BSV_SERVICE order by BSV_S_SERVICE_NAME";
 		
-		JdbcTemplate jdbcTemplate = new JdbcTemplate(ds);
+		JdbcTemplate jdbcTemplate = new JdbcTemplate(tx.getDataSource());
 		logger.info(query);
 		
 		List<CyBssService> ret = jdbcTemplate.query(
@@ -59,7 +59,7 @@ public class CyBssServiceMysql extends CyBssMysqlDao
 		logger.info("BssServiceMysql.get() >>>");
 		
 		String query="select BSV_N_SERVICE_ID,BSV_S_SERVICE_NAME,BSV_S_SERVICE_URL from BSST_BSV_SERVICE where BSV_N_SERVICE_ID=?";
-		JdbcTemplate jdbcTemplate = new JdbcTemplate(ds);
+		JdbcTemplate jdbcTemplate = new JdbcTemplate(tx.getDataSource());
 		logger.info(query+"["+id+"]");
 		
 		CyBssService ret=jdbcTemplate.queryForObject(query, new Object[] { id },new RowMapper<CyBssService>() {
@@ -89,7 +89,7 @@ public class CyBssServiceMysql extends CyBssMysqlDao
 		String query="select BSO_N_OPERATION_ID,BSV_N_SERVICE_ID,BSO_S_NAME,BSO_S_METHOD,BSO_S_OPERATION_URL,BSO_S_DESCRIPTION";
 		query+=" from BSST_BSO_SERVICE_OPERATION where BSV_N_SERVICE_ID=? order by BSO_S_NAME";
 		
-		JdbcTemplate jdbcTemplate = new JdbcTemplate(ds);
+		JdbcTemplate jdbcTemplate = new JdbcTemplate(tx.getDataSource());
 		logger.info(query+"["+id+"]");
 		
 		List<CyBssServOperation> ret = jdbcTemplate.query(
@@ -127,7 +127,7 @@ public class CyBssServiceMysql extends CyBssMysqlDao
 		query+=" from BSST_BSO_SERVICE_OPERATION where BSO_N_OPERATION_ID=?";
 		
 		
-		JdbcTemplate jdbcTemplate = new JdbcTemplate(ds);
+		JdbcTemplate jdbcTemplate = new JdbcTemplate(tx.getDataSource());
 		logger.info(query+"["+id+"]");
 		
 		CyBssServOperation ret=jdbcTemplate.queryForObject(query, new Object[] { id },new RowMapper<CyBssServOperation>() {
@@ -160,7 +160,7 @@ public class CyBssServiceMysql extends CyBssMysqlDao
 		String query="select BOP_PARAM_NAME,BSO_N_OPERATION_ID,BOP_C_FLG_URL,BOP_S_DESCRIPTION,BOP_C_REQUIRED,BOP_S_TYPE ";
 		query+=" from BSST_BOP_OPERATION_PARAM where BSO_N_OPERATION_ID=? ORDER BY BOP_N_SHOW_ORDER";
 		
-		JdbcTemplate jdbcTemplate = new JdbcTemplate(ds);
+		JdbcTemplate jdbcTemplate = new JdbcTemplate(tx.getDataSource());
 		logger.info(query+"["+idOp+"]");
 		
 		List<CyBssOperationParam> ret = jdbcTemplate.query(

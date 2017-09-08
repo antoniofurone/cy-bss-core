@@ -12,7 +12,6 @@ import org.cysoft.bss.core.common.CyBssUtility;
 import org.cysoft.bss.core.dao.FileDao;
 import org.cysoft.bss.core.dao.LocationDao;
 import org.cysoft.bss.core.dao.TicketDao;
-import org.cysoft.bss.core.model.CyBssFile;
 import org.cysoft.bss.core.model.Location;
 import org.cysoft.bss.core.model.Ticket;
 import org.cysoft.bss.core.model.TicketCategory;
@@ -25,9 +24,6 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallbackWithoutResult;
-import org.springframework.transaction.support.TransactionTemplate;
 
 public class TicketMysql extends CyBssMysqlDao
 	implements TicketDao{
@@ -54,7 +50,7 @@ public class TicketMysql extends CyBssMysqlDao
 		cmd+=" values ";
 		cmd+=" (?,now(),?,?,?,?)";
 		
-		JdbcTemplate jdbcTemplate = new JdbcTemplate(ds);
+		JdbcTemplate jdbcTemplate = new JdbcTemplate(tx.getDataSource());
 		logger.info(cmd+"["+ticket+"]");
 		
 		try {
@@ -80,7 +76,7 @@ public class TicketMysql extends CyBssMysqlDao
 	public Ticket get(long id,long langId) {
 		
 		// TODO Auto-generated method stub
-		JdbcTemplate jdbcTemplate = new JdbcTemplate(ds);
+		JdbcTemplate jdbcTemplate = new JdbcTemplate(tx.getDataSource());
 		
 		
 		String query="select  ID,TEXT,CREATION_DATE,UPDATE_DATE,STATUS_ID,IFNULL(c.TSL_S_NAME,STATUS_NAME) AS STATUS_NAME,USER_ID,USER_NAME,CATEGORY_ID,IFNULL(b.TCL_S_NAME,CATEGORY_NAME) AS CATEGORY_NAME,";
@@ -103,95 +99,50 @@ public class TicketMysql extends CyBssMysqlDao
 
 	}
 	
-	
+	@Override
+	public void removeLocation(long id) throws CyBssException {
+		
+		JdbcTemplate jdbcTemplate = new JdbcTemplate(tx.getDataSource());
+	    String cmd="update BSST_TIC_TICKET set LOC_N_LOCATION_ID=? where TIC_N_TICKET_ID=?";
+		logger.info(cmd+"["+id+"]");
+		
+		jdbcTemplate.update(cmd, new Object[]{
+				null,id
+			});
+	}
 	
 	@Override
-	public void update(final long id, final Ticket ticket,final long langId) throws CyBssException {
+	public void update(long id, Ticket ticket) throws CyBssException {
 		// TODO Auto-generated method stub
 		
-		TransactionTemplate txTemplate=new TransactionTemplate(tx);
-		txTemplate.execute(new TransactionCallbackWithoutResult(){
-
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus arg0) {
-				// TODO Auto-generated method stub
-				JdbcTemplate jdbcTemplate = new JdbcTemplate(ds);
-				
-				Ticket oldVersion=get(id, langId);
-				if (oldVersion.getLocationId()!=0){
-					Location location=locationDao.get(oldVersion.getLocationId(),langId);
-					if (location.getLocationType().equals(Ticket.ENTITY_NAME)){
-					   String cmd="update BSST_TIC_TICKET set LOC_N_LOCATION_ID=? where TIC_N_TICKET_ID=?";
-					   logger.info(cmd+"["+id+","+ticket+"]");
-					   try {
-							jdbcTemplate.update(cmd, new Object[]{
-									null,id
-								});
-							} catch (DataAccessException  e) {
-							// TODO Auto-generated catch block
-							logger.error(e.toString());
-							throw new RuntimeException(e);
-						}
-					   
-					   try {
-						   locationDao.remove(location.getId());
-					   } catch (CyBssException e) {
-						// TODO Auto-generated catch block
-						   logger.error(e.toString());
-						   throw new RuntimeException(e);
-					   }
-					}
-				}
-				
-				if (ticket.getLocation()!=null){
-					long locationId=0;
-					try {
-						locationId = locationDao.add(ticket.getLocation());
-					} catch (CyBssException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-					ticket.setLocationId(locationId);
-				}
-				
-				String cmd="update BSST_TIC_TICKET set TIC_S_TEXT=?,TCA_N_CATEGORY_ID=?,PER_N_PERSON_ID=?,";
-				cmd+="LOC_N_LOCATION_ID=?";
-				if (ticket.getStatusId()!=0)
-					cmd+=",TST_N_STATUS_ID=?";
-				cmd+=" where TIC_N_TICKET_ID=?";
-				
-				logger.info(cmd+"["+id+","+ticket+"]");
-				
-				List<Object> parms=new ArrayList<Object>();
-				parms.add(ticket.getText());
-				parms.add((ticket.getCategoryId()==0)?null:ticket.getCategoryId());
-				parms.add((ticket.getPersonId()==0)?null:ticket.getPersonId());
-				parms.add((ticket.getLocationId()==0)?null:ticket.getLocationId());
-				if (ticket.getStatusId()!=0)
-					parms.add(ticket.getStatusId());
-				parms.add(id);
-				
-				try {
-					jdbcTemplate.update(cmd, parms.toArray());
-					} catch (DataAccessException  e) {
-					// TODO Auto-generated catch block
-					logger.error(e.toString());
-					throw new RuntimeException(e);
-				}
-				
-			}
+		JdbcTemplate jdbcTemplate = new JdbcTemplate(tx.getDataSource());
+		String cmd="update BSST_TIC_TICKET set TIC_S_TEXT=?,TCA_N_CATEGORY_ID=?,PER_N_PERSON_ID=?,";
+		cmd+="LOC_N_LOCATION_ID=?";
+		if (ticket.getStatusId()!=0)
+			cmd+=",TST_N_STATUS_ID=?";
+		cmd+=" where TIC_N_TICKET_ID=?";
 			
-		});
+		logger.info(cmd+"["+id+","+ticket+"]");
+			
+		List<Object> parms=new ArrayList<Object>();
+		parms.add(ticket.getText());
+		parms.add((ticket.getCategoryId()==0)?null:ticket.getCategoryId());
+		parms.add((ticket.getPersonId()==0)?null:ticket.getPersonId());
+		parms.add((ticket.getLocationId()==0)?null:ticket.getLocationId());
+		if (ticket.getStatusId()!=0)
+			parms.add(ticket.getStatusId());
+		parms.add(id);
+				
+		jdbcTemplate.update(cmd, parms.toArray());
+	
 	}
 	
 	@Override
 	public List<Ticket> find(String text, long categoryId, long statusId,
 			long personId,String fromDate,String toDate,long langId) throws CyBssException {
-		// TODO Auto-generated method stub
 		
 		// TODO Auto-generated method stub
-		JdbcTemplate jdbcTemplate = new JdbcTemplate(ds);
-				
+		JdbcTemplate jdbcTemplate = new JdbcTemplate(tx.getDataSource());
 				
 		String query="select  ID,TEXT,CREATION_DATE,UPDATE_DATE,STATUS_ID,IFNULL(c.TSL_S_NAME,STATUS_NAME) AS STATUS_NAME,USER_ID,USER_NAME,CATEGORY_ID,IFNULL(b.TCL_S_NAME,CATEGORY_NAME) AS CATEGORY_NAME,";
 		query+="PERSON_ID,PERSON_FIRST_NAME,PERSON_SECOND_NAME,LOCATION_ID,LOCATION_LATITUDE,LOCATION_LONGITUDE";
@@ -315,7 +266,7 @@ public class TicketMysql extends CyBssMysqlDao
 		String query="select a.TCA_N_CATEGORY_ID,IFNULL(b.TCL_S_NAME,a.TCA_S_NAME) AS TCA_S_NAME,IFNULL(b.TCL_S_DESC,a.TCA_S_DESC) AS TCA_S_DESC from BSST_TCA_TICKET_CATEGORY a";
 		query+=" left join BSST_TCL_TICKET_CATEGORY_LANG b on a.TCA_N_CATEGORY_ID=b.TCA_N_CATEGORY_ID AND LAN_N_LANG_ID="+langId;
 	 	
-		JdbcTemplate jdbcTemplate = new JdbcTemplate(ds);
+		JdbcTemplate jdbcTemplate = new JdbcTemplate(tx.getDataSource());
 		logger.info(query);
 		
 		List<TicketCategory> ret = jdbcTemplate.query(
@@ -348,7 +299,7 @@ public class TicketMysql extends CyBssMysqlDao
 	 	query+=" WHERE a.TWF_N_START_STATUS_ID=?";
 		
 
-		JdbcTemplate jdbcTemplate = new JdbcTemplate(ds);
+		JdbcTemplate jdbcTemplate = new JdbcTemplate(tx.getDataSource());
 		logger.info(query);
 		
 		List<TicketStatus> ret = jdbcTemplate.query(
@@ -372,134 +323,51 @@ public class TicketMysql extends CyBssMysqlDao
 		return ret;
 	}
 
+	@Override
+	public void addTrace(long id,long oldStatus,long newStatus,long userId,String note) throws CyBssException{
+		JdbcTemplate jdbcTemplate = new JdbcTemplate(tx.getDataSource());
+		
+		String cmd="insert into BSST_TTR_TICKET_TRACE(TIC_N_TICKET_ID,TWF_N_START_STATUS_ID,TWF_N_END_STATUS_ID,TTR_D_TRANS_DATE,";
+		cmd+="USR_N_USER_ID,TTR_S_NOTE) values (?,?,?,now(),?,?)";
+		logger.info(cmd+"["+id+","+oldStatus+","+newStatus+","+userId+","+note+"]");
+		
+		jdbcTemplate.update(cmd, new Object[]{
+				id,oldStatus,newStatus,userId,note  
+			});
+	}
 	
 	@Override
-	public void changeStatus(final Ticket ticket,final long newStatus,final long userId, final String note,long langId) throws CyBssException {
+	public void changeStatus(long id, long newStatus) throws CyBssException {
 		// TODO Auto-generated method stub
+		JdbcTemplate jdbcTemplate = new JdbcTemplate(tx.getDataSource());
 		
-		TransactionTemplate txTemplate=new TransactionTemplate(tx);
-		txTemplate.execute(new TransactionCallbackWithoutResult(){
-
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus txStatus) {
-				// TODO Auto-generated method stub
-				
-				long oldStatus=ticket.getStatusId();
-				ticket.setStatusId(newStatus);
-				
-				String cmd="insert into BSST_TTR_TICKET_TRACE(TIC_N_TICKET_ID,TWF_N_START_STATUS_ID,TWF_N_END_STATUS_ID,TTR_D_TRANS_DATE,";
-				cmd+="USR_N_USER_ID,TTR_S_NOTE) values (?,?,?,now(),?,?)";
-				
-				JdbcTemplate jdbcTemplate = new JdbcTemplate(tx.getDataSource());
-				logger.info(cmd+"["+ticket+","+newStatus+","+userId+","+note+"]");
-				
-				try {
-					jdbcTemplate.update(cmd, new Object[]{
-							ticket.getId(),oldStatus,ticket.getStatusId(),userId,note  
-						});
-				} catch (DataAccessException e) {
-					// TODO Auto-generated catch block
-					logger.error(e.toString());
-					throw new RuntimeException(e);
-				}
-				
-				
-				cmd="update BSST_TIC_TICKET set TST_N_STATUS_ID=?";
-				cmd+=" where TIC_N_TICKET_ID=?";
-				logger.info(cmd+"["+ticket.getStatusId()+","+ticket.getId()+"]");
-				try {
-					jdbcTemplate.update(cmd, new Object[]{
-							ticket.getStatusId(),ticket.getId()  
-						});
-				} catch (DataAccessException e) {
-					// TODO Auto-generated catch block
-					logger.error(e.toString());
-					throw new RuntimeException(e);
-				}
-
-				
-			}
-			
-		});
-
+		String cmd="update BSST_TIC_TICKET set TST_N_STATUS_ID=?";
+		cmd+=" where TIC_N_TICKET_ID=?";
+		logger.info(cmd+"["+newStatus+","+id+"]");
+		
+		jdbcTemplate.update(cmd, new Object[]{
+				newStatus,id  
+				});
 				
 	}
 
 	@Override
-	public void remove(final long id,final long langId) throws CyBssException {
-		// TODO Auto-generated method stub
-		
-		TransactionTemplate txTemplate=new TransactionTemplate(tx);
-		txTemplate.execute(new TransactionCallbackWithoutResult(){
-
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus txStatus) {
-				// TODO Auto-generated method stub
-
-				JdbcTemplate jdbcTemplate = new JdbcTemplate(tx.getDataSource());
-				
-				Ticket ticket=get(id, langId);
-				if (ticket==null) return;
-				
-				Location location=null;
-				if (ticket.getLocationId()!=0){
-					location=locationDao.get(ticket.getLocationId(),langId);
-				}
-				
-				List<CyBssFile> files=fileDao.getByEntity(Ticket.ENTITY_NAME,id);
-				if (files!=null)
-					for(CyBssFile file:files){
-						String cmd="delete from BSST_FIL_FILE where FILE_N_FILE_ID=? ";
-						logger.info(cmd+"["+file.getId()+"]");
-						
-						jdbcTemplate.update(cmd, new Object[]{
-								file.getId()	
-							});
-						
-					}
-				
-				String cmd="delete from BSST_TTR_TICKET_TRACE where TIC_N_TICKET_ID=?";
-				logger.info(cmd+"["+id+"]");
-				try {
-					jdbcTemplate.update(cmd, new Object[]{
-							id  
-						});
-				} catch (DataAccessException e) {
-					// TODO Auto-generated catch block
-					logger.error(e.toString());
-					throw new RuntimeException(e);
-				}
-				
-				cmd="delete from BSST_TIC_TICKET where TIC_N_TICKET_ID=?";
-				logger.info(cmd+"["+id+"]");
-				try {
-					jdbcTemplate.update(cmd, new Object[]{
-							id  
-						});
-				} catch (DataAccessException e) {
-					// TODO Auto-generated catch block
-					logger.error(e.toString());
-					throw new RuntimeException(e);
-				}
-				
-				if (location!=null && location.getLocationType().equals(Ticket.ENTITY_NAME)){
-					cmd="delete from BSST_LOC_LOCATION where LOC_N_LOCATION_ID=?";
-					logger.info(cmd+"["+id+"]");
-					try {
-						jdbcTemplate.update(cmd, new Object[]{
-								location.getId()
-							});
-					} catch (DataAccessException e) {
-						// TODO Auto-generated catch block
-						logger.error(e.toString());
-						throw new RuntimeException(e);
-					}
-					
-				}
-
-			}
+	public void removeTrace(long id) throws CyBssException{
+		JdbcTemplate jdbcTemplate = new JdbcTemplate(tx.getDataSource());
+		String cmd="delete from BSST_TTR_TICKET_TRACE where TIC_N_TICKET_ID=?";
+		logger.info(cmd+"["+id+"]");
+		jdbcTemplate.update(cmd, new Object[]{
+					id  
 		});
-				
+	}
+	
+	@Override
+	public void remove(long id) throws CyBssException {
+		// TODO Auto-generated method stub
+		JdbcTemplate jdbcTemplate = new JdbcTemplate(tx.getDataSource());
+		String cmd="delete from BSST_TIC_TICKET where TIC_N_TICKET_ID=?";
+		logger.info(cmd+"["+id+"]");
+		jdbcTemplate.update(cmd, new Object[]{id});						
 	}
 
 	@Override

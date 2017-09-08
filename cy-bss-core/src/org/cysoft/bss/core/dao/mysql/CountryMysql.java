@@ -27,7 +27,7 @@ public class CountryMysql extends CyBssMysqlDao
 		
 		String query="select CON_N_COUNTRY_ID,CON_S_CODE,CON_S_NAME from BSST_CON_COUNTRY";
 		
-		JdbcTemplate jdbcTemplate = new JdbcTemplate(ds);
+		JdbcTemplate jdbcTemplate = new JdbcTemplate(tx.getDataSource());
 		logger.info(query);
 		
 		List<Country> ret = jdbcTemplate.query(
@@ -63,7 +63,7 @@ public class CountryMysql extends CyBssMysqlDao
 		
 		String cmd="insert into BSST_CON_COUNTRY(CON_S_CODE,CON_S_NAME) ";
 		cmd+=" values (?,?)";
-		JdbcTemplate jdbcTemplate = new JdbcTemplate(ds);
+		JdbcTemplate jdbcTemplate = new JdbcTemplate(tx.getDataSource());
 		logger.info(cmd+"["+country+"]");
 		
 		try {
@@ -88,7 +88,7 @@ public class CountryMysql extends CyBssMysqlDao
 		
 		String cmd="update BSST_CON_COUNTRY set CON_S_CODE=?,CON_S_NAME=? ";
 		cmd+="where CON_N_COUNTRY_ID=?";
-		JdbcTemplate jdbcTemplate = new JdbcTemplate(ds);
+		JdbcTemplate jdbcTemplate = new JdbcTemplate(tx.getDataSource());
 		logger.info(cmd+"["+country+"]");
 		
 		try {
@@ -111,7 +111,7 @@ public class CountryMysql extends CyBssMysqlDao
 		logger.info("CountryMysql.get() >>>");
 		
 		// TODO Auto-generated method stub
-		JdbcTemplate jdbcTemplate = new JdbcTemplate(ds);
+		JdbcTemplate jdbcTemplate = new JdbcTemplate(tx.getDataSource());
 		
 		String query="select CON_N_COUNTRY_ID,CON_S_CODE,CON_S_NAME from BSST_CON_COUNTRY";
 		query+=" where CON_N_COUNTRY_ID=?";
@@ -136,7 +136,7 @@ public class CountryMysql extends CyBssMysqlDao
 		logger.info("CountryMysql.remove() >>>");
 		
 		String cmd="delete from BSST_CON_COUNTRY where CON_N_COUNTRY_ID=?";
-		JdbcTemplate jdbcTemplate = new JdbcTemplate(ds);
+		JdbcTemplate jdbcTemplate = new JdbcTemplate(tx.getDataSource());
 		logger.info(cmd+"["+id+"]");
 		
 		try {
@@ -171,7 +171,7 @@ public class CountryMysql extends CyBssMysqlDao
 		}
 		query+=" order by CON_S_NAME";
 		
-		JdbcTemplate jdbcTemplate = new JdbcTemplate(ds);
+		JdbcTemplate jdbcTemplate = new JdbcTemplate(tx.getDataSource());
 		logger.info(query+"[name="+name+"]");
 		
 		List<Country> ret=jdbcTemplate.query(query, parms.toArray(),new RowMapperCountry());

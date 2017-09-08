@@ -279,19 +279,19 @@ public class InvoiceWs extends CyBssWebServiceAdapter
 		return response;
 	}
 	
-	@RequestMapping(value = "/{invoiceType}/{id}/close",method = RequestMethod.GET)
-	@CyBssOperation(name = "close")
-	public InvoiceResponse close(
+	@RequestMapping(value = "/{invoiceType}/{id}/lock",method = RequestMethod.GET)
+	@CyBssOperation(name = "lock")
+	public InvoiceResponse lock(
 			@RequestHeader("Security-Token") String securityToken,
 			@PathVariable("id") Long id,
 			@PathVariable("invoiceType") String invoiceType
 			) throws CyBssException{
 		
-		logger.info("InvoiceWs.close() >>> id="+id);
+		logger.info("InvoiceWs.lock() >>> id="+id);
 		InvoiceResponse response=new InvoiceResponse();
 		
 		// checkGrant
-		if (!checkGrant(response,securityToken,"close",String.class,Long.class,String.class))
+		if (!checkGrant(response,securityToken,"lock",String.class,Long.class,String.class))
 			return response;
 		// end checkGrant 
 		
@@ -310,12 +310,51 @@ public class InvoiceWs extends CyBssWebServiceAdapter
 			return response;
 		}
 		
-		invoiceService.close(invoiceType, id);
+		invoiceService.lock(invoiceType, id);
 		response.setInvoice(invoiceService.get(invoiceType, id));
 		
-		logger.info("InvoiceWs.close() <<< ");
+		logger.info("InvoiceWs.lock() <<< ");
 		return response;
 	}
+	
+	@RequestMapping(value = "/{invoiceType}/{id}/unlock",method = RequestMethod.GET)
+	@CyBssOperation(name = "unlock")
+	public InvoiceResponse unlock(
+			@RequestHeader("Security-Token") String securityToken,
+			@PathVariable("id") Long id,
+			@PathVariable("invoiceType") String invoiceType
+			) throws CyBssException{
+		
+		logger.info("InvoiceWs.unlock() >>> id="+id);
+		InvoiceResponse response=new InvoiceResponse();
+		
+		// checkGrant
+		if (!checkGrant(response,securityToken,"unlock",String.class,Long.class,String.class))
+			return response;
+		// end checkGrant 
+		
+		if (!invoiceType.equalsIgnoreCase(Invoice.TYPE_ACTIVE) &&
+				!invoiceType.equalsIgnoreCase(Invoice.TYPE_PASSIVE)){
+				setResult(response, ICyBssResultConst.RESULT_INVOICE_TYPE_INVALID, 
+						ICyBssResultConst.RESULT_D_INVOICE_TYPE_INVALID,response.getLanguageCode());
+				return response;
+			}
+		invoiceType=invoiceType.toUpperCase();
+		
+		Invoice invoice=invoiceService.get(invoiceType, id);
+		if (invoice==null){
+			setResult(response, ICyBssResultConst.RESULT_NOT_FOUND, 
+					ICyBssResultConst.RESULT_D_NOT_FOUND,response.getLanguageCode());
+			return response;
+		}
+		
+		invoiceService.unlock(invoiceType, id);
+		response.setInvoice(invoiceService.get(invoiceType, id));
+		
+		logger.info("InvoiceWs.unlock() <<< ");
+		return response;
+	}
+	
 	
 	@RequestMapping(value = "/{invoiceType}/{id}/getBillables",method = RequestMethod.GET)
 	@CyBssOperation(name = "getBillables")
@@ -354,6 +393,54 @@ public class InvoiceWs extends CyBssWebServiceAdapter
 		logger.info("InvoiceWs.getBillables() <<< ");
 		return response;
 	}
+	
+	@RequestMapping(value = "/{invoiceType}/{id}/updateNumber/{invoiceNumber}",method = RequestMethod.GET)
+	@CyBssOperation(name = "updateNumber")
+	public InvoiceResponse updateNumber(
+			@RequestHeader("Security-Token") String securityToken,
+			@PathVariable("id") Long id,
+			@PathVariable("invoiceNumber") Integer invoiceNumber,
+			@PathVariable("invoiceType") String invoiceType
+			) throws CyBssException{
+		
+		logger.info("InvoiceWs.updateNumber() >>> id="+id+";invoiceNumber="+invoiceNumber);
+		InvoiceResponse response=new InvoiceResponse();
+		
+		// checkGrant
+		if (!checkGrant(response,securityToken,"updateNumber",String.class,Long.class,Integer.class,String.class))
+			return response;
+		// end checkGrant 
+		
+		if (!invoiceType.equalsIgnoreCase(Invoice.TYPE_ACTIVE) &&
+				!invoiceType.equalsIgnoreCase(Invoice.TYPE_PASSIVE)){
+				setResult(response, ICyBssResultConst.RESULT_INVOICE_TYPE_INVALID, 
+						ICyBssResultConst.RESULT_D_INVOICE_TYPE_INVALID,response.getLanguageCode());
+				return response;
+			}
+		invoiceType=invoiceType.toUpperCase();
+		
+		Invoice invoice=invoiceService.get(invoiceType, id);
+		if (invoice==null){
+			setResult(response, ICyBssResultConst.RESULT_NOT_FOUND, 
+					ICyBssResultConst.RESULT_D_NOT_FOUND,response.getLanguageCode());
+			return response;
+		}
+		
+		invoiceService.updateNumber(invoiceType, id, invoiceNumber);
+		
+		invoice=invoiceService.get(invoiceType, id);
+		if (invoice==null){
+			setResult(response, ICyBssResultConst.RESULT_NOT_FOUND, 
+					ICyBssResultConst.RESULT_D_NOT_FOUND,response.getLanguageCode());
+			return response;
+		}
+		
+		response.setInvoice(invoice);
+		
+		logger.info("InvoiceWs.updateNumber() <<< ");
+		return response;
+	}
+	
 	
 	@RequestMapping(value = "/{invoiceType}/{id}/addBillable/{billableId}",method = RequestMethod.GET)
 	@CyBssOperation(name = "addBillable")

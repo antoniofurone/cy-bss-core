@@ -45,7 +45,7 @@ public class PersonWs extends CyBssWebServiceAdapter
 	
 	protected ContactService contactService=null;
 	@Autowired
-	public void setContactDao(ContactService contactService){
+	public void setContactService(ContactService contactService){
 			this.contactService=contactService;
 	}
 	

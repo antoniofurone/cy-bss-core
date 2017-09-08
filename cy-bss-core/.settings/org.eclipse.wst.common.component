@@ -2,6 +2,7 @@
     <wb-module deploy-name="cy-bss-core">
         <wb-resource deploy-path="/" source-path="/WebContent" tag="defaultRootSource"/>
         <wb-resource deploy-path="/WEB-INF/classes" source-path="/src"/>
+        <wb-resource deploy-path="/WEB-INF/classes" source-path="/DataBase/Mercury"/>
         <property name="java-output-path" value="/cy-bss-core/build/classes"/>
         <property name="context-root" value="cy-bss-core"/>
     </wb-module>
