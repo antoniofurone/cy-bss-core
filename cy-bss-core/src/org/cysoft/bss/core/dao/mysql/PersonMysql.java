@@ -207,11 +207,11 @@ implements PersonDao{
             person.setFirstName(rs.getString("FIRST_NAME"));
             person.setSecondName(rs.getString("SECOND_NAME"));
             person.setGender(rs.getString("GENDER"));
-            person.setAddress(rs.getString("ADDRESS"));
-            person.setZipCode(rs.getString("ZIP"));
+            person.setAddress(rs.getString("ADDRESS")==null?"":rs.getString("ADDRESS"));
+            person.setZipCode(rs.getString("ZIP")==null?"":rs.getString("ZIP"));
             person.setCityId(rs.getLong("CITY_ID"));
-            person.setCity(rs.getString("CITY"));
-            person.setCountry(rs.getString("COUNTRY"));
+            person.setCity(rs.getString("CITY")==null?"":rs.getString("CITY"));
+            person.setCountry(rs.getString("COUNTRY")==null?"":rs.getString("COUNTRY"));
             person.setFiscalCode(rs.getString("FISCAL_CODE")); 
             person.setBirthDay(rs.getString("BIRTH_DAY")); 
             person.setBirthCityId(rs.getLong("BIRTH_CITY_ID"));

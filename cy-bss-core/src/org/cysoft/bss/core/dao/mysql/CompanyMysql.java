@@ -132,11 +132,11 @@ implements CompanyDao{
             company.setId(rs.getLong("ID"));
             company.setCode(rs.getString("CODE"));
             company.setName(rs.getString("NAME"));
-            company.setAddress(rs.getString("ADDRESS"));
-            company.setZipCode(rs.getString("ZIP"));
+            company.setAddress(rs.getString("ADDRESS")==null?"":rs.getString("ADDRESS"));
+            company.setZipCode(rs.getString("ZIP")==null?"":rs.getString("ZIP"));
             company.setCityId(rs.getLong("CITY_ID"));
-            company.setCity(rs.getString("CITY"));
-            company.setCountry(rs.getString("COUNTRY"));
+            company.setCity(rs.getString("CITY")==null?"":rs.getString("CITY"));
+            company.setCountry(rs.getString("COUNTRY")==null?"":rs.getString("COUNTRY"));
             company.setFiscalCode(rs.getString("FISCAL_CODE"));
             company.setVatCode(rs.getString("VAT_CODE"));
             company.setHeadDeptId(rs.getLong("HEAD_DEPT_ID"));
