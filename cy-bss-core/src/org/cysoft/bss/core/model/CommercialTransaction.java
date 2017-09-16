@@ -296,6 +296,15 @@ public abstract class CommercialTransaction {
 	public void setComponent(PriceComponent component) {
 		this.component = component;
 	}
+	
+	private int noBilled;
+	public int getNoBilled() {
+		return noBilled;
+	}
+	public void setNoBilled(int noBilled) {
+		this.noBilled = noBilled;
+	}
+	
 	@Override
 	public String toString() {
 		return "CommercialTransaction [id=" + id + ", companyId=" + companyId + ", companyCode=" + companyCode

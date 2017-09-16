@@ -3,7 +3,6 @@ package org.cysoft.bss.core.config;
 import javax.servlet.MultipartConfigElement;
 
 import org.cysoft.bss.core.common.CyBssDataSource;
-import org.cysoft.bss.core.common.CyBssMessageSource;
 import org.cysoft.bss.core.dao.AppDao;
 import org.cysoft.bss.core.dao.CyBssAuthDao;
 import org.cysoft.bss.core.dao.FileDao;
@@ -14,6 +13,7 @@ import org.cysoft.bss.core.dao.mysql.CyBssAuthMysql;
 import org.cysoft.bss.core.dao.mysql.FileMysql;
 import org.cysoft.bss.core.dao.mysql.LanguageMysql;
 import org.cysoft.bss.core.dao.mysql.UserMysql;
+import org.cysoft.bss.core.message.CyBssMessageSource;
 import org.cysoft.bss.core.service.AppService;
 import org.cysoft.bss.core.service.CyBssAuthService;
 import org.cysoft.bss.core.service.LanguageService;
@@ -52,8 +52,6 @@ private static final Logger logger = LoggerFactory.getLogger(CyBssFileApp.class)
 	@Description("Message Source File")
 	 public CyBssMessageSource messageSource(){
 		CyBssMessageSource ms=new CyBssMessageSource();
-		ms.setBasename("/WEB-INF/messages/messages");
-		ms.setDefaultEncoding("UTF-8");
 		return ms;
 	 }
 	

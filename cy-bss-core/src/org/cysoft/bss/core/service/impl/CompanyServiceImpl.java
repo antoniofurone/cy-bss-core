@@ -7,12 +7,12 @@ import org.cysoft.bss.core.dao.CompanyDao;
 import org.cysoft.bss.core.dao.ContactDao;
 import org.cysoft.bss.core.dao.ObjectDao;
 import org.cysoft.bss.core.dao.PersonDao;
+import org.cysoft.bss.core.message.ICyBssMessageConst;
 import org.cysoft.bss.core.model.Company;
 import org.cysoft.bss.core.model.CompanyDept;
 import org.cysoft.bss.core.model.CompanyPerson;
 import org.cysoft.bss.core.model.PersonRole;
 import org.cysoft.bss.core.service.CompanyService;
-import org.cysoft.bss.core.web.response.ICyBssResultConst;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.TransactionStatus;
@@ -92,7 +92,7 @@ implements CompanyService{
 		// TODO Auto-generated method stub
 		CompanyDept parentDept=companyDao.getDept(dept.getParentId());
 		if (parentDept==null)
-			throw new CyBssException(msgSource.getMessage(ICyBssResultConst.RESULT_D_NOT_FOUND));
+			throw new CyBssException(msgSource.getMessage(ICyBssMessageConst.RESULT_D_NOT_FOUND));
 		
 		dept.setCompanyId(parentDept.getCompanyId());
 		return companyDao.addDept(dept);
@@ -103,14 +103,14 @@ implements CompanyService{
 		// TODO Auto-generated method stub
 		
 		if (companyDao.getDept(companyPerson.getDeptId())==null)
-			throw new CyBssException(msgSource.getMessage(ICyBssResultConst.RESULT_D_NOT_FOUND));
+			throw new CyBssException(msgSource.getMessage(ICyBssMessageConst.RESULT_D_NOT_FOUND));
 		
 		if (personDao.get(companyPerson.getPersonId())==null)
-			throw new CyBssException(msgSource.getMessage(ICyBssResultConst.RESULT_D_NOT_FOUND));
+			throw new CyBssException(msgSource.getMessage(ICyBssMessageConst.RESULT_D_NOT_FOUND));
 		
 		if (companyDao.getPersonRole(companyPerson.getPersonId(),
 				languageDao.getLanguage(languageCode).getId())==null)
-			throw new CyBssException(msgSource.getMessage(ICyBssResultConst.RESULT_D_NOT_FOUND));
+			throw new CyBssException(msgSource.getMessage(ICyBssMessageConst.RESULT_D_NOT_FOUND));
 		
 		companyDao.addPerson(companyPerson.getPersonId(), companyPerson.getDeptId(), companyPerson.getRoleId());
 	}

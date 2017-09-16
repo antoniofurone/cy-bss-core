@@ -6,11 +6,11 @@ import java.util.List;
 
 import org.cysoft.bss.core.common.CyBssException;
 import org.cysoft.bss.core.common.CyBssUtility;
+import org.cysoft.bss.core.message.ICyBssMessageConst;
 import org.cysoft.bss.core.model.Invoice;
 import org.cysoft.bss.core.service.InvoiceService;
 import org.cysoft.bss.core.web.annotation.CyBssOperation;
 import org.cysoft.bss.core.web.annotation.CyBssService;
-import org.cysoft.bss.core.web.response.ICyBssResultConst;
 import org.cysoft.bss.core.web.response.rest.invoice.InvoiceListResponse;
 import org.cysoft.bss.core.web.response.rest.invoice.InvoiceResponse;
 import org.cysoft.bss.core.web.service.CyBssWebServiceAdapter;
@@ -61,8 +61,8 @@ public class InvoiceWs extends CyBssWebServiceAdapter
 		
 		if (!invoiceType.equalsIgnoreCase(Invoice.TYPE_ACTIVE) &&
 			!invoiceType.equalsIgnoreCase(Invoice.TYPE_PASSIVE)){
-			setResult(response, ICyBssResultConst.RESULT_INVOICE_TYPE_INVALID, 
-					ICyBssResultConst.RESULT_D_INVOICE_TYPE_INVALID,response.getLanguageCode());
+			setResult(response, ICyBssMessageConst.RESULT_INVOICE_TYPE_INVALID, 
+					ICyBssMessageConst.RESULT_D_INVOICE_TYPE_INVALID,response.getLanguageCode());
 			return response;
 		}
 		invoice.setInvoiceType(invoiceType.toUpperCase());
@@ -133,8 +133,8 @@ public class InvoiceWs extends CyBssWebServiceAdapter
 		
 		if (!invoiceType.equalsIgnoreCase(Invoice.TYPE_ACTIVE) &&
 				!invoiceType.equalsIgnoreCase(Invoice.TYPE_PASSIVE)){
-				setResult(response, ICyBssResultConst.RESULT_INVOICE_TYPE_INVALID, 
-						ICyBssResultConst.RESULT_D_INVOICE_TYPE_INVALID,response.getLanguageCode());
+				setResult(response, ICyBssMessageConst.RESULT_INVOICE_TYPE_INVALID, 
+						ICyBssMessageConst.RESULT_D_INVOICE_TYPE_INVALID,response.getLanguageCode());
 				return response;
 			}
 		
@@ -178,8 +178,8 @@ public class InvoiceWs extends CyBssWebServiceAdapter
 		
 		if (!invoiceType.equalsIgnoreCase(Invoice.TYPE_ACTIVE) &&
 				!invoiceType.equalsIgnoreCase(Invoice.TYPE_PASSIVE)){
-				setResult(response, ICyBssResultConst.RESULT_INVOICE_TYPE_INVALID, 
-						ICyBssResultConst.RESULT_D_INVOICE_TYPE_INVALID,response.getLanguageCode());
+				setResult(response, ICyBssMessageConst.RESULT_INVOICE_TYPE_INVALID, 
+						ICyBssMessageConst.RESULT_D_INVOICE_TYPE_INVALID,response.getLanguageCode());
 				return response;
 			}
 		invoiceType=invoiceType.toUpperCase();
@@ -188,8 +188,8 @@ public class InvoiceWs extends CyBssWebServiceAdapter
 		if (invoice!=null)
 			response.setInvoice(invoice);
 		else
-			setResult(response, ICyBssResultConst.RESULT_NOT_FOUND, 
-					ICyBssResultConst.RESULT_D_NOT_FOUND,response.getLanguageCode());
+			setResult(response, ICyBssMessageConst.RESULT_NOT_FOUND, 
+					ICyBssMessageConst.RESULT_D_NOT_FOUND,response.getLanguageCode());
 		
 		logger.info("InvoiceWs.get() <<< ");
 		return response;
@@ -215,16 +215,16 @@ public class InvoiceWs extends CyBssWebServiceAdapter
 		
 		if (!invoiceType.equalsIgnoreCase(Invoice.TYPE_ACTIVE) &&
 				!invoiceType.equalsIgnoreCase(Invoice.TYPE_PASSIVE)){
-				setResult(response, ICyBssResultConst.RESULT_INVOICE_TYPE_INVALID, 
-						ICyBssResultConst.RESULT_D_INVOICE_TYPE_INVALID,response.getLanguageCode());
+				setResult(response, ICyBssMessageConst.RESULT_INVOICE_TYPE_INVALID, 
+						ICyBssMessageConst.RESULT_D_INVOICE_TYPE_INVALID,response.getLanguageCode());
 				return response;
 			}
 		invoice.setInvoiceType(invoiceType.toUpperCase());
 		
 		Invoice _invoice=invoiceService.get(invoice.getInvoiceType(), id);
 		if (_invoice==null || _invoice.getNumber()!=0){
-			setResult(response, ICyBssResultConst.RESULT_NOT_FOUND, 
-					ICyBssResultConst.RESULT_D_NOT_FOUND,response.getLanguageCode());
+			setResult(response, ICyBssMessageConst.RESULT_NOT_FOUND, 
+					ICyBssMessageConst.RESULT_D_NOT_FOUND,response.getLanguageCode());
 			return response;
 		}
 		
@@ -259,8 +259,8 @@ public class InvoiceWs extends CyBssWebServiceAdapter
 		
 		if (!invoiceType.equalsIgnoreCase(Invoice.TYPE_ACTIVE) &&
 				!invoiceType.equalsIgnoreCase(Invoice.TYPE_PASSIVE)){
-				setResult(response, ICyBssResultConst.RESULT_INVOICE_TYPE_INVALID, 
-						ICyBssResultConst.RESULT_D_INVOICE_TYPE_INVALID,response.getLanguageCode());
+				setResult(response, ICyBssMessageConst.RESULT_INVOICE_TYPE_INVALID, 
+						ICyBssMessageConst.RESULT_D_INVOICE_TYPE_INVALID,response.getLanguageCode());
 				return response;
 			}
 		invoiceType=invoiceType.toUpperCase();
@@ -268,8 +268,8 @@ public class InvoiceWs extends CyBssWebServiceAdapter
 		
 		Invoice invoice=invoiceService.get(invoiceType, id);
 		if (invoice==null){
-			setResult(response, ICyBssResultConst.RESULT_NOT_FOUND, 
-					ICyBssResultConst.RESULT_D_NOT_FOUND,response.getLanguageCode());
+			setResult(response, ICyBssMessageConst.RESULT_NOT_FOUND, 
+					ICyBssMessageConst.RESULT_D_NOT_FOUND,response.getLanguageCode());
 			return response;
 		}
 		
@@ -297,16 +297,16 @@ public class InvoiceWs extends CyBssWebServiceAdapter
 		
 		if (!invoiceType.equalsIgnoreCase(Invoice.TYPE_ACTIVE) &&
 				!invoiceType.equalsIgnoreCase(Invoice.TYPE_PASSIVE)){
-				setResult(response, ICyBssResultConst.RESULT_INVOICE_TYPE_INVALID, 
-						ICyBssResultConst.RESULT_D_INVOICE_TYPE_INVALID,response.getLanguageCode());
+				setResult(response, ICyBssMessageConst.RESULT_INVOICE_TYPE_INVALID, 
+						ICyBssMessageConst.RESULT_D_INVOICE_TYPE_INVALID,response.getLanguageCode());
 				return response;
 			}
 		invoiceType=invoiceType.toUpperCase();
 		
 		Invoice invoice=invoiceService.get(invoiceType, id);
 		if (invoice==null){
-			setResult(response, ICyBssResultConst.RESULT_NOT_FOUND, 
-					ICyBssResultConst.RESULT_D_NOT_FOUND,response.getLanguageCode());
+			setResult(response, ICyBssMessageConst.RESULT_NOT_FOUND, 
+					ICyBssMessageConst.RESULT_D_NOT_FOUND,response.getLanguageCode());
 			return response;
 		}
 		
@@ -335,16 +335,16 @@ public class InvoiceWs extends CyBssWebServiceAdapter
 		
 		if (!invoiceType.equalsIgnoreCase(Invoice.TYPE_ACTIVE) &&
 				!invoiceType.equalsIgnoreCase(Invoice.TYPE_PASSIVE)){
-				setResult(response, ICyBssResultConst.RESULT_INVOICE_TYPE_INVALID, 
-						ICyBssResultConst.RESULT_D_INVOICE_TYPE_INVALID,response.getLanguageCode());
+				setResult(response, ICyBssMessageConst.RESULT_INVOICE_TYPE_INVALID, 
+						ICyBssMessageConst.RESULT_D_INVOICE_TYPE_INVALID,response.getLanguageCode());
 				return response;
 			}
 		invoiceType=invoiceType.toUpperCase();
 		
 		Invoice invoice=invoiceService.get(invoiceType, id);
 		if (invoice==null){
-			setResult(response, ICyBssResultConst.RESULT_NOT_FOUND, 
-					ICyBssResultConst.RESULT_D_NOT_FOUND,response.getLanguageCode());
+			setResult(response, ICyBssMessageConst.RESULT_NOT_FOUND, 
+					ICyBssMessageConst.RESULT_D_NOT_FOUND,response.getLanguageCode());
 			return response;
 		}
 		
@@ -374,16 +374,16 @@ public class InvoiceWs extends CyBssWebServiceAdapter
 		
 		if (!invoiceType.equalsIgnoreCase(Invoice.TYPE_ACTIVE) &&
 				!invoiceType.equalsIgnoreCase(Invoice.TYPE_PASSIVE)){
-				setResult(response, ICyBssResultConst.RESULT_INVOICE_TYPE_INVALID, 
-						ICyBssResultConst.RESULT_D_INVOICE_TYPE_INVALID,response.getLanguageCode());
+				setResult(response, ICyBssMessageConst.RESULT_INVOICE_TYPE_INVALID, 
+						ICyBssMessageConst.RESULT_D_INVOICE_TYPE_INVALID,response.getLanguageCode());
 				return response;
 			}
 		invoiceType=invoiceType.toUpperCase();
 		
 		Invoice invoice=invoiceService.get(invoiceType, id);
 		if (invoice==null){
-			setResult(response, ICyBssResultConst.RESULT_NOT_FOUND, 
-					ICyBssResultConst.RESULT_D_NOT_FOUND,response.getLanguageCode());
+			setResult(response, ICyBssMessageConst.RESULT_NOT_FOUND, 
+					ICyBssMessageConst.RESULT_D_NOT_FOUND,response.getLanguageCode());
 			return response;
 		}
 		
@@ -413,16 +413,16 @@ public class InvoiceWs extends CyBssWebServiceAdapter
 		
 		if (!invoiceType.equalsIgnoreCase(Invoice.TYPE_ACTIVE) &&
 				!invoiceType.equalsIgnoreCase(Invoice.TYPE_PASSIVE)){
-				setResult(response, ICyBssResultConst.RESULT_INVOICE_TYPE_INVALID, 
-						ICyBssResultConst.RESULT_D_INVOICE_TYPE_INVALID,response.getLanguageCode());
+				setResult(response, ICyBssMessageConst.RESULT_INVOICE_TYPE_INVALID, 
+						ICyBssMessageConst.RESULT_D_INVOICE_TYPE_INVALID,response.getLanguageCode());
 				return response;
 			}
 		invoiceType=invoiceType.toUpperCase();
 		
 		Invoice invoice=invoiceService.get(invoiceType, id);
 		if (invoice==null){
-			setResult(response, ICyBssResultConst.RESULT_NOT_FOUND, 
-					ICyBssResultConst.RESULT_D_NOT_FOUND,response.getLanguageCode());
+			setResult(response, ICyBssMessageConst.RESULT_NOT_FOUND, 
+					ICyBssMessageConst.RESULT_D_NOT_FOUND,response.getLanguageCode());
 			return response;
 		}
 		
@@ -430,8 +430,8 @@ public class InvoiceWs extends CyBssWebServiceAdapter
 		
 		invoice=invoiceService.get(invoiceType, id);
 		if (invoice==null){
-			setResult(response, ICyBssResultConst.RESULT_NOT_FOUND, 
-					ICyBssResultConst.RESULT_D_NOT_FOUND,response.getLanguageCode());
+			setResult(response, ICyBssMessageConst.RESULT_NOT_FOUND, 
+					ICyBssMessageConst.RESULT_D_NOT_FOUND,response.getLanguageCode());
 			return response;
 		}
 		
@@ -461,16 +461,16 @@ public class InvoiceWs extends CyBssWebServiceAdapter
 		
 		if (!invoiceType.equalsIgnoreCase(Invoice.TYPE_ACTIVE) &&
 				!invoiceType.equalsIgnoreCase(Invoice.TYPE_PASSIVE)){
-				setResult(response, ICyBssResultConst.RESULT_INVOICE_TYPE_INVALID, 
-						ICyBssResultConst.RESULT_D_INVOICE_TYPE_INVALID,response.getLanguageCode());
+				setResult(response, ICyBssMessageConst.RESULT_INVOICE_TYPE_INVALID, 
+						ICyBssMessageConst.RESULT_D_INVOICE_TYPE_INVALID,response.getLanguageCode());
 				return response;
 			}
 		invoiceType=invoiceType.toUpperCase();
 		
 		Invoice invoice=invoiceService.get(invoiceType, id);
 		if (invoice==null){
-			setResult(response, ICyBssResultConst.RESULT_NOT_FOUND, 
-					ICyBssResultConst.RESULT_D_NOT_FOUND,response.getLanguageCode());
+			setResult(response, ICyBssMessageConst.RESULT_NOT_FOUND, 
+					ICyBssMessageConst.RESULT_D_NOT_FOUND,response.getLanguageCode());
 			return response;
 		}
 		
@@ -479,8 +479,8 @@ public class InvoiceWs extends CyBssWebServiceAdapter
 		
 		invoice=invoiceService.get(invoiceType, id);
 		if (invoice==null){
-			setResult(response, ICyBssResultConst.RESULT_NOT_FOUND, 
-					ICyBssResultConst.RESULT_D_NOT_FOUND,response.getLanguageCode());
+			setResult(response, ICyBssMessageConst.RESULT_NOT_FOUND, 
+					ICyBssMessageConst.RESULT_D_NOT_FOUND,response.getLanguageCode());
 			return response;
 		}
 		
@@ -509,16 +509,16 @@ public class InvoiceWs extends CyBssWebServiceAdapter
 		
 		if (!invoiceType.equalsIgnoreCase(Invoice.TYPE_ACTIVE) &&
 				!invoiceType.equalsIgnoreCase(Invoice.TYPE_PASSIVE)){
-				setResult(response, ICyBssResultConst.RESULT_INVOICE_TYPE_INVALID, 
-						ICyBssResultConst.RESULT_D_INVOICE_TYPE_INVALID,response.getLanguageCode());
+				setResult(response, ICyBssMessageConst.RESULT_INVOICE_TYPE_INVALID, 
+						ICyBssMessageConst.RESULT_D_INVOICE_TYPE_INVALID,response.getLanguageCode());
 				return response;
 			}
 		invoiceType=invoiceType.toUpperCase();
 
 		Invoice invoice=invoiceService.get(invoiceType, id);
 		if (invoice==null){
-			setResult(response, ICyBssResultConst.RESULT_NOT_FOUND, 
-					ICyBssResultConst.RESULT_D_NOT_FOUND,response.getLanguageCode());
+			setResult(response, ICyBssMessageConst.RESULT_NOT_FOUND, 
+					ICyBssMessageConst.RESULT_D_NOT_FOUND,response.getLanguageCode());
 			return response;
 		}
 
@@ -527,8 +527,8 @@ public class InvoiceWs extends CyBssWebServiceAdapter
 		
 		invoice=invoiceService.get(invoiceType, id);
 		if (invoice==null){
-			setResult(response, ICyBssResultConst.RESULT_NOT_FOUND, 
-					ICyBssResultConst.RESULT_D_NOT_FOUND,response.getLanguageCode());
+			setResult(response, ICyBssMessageConst.RESULT_NOT_FOUND, 
+					ICyBssMessageConst.RESULT_D_NOT_FOUND,response.getLanguageCode());
 			return response;
 		}
 		

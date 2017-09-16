@@ -1,10 +1,11 @@
 package org.cysoft.bss.core.web.response;
 
+import org.cysoft.bss.core.message.ICyBssMessageConst;
 import org.cysoft.bss.core.model.ICyBssConst;
 
 public abstract class CyBssResponseAdapter implements ICyBssResponse{
 	
-	private String resultCode=ICyBssResultConst.RESULT_OK;
+	private String resultCode=ICyBssMessageConst.RESULT_OK;
 	public String getResultCode() {
 		return resultCode;
 	}
@@ -38,7 +39,7 @@ public abstract class CyBssResponseAdapter implements ICyBssResponse{
 	}
 	
 	public void reset(){
-		resultCode=ICyBssResultConst.RESULT_OK;resultDesc="OK";
+		resultCode=ICyBssMessageConst.RESULT_OK;resultDesc="OK";
 	}
 	
 }

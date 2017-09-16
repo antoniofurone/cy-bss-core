@@ -4,10 +4,10 @@ import java.util.List;
 import org.cysoft.bss.core.common.CyBssException;
 import org.cysoft.bss.core.dao.BillableDao;
 import org.cysoft.bss.core.dao.InvoiceDao;
+import org.cysoft.bss.core.message.ICyBssMessageConst;
 import org.cysoft.bss.core.model.Billable;
 import org.cysoft.bss.core.model.Invoice;
 import org.cysoft.bss.core.service.InvoiceService;
-import org.cysoft.bss.core.web.response.ICyBssResultConst;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
@@ -22,12 +22,14 @@ public class InvoiceServiceImpl extends CyBssServiceBase
 {
 	protected InvoiceDao passiveInvoiceDao=null;
 	@Autowired
+	@Qualifier("passiveInvoiceDao")
 	public void setPassiveInvoiceDao(InvoiceDao passiveInvoiceDao){
 			this.passiveInvoiceDao=passiveInvoiceDao;
 	}
 	
 	protected InvoiceDao invoiceDao=null;
 	@Autowired
+	@Qualifier("invoiceDao")
 	public void setInvoiceDao(InvoiceDao invoiceDao){
 			this.invoiceDao=invoiceDao;
 	}
@@ -92,7 +94,7 @@ public class InvoiceServiceImpl extends CyBssServiceBase
 		
 		final Invoice invoice=_invoiceDao.get(id);
 		if (invoice==null)
-			throw new CyBssException(msgSource.getMessage(ICyBssResultConst.RESULT_D_NOT_FOUND));
+			throw new CyBssException(msgSource.getMessage(ICyBssMessageConst.RESULT_D_NOT_FOUND));
 		
 		TransactionTemplate txTemplate=new TransactionTemplate(tx);
 		txTemplate.execute(new TransactionCallbackWithoutResult(){
@@ -127,7 +129,7 @@ public class InvoiceServiceImpl extends CyBssServiceBase
 		
 		final Invoice invoice=_invoiceDao.get(id);
 		if (invoice==null)
-			throw new CyBssException(msgSource.getMessage(ICyBssResultConst.RESULT_D_NOT_FOUND));
+			throw new CyBssException(msgSource.getMessage(ICyBssMessageConst.RESULT_D_NOT_FOUND));
 		
 		TransactionTemplate txTemplate=new TransactionTemplate(tx);
 		txTemplate.execute(new TransactionCallbackWithoutResult(){
@@ -155,7 +157,7 @@ public class InvoiceServiceImpl extends CyBssServiceBase
 		
 		final Invoice invoice=_invoiceDao.get(id);
 		if (invoice==null)
-			throw new CyBssException(msgSource.getMessage(ICyBssResultConst.RESULT_D_NOT_FOUND));
+			throw new CyBssException(msgSource.getMessage(ICyBssMessageConst.RESULT_D_NOT_FOUND));
 		
 		TransactionTemplate txTemplate=new TransactionTemplate(tx);
 		txTemplate.execute(new TransactionCallbackWithoutResult(){
@@ -183,7 +185,7 @@ public class InvoiceServiceImpl extends CyBssServiceBase
 		
 		final Invoice invoice=_invoiceDao.get(id);
 		if (invoice==null)
-			throw new CyBssException(msgSource.getMessage(ICyBssResultConst.RESULT_D_NOT_FOUND));
+			throw new CyBssException(msgSource.getMessage(ICyBssMessageConst.RESULT_D_NOT_FOUND));
 		
 		return _billableDao.getNotLinked(invoice.getCompanyId(), invoice.getTpCompanyId(), 
 				invoice.getPersonId(), invoice.getCurrencyId());
@@ -197,7 +199,7 @@ public class InvoiceServiceImpl extends CyBssServiceBase
 		
 		final Invoice invoice=_invoiceDao.get(id);
 		if (invoice==null)
-			throw new CyBssException(msgSource.getMessage(ICyBssResultConst.RESULT_D_NOT_FOUND));
+			throw new CyBssException(msgSource.getMessage(ICyBssMessageConst.RESULT_D_NOT_FOUND));
 		
 		
 		TransactionTemplate txTemplate=new TransactionTemplate(tx);
@@ -227,7 +229,7 @@ public class InvoiceServiceImpl extends CyBssServiceBase
 		
 		final Invoice invoice=_invoiceDao.get(id);
 		if (invoice==null)
-			throw new CyBssException(msgSource.getMessage(ICyBssResultConst.RESULT_D_NOT_FOUND));
+			throw new CyBssException(msgSource.getMessage(ICyBssMessageConst.RESULT_D_NOT_FOUND));
 		
 		TransactionTemplate txTemplate=new TransactionTemplate(tx);
 		txTemplate.execute(new TransactionCallbackWithoutResult(){
@@ -261,7 +263,7 @@ public class InvoiceServiceImpl extends CyBssServiceBase
 		List<Billable> billables=_billableDao.getByInvoice(invoice.getId());
 		for (Billable billable:billables){
 			if (invoice.getCurrencyId()!=billable.getCurrencyId())
-				throw new CyBssException(msgSource.getMessage(ICyBssResultConst.RESULT_CURRENCY_DIFF));
+				throw new CyBssException(msgSource.getMessage(ICyBssMessageConst.RESULT_CURRENCY_DIFF));
 			
 			invoice.setAmount(invoice.getAmount()+billable.getAmount());
 			invoice.setVatAmount(invoice.getVatAmount()+billable.getVatAmount());
@@ -287,7 +289,7 @@ public class InvoiceServiceImpl extends CyBssServiceBase
 		final InvoiceDao _invoiceDao=invoiceType.equals(Invoice.TYPE_PASSIVE)?passiveInvoiceDao:invoiceDao;
 		final Invoice invoice=_invoiceDao.get(id);
 		if (invoice==null)
-			throw new CyBssException(msgSource.getMessage(ICyBssResultConst.RESULT_D_NOT_FOUND));
+			throw new CyBssException(msgSource.getMessage(ICyBssMessageConst.RESULT_D_NOT_FOUND));
 		
 		_update(invoiceType,invoice);
 	}
@@ -299,7 +301,7 @@ public class InvoiceServiceImpl extends CyBssServiceBase
 		final InvoiceDao _invoiceDao=invoiceType.equals(Invoice.TYPE_PASSIVE)?passiveInvoiceDao:invoiceDao;
 		final Invoice invoice=_invoiceDao.get(id);
 		if (invoice==null)
-			throw new CyBssException(msgSource.getMessage(ICyBssResultConst.RESULT_D_NOT_FOUND));
+			throw new CyBssException(msgSource.getMessage(ICyBssMessageConst.RESULT_D_NOT_FOUND));
 		
 		_invoiceDao.updateNumber(id, invoiceNumber);
 	}

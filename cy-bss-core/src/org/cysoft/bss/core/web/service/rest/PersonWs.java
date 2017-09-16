@@ -5,13 +5,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.cysoft.bss.core.common.CyBssException;
+import org.cysoft.bss.core.message.ICyBssMessageConst;
 import org.cysoft.bss.core.model.Contact;
 import org.cysoft.bss.core.model.Person;
 import org.cysoft.bss.core.service.ContactService;
 import org.cysoft.bss.core.service.PersonService;
 import org.cysoft.bss.core.web.annotation.CyBssOperation;
 import org.cysoft.bss.core.web.annotation.CyBssService;
-import org.cysoft.bss.core.web.response.ICyBssResultConst;
 import org.cysoft.bss.core.web.response.rest.contact.ContactListResponse;
 import org.cysoft.bss.core.web.response.rest.person.PersonListResponse;
 import org.cysoft.bss.core.web.response.rest.person.PersonResponse;
@@ -90,8 +90,8 @@ public class PersonWs extends CyBssWebServiceAdapter
 		}
 		
 		if (personService.getByCode(person.getCode())!=null){
-			setResult(response, ICyBssResultConst.RESULT_PERSCODE_USED, 
-					ICyBssResultConst.RESULT_D_PERSCODE_USED,response.getLanguageCode());
+			setResult(response, ICyBssMessageConst.RESULT_PERSCODE_USED, 
+					ICyBssMessageConst.RESULT_D_PERSCODE_USED,response.getLanguageCode());
 			return response;
 		}
 		
@@ -122,8 +122,8 @@ public class PersonWs extends CyBssWebServiceAdapter
 		
 		
 		if (personService.get(id)==null){
-			setResult(response, ICyBssResultConst.RESULT_NOT_FOUND, 
-					ICyBssResultConst.RESULT_D_NOT_FOUND,response.getLanguageCode());
+			setResult(response, ICyBssMessageConst.RESULT_NOT_FOUND, 
+					ICyBssMessageConst.RESULT_D_NOT_FOUND,response.getLanguageCode());
 			return response;
 			}
 		
@@ -157,8 +157,8 @@ public class PersonWs extends CyBssWebServiceAdapter
 		if (person!=null)
 			response.setPerson(person);
 		else
-			setResult(response, ICyBssResultConst.RESULT_NOT_FOUND, 
-					ICyBssResultConst.RESULT_D_NOT_FOUND,response.getLanguageCode());
+			setResult(response, ICyBssMessageConst.RESULT_NOT_FOUND, 
+					ICyBssMessageConst.RESULT_D_NOT_FOUND,response.getLanguageCode());
 		
 		logger.info("PersonWs.get() <<< ");
 		
@@ -184,8 +184,8 @@ public class PersonWs extends CyBssWebServiceAdapter
 		if (person!=null)
 			response.setPerson(person);
 		else
-			setResult(response, ICyBssResultConst.RESULT_NOT_FOUND, 
-					ICyBssResultConst.RESULT_D_NOT_FOUND,response.getLanguageCode());
+			setResult(response, ICyBssMessageConst.RESULT_NOT_FOUND, 
+					ICyBssMessageConst.RESULT_D_NOT_FOUND,response.getLanguageCode());
 		
 		logger.info("PersonWs.getByCode() <<< ");
 		

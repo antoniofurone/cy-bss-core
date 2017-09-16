@@ -1,7 +1,7 @@
 package org.cysoft.bss.core.service.impl;
 
-import org.cysoft.bss.core.common.CyBssMessageSource;
 import org.cysoft.bss.core.dao.LanguageDao;
+import org.cysoft.bss.core.message.CyBssMessageSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 

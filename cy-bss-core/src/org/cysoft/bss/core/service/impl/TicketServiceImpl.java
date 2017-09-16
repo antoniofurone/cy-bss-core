@@ -6,6 +6,7 @@ import org.cysoft.bss.core.common.CyBssException;
 import org.cysoft.bss.core.dao.FileDao;
 import org.cysoft.bss.core.dao.LocationDao;
 import org.cysoft.bss.core.dao.TicketDao;
+import org.cysoft.bss.core.message.ICyBssMessageConst;
 import org.cysoft.bss.core.model.CyBssFile;
 import org.cysoft.bss.core.model.Location;
 import org.cysoft.bss.core.model.Ticket;
@@ -13,7 +14,6 @@ import org.cysoft.bss.core.model.TicketCategory;
 import org.cysoft.bss.core.model.TicketStatus;
 import org.cysoft.bss.core.model.TicketStatusTrace;
 import org.cysoft.bss.core.service.TicketService;
-import org.cysoft.bss.core.web.response.ICyBssResultConst;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.TransactionStatus;
@@ -57,7 +57,7 @@ implements TicketService{
 		
 		final Ticket oldVersion=get(id, langId);
 		if (oldVersion==null)
-			throw new CyBssException(msgSource.getMessage(ICyBssResultConst.RESULT_D_NOT_FOUND));
+			throw new CyBssException(msgSource.getMessage(ICyBssMessageConst.RESULT_D_NOT_FOUND));
 		
 		TransactionTemplate txTemplate=new TransactionTemplate(tx);
 		txTemplate.execute(new TransactionCallbackWithoutResult(){
@@ -69,7 +69,7 @@ implements TicketService{
 					if (oldVersion.getLocationId()!=0){
 						Location location=locationDao.get(oldVersion.getLocationId(),langId);
 						if (location==null)
-							throw new CyBssException(msgSource.getMessage(ICyBssResultConst.RESULT_D_NOT_FOUND));
+							throw new CyBssException(msgSource.getMessage(ICyBssMessageConst.RESULT_D_NOT_FOUND));
 						
 						if (location.getLocationType().equals(Ticket.ENTITY_NAME)){
 							ticketDao.removeLocation(id);
@@ -100,13 +100,13 @@ implements TicketService{
 		
 		Ticket ticket=get(id, langId);
 		if (ticket==null) 
-			throw new CyBssException(msgSource.getMessage(ICyBssResultConst.RESULT_D_NOT_FOUND));
+			throw new CyBssException(msgSource.getMessage(ICyBssMessageConst.RESULT_D_NOT_FOUND));
 		
 		Location location=null;
 		if (ticket.getLocationId()!=0){
 			location=locationDao.get(ticket.getLocationId(),langId);
 			if (location==null) 
-				throw new CyBssException(msgSource.getMessage(ICyBssResultConst.RESULT_D_NOT_FOUND));
+				throw new CyBssException(msgSource.getMessage(ICyBssMessageConst.RESULT_D_NOT_FOUND));
 		}
 		
 		final Location _location=location;

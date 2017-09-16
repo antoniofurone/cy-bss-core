@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.cysoft.bss.core.common.CyBssException;
+import org.cysoft.bss.core.message.ICyBssMessageConst;
 import org.cysoft.bss.core.model.Company;
 import org.cysoft.bss.core.model.CompanyDept;
 import org.cysoft.bss.core.model.CompanyPerson;
@@ -15,7 +16,6 @@ import org.cysoft.bss.core.service.ContactService;
 import org.cysoft.bss.core.service.PersonService;
 import org.cysoft.bss.core.web.annotation.CyBssOperation;
 import org.cysoft.bss.core.web.annotation.CyBssService;
-import org.cysoft.bss.core.web.response.ICyBssResultConst;
 import org.cysoft.bss.core.web.response.rest.company.CompanyDeptListResponse;
 import org.cysoft.bss.core.web.response.rest.company.CompanyDeptResponse;
 import org.cysoft.bss.core.web.response.rest.company.CompanyListResponse;
@@ -94,8 +94,8 @@ implements ICyBssWebService{
 		}
 		
 		if (companyService.getByCode(company.getCode())!=null){
-			setResult(response, ICyBssResultConst.RESULT_COMPANYCODE_USED, 
-					ICyBssResultConst.RESULT_D_COMPANYCODE_USED,response.getLanguageCode());
+			setResult(response, ICyBssMessageConst.RESULT_COMPANYCODE_USED, 
+					ICyBssMessageConst.RESULT_D_COMPANYCODE_USED,response.getLanguageCode());
 			return response;
 		}
 		
@@ -134,8 +134,8 @@ implements ICyBssWebService{
 		
 		CompanyDept parentDept=companyService.getDept(dept.getParentId());
 		if (parentDept==null){
-			setResult(response, ICyBssResultConst.RESULT_NOT_FOUND, 
-					ICyBssResultConst.RESULT_D_NOT_FOUND,response.getLanguageCode());
+			setResult(response, ICyBssMessageConst.RESULT_NOT_FOUND, 
+					ICyBssMessageConst.RESULT_D_NOT_FOUND,response.getLanguageCode());
 			return response;
 		}
 		
@@ -170,14 +170,14 @@ implements ICyBssWebService{
 		
 		Company company=companyService.get(id);
 		if (company==null){
-			setResult(response, ICyBssResultConst.RESULT_NOT_FOUND, 
-					ICyBssResultConst.RESULT_D_NOT_FOUND,response.getLanguageCode());
+			setResult(response, ICyBssMessageConst.RESULT_NOT_FOUND, 
+					ICyBssMessageConst.RESULT_D_NOT_FOUND,response.getLanguageCode());
 			return response;
 		}
 		company=companyService.get(subsId);
 		if (company==null){
-			setResult(response, ICyBssResultConst.RESULT_NOT_FOUND, 
-					ICyBssResultConst.RESULT_D_NOT_FOUND,response.getLanguageCode());
+			setResult(response, ICyBssMessageConst.RESULT_NOT_FOUND, 
+					ICyBssMessageConst.RESULT_D_NOT_FOUND,response.getLanguageCode());
 			return response;
 		}
 		
@@ -231,8 +231,8 @@ implements ICyBssWebService{
 		if (company!=null)
 			response.setCompany(company);
 		else
-			setResult(response, ICyBssResultConst.RESULT_NOT_FOUND, 
-					ICyBssResultConst.RESULT_D_NOT_FOUND,response.getLanguageCode());
+			setResult(response, ICyBssMessageConst.RESULT_NOT_FOUND, 
+					ICyBssMessageConst.RESULT_D_NOT_FOUND,response.getLanguageCode());
 		
 		logger.info("CompanyWs.get() <<< ");
 		
@@ -258,8 +258,8 @@ implements ICyBssWebService{
 		if (company!=null)
 			response.setCompany(company);
 		else
-			setResult(response, ICyBssResultConst.RESULT_NOT_FOUND, 
-					ICyBssResultConst.RESULT_D_NOT_FOUND,response.getLanguageCode());
+			setResult(response, ICyBssMessageConst.RESULT_NOT_FOUND, 
+					ICyBssMessageConst.RESULT_D_NOT_FOUND,response.getLanguageCode());
 		
 		logger.info("CompanyWs.getByCode() <<< ");
 		
@@ -409,8 +409,8 @@ implements ICyBssWebService{
 		// end checkGrant 
 		
 		if (companyService.get(id)==null){
-			setResult(response, ICyBssResultConst.RESULT_NOT_FOUND, 
-					ICyBssResultConst.RESULT_D_NOT_FOUND,response.getLanguageCode());
+			setResult(response, ICyBssMessageConst.RESULT_NOT_FOUND, 
+					ICyBssMessageConst.RESULT_D_NOT_FOUND,response.getLanguageCode());
 			return response;
 			}
 		
@@ -444,14 +444,14 @@ implements ICyBssWebService{
 		
 		CompanyDept parentDept=companyService.getDept(companyDept.getParentId());
 		if (parentDept==null){
-			setResult(response, ICyBssResultConst.RESULT_NOT_FOUND, 
-					ICyBssResultConst.RESULT_D_NOT_FOUND,response.getLanguageCode());
+			setResult(response, ICyBssMessageConst.RESULT_NOT_FOUND, 
+					ICyBssMessageConst.RESULT_D_NOT_FOUND,response.getLanguageCode());
 			return response;
 		}
 		
 		if (companyService.getDept(deptId)==null){
-			setResult(response, ICyBssResultConst.RESULT_NOT_FOUND, 
-					ICyBssResultConst.RESULT_D_NOT_FOUND,response.getLanguageCode());
+			setResult(response, ICyBssMessageConst.RESULT_NOT_FOUND, 
+					ICyBssMessageConst.RESULT_D_NOT_FOUND,response.getLanguageCode());
 			return response;
 			}
 		
@@ -484,20 +484,20 @@ implements ICyBssWebService{
 		// end checkGrant 
 		
 		if (companyService.getDept(deptId)==null){
-			setResult(response, ICyBssResultConst.RESULT_NOT_FOUND, 
-					ICyBssResultConst.RESULT_D_NOT_FOUND,response.getLanguageCode());
+			setResult(response, ICyBssMessageConst.RESULT_NOT_FOUND, 
+					ICyBssMessageConst.RESULT_D_NOT_FOUND,response.getLanguageCode());
 			return response;
 			}
 		if (personService.get(companyPerson.getPersonId())==null){
-			setResult(response, ICyBssResultConst.RESULT_NOT_FOUND, 
-					ICyBssResultConst.RESULT_D_NOT_FOUND,response.getLanguageCode());
+			setResult(response, ICyBssMessageConst.RESULT_NOT_FOUND, 
+					ICyBssMessageConst.RESULT_D_NOT_FOUND,response.getLanguageCode());
 			return response;
 			}
 		
 		if (companyService.getPersonRole(companyPerson.getPersonId(),
 				languageService.getLanguage(response.getLanguageCode()).getId())==null){
-			setResult(response, ICyBssResultConst.RESULT_NOT_FOUND, 
-					ICyBssResultConst.RESULT_D_NOT_FOUND,response.getLanguageCode());
+			setResult(response, ICyBssMessageConst.RESULT_NOT_FOUND, 
+					ICyBssMessageConst.RESULT_D_NOT_FOUND,response.getLanguageCode());
 			return response;
 			}
 		
@@ -691,8 +691,8 @@ implements ICyBssWebService{
 		if (company!=null)
 			response.setCompany(company);
 		else
-			setResult(response, ICyBssResultConst.RESULT_NOT_FOUND, 
-					ICyBssResultConst.RESULT_D_NOT_FOUND,response.getLanguageCode());
+			setResult(response, ICyBssMessageConst.RESULT_NOT_FOUND, 
+					ICyBssMessageConst.RESULT_D_NOT_FOUND,response.getLanguageCode());
 	
 		logger.info("ProductWs.getCategory() <<< ");
 		return response;
@@ -717,8 +717,8 @@ implements ICyBssWebService{
 		// end checkGrant 
 		
 		if (companyService.getManaged(id)==null){
-			setResult(response, ICyBssResultConst.RESULT_NOT_FOUND, 
-					ICyBssResultConst.RESULT_D_NOT_FOUND,response.getLanguageCode());
+			setResult(response, ICyBssMessageConst.RESULT_NOT_FOUND, 
+					ICyBssMessageConst.RESULT_D_NOT_FOUND,response.getLanguageCode());
 			return response;
 			}
 		

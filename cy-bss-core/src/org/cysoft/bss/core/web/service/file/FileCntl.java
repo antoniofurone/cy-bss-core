@@ -9,10 +9,10 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.cysoft.bss.core.common.CyBssException;
 import org.cysoft.bss.core.dao.FileDao;
+import org.cysoft.bss.core.message.ICyBssMessageConst;
 import org.cysoft.bss.core.model.CyBssFile;
 import org.cysoft.bss.core.web.annotation.CyBssOperation;
 import org.cysoft.bss.core.web.annotation.CyBssService;
-import org.cysoft.bss.core.web.response.ICyBssResultConst;
 import org.cysoft.bss.core.web.response.file.FileListResponse;
 import org.cysoft.bss.core.web.response.file.FileResponse;
 import org.cysoft.bss.core.web.service.CyBssWebServiceAdapter;
@@ -48,7 +48,7 @@ implements ICyBssWebService{
 	@RequestMapping(value="upload",method=RequestMethod.GET)
 	public @ResponseBody FileResponse uploadInfo(){
 		FileResponse response=new FileResponse();
-		response.setResultCode(ICyBssResultConst.RESULT_NOK);
+		response.setResultCode(ICyBssMessageConst.RESULT_NOK);
 		response.setResultDesc("You can uploading a file by posting to this same URL");
 		return response;
 	}
@@ -97,15 +97,15 @@ implements ICyBssWebService{
 				fileDao.upload(fileName,file, fileType, entityName, entityId, note, visibility);
 			} catch (CyBssException e) {
 				// TODO Auto-generated catch block
-				response.setResultCode(ICyBssResultConst.RESULT_NOK);
+				response.setResultCode(ICyBssMessageConst.RESULT_NOK);
 				response.setResultDesc(e.getMessage());
 				return response;
 			}
 		}
 		else
 		{
-			setResult(response, ICyBssResultConst.RESULT_FILE_EMPTY, 
-					ICyBssResultConst.RESULT_D_FILE_EMPTY,response.getLanguageCode());
+			setResult(response, ICyBssMessageConst.RESULT_FILE_EMPTY, 
+					ICyBssMessageConst.RESULT_D_FILE_EMPTY,response.getLanguageCode());
 			return response;
 		}
 		return response;

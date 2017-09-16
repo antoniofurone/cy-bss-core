@@ -3,11 +3,11 @@ package org.cysoft.bss.core.web.service.rest;
 import java.util.List;
 
 import org.cysoft.bss.core.common.CyBssException;
+import org.cysoft.bss.core.message.ICyBssMessageConst;
 import org.cysoft.bss.core.model.Country;
 import org.cysoft.bss.core.service.CountryService;
 import org.cysoft.bss.core.web.annotation.CyBssOperation;
 import org.cysoft.bss.core.web.annotation.CyBssService;
-import org.cysoft.bss.core.web.response.ICyBssResultConst;
 import org.cysoft.bss.core.web.response.rest.country.CountryListResponse;
 import org.cysoft.bss.core.web.response.rest.country.CountryResponse;
 import org.cysoft.bss.core.web.service.CyBssWebServiceAdapter;
@@ -78,8 +78,8 @@ implements ICyBssWebService{
 		if (country!=null)
 			response.setCountry(country);
 		else
-			setResult(response, ICyBssResultConst.RESULT_NOT_FOUND, 
-					ICyBssResultConst.RESULT_D_NOT_FOUND,response.getLanguageCode());
+			setResult(response, ICyBssMessageConst.RESULT_NOT_FOUND, 
+					ICyBssMessageConst.RESULT_D_NOT_FOUND,response.getLanguageCode());
 	
 		logger.info("CountryWs.get() <<< ");
 		return response;
@@ -103,8 +103,8 @@ implements ICyBssWebService{
 		// end checkGrant 
 		
 		if (countryService.get(id)==null){
-			setResult(response, ICyBssResultConst.RESULT_NOT_FOUND, 
-					ICyBssResultConst.RESULT_D_NOT_FOUND,response.getLanguageCode());
+			setResult(response, ICyBssMessageConst.RESULT_NOT_FOUND, 
+					ICyBssMessageConst.RESULT_D_NOT_FOUND,response.getLanguageCode());
 			return response;
 			}
 		

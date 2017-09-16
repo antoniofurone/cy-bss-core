@@ -118,7 +118,7 @@ implements SaleService {
 								invoiceIds.add(billable.getInvoiceId());
 					}
 					for(long invoiceId:invoiceIds){
-						invoiceService.updateAmounts(Invoice.TYPE_PASSIVE, invoiceId);
+						invoiceService.updateAmounts(Invoice.TYPE_ACTIVE, invoiceId);
 					}
 					
 					billableRevenueDao.removeByParent(id);
@@ -187,8 +187,9 @@ implements SaleService {
 							if (!invoiceIds.contains(billable.getInvoiceId()))
 								invoiceIds.add(billable.getInvoiceId());
 					}
+					
 					for(long invoiceId:invoiceIds){
-						invoiceService.updateAmounts(Invoice.TYPE_PASSIVE, invoiceId);
+						invoiceService.updateAmounts(Invoice.TYPE_ACTIVE, invoiceId);
 					}
 				
 				} catch (CyBssException e) {
@@ -231,5 +232,11 @@ implements SaleService {
 		
 		billableRevenueDao.add(billableRevenue);
 		
+	}
+
+	@Override
+	public List<Billable> getBillables(long id) throws CyBssException {
+		// TODO Auto-generated method stub
+		return billableRevenueDao.getByParent(id);
 	}
 }

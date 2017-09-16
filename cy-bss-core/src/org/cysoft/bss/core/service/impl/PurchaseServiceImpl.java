@@ -237,5 +237,12 @@ public class PurchaseServiceImpl extends CyBssServiceBase
 		billableCostDao.add(billableCost);
 		
 	}
+
+
+	@Override
+	public List<Billable> getBillables(long id) throws CyBssException {
+		// TODO Auto-generated method stub
+		return billableCostDao.getByParent(id);
+	}
 	
 }

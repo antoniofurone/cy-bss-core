@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.cysoft.bss.core.common.CyBssException;
+import org.cysoft.bss.core.message.ICyBssMessageConst;
 import org.cysoft.bss.core.model.Language;
 import org.cysoft.bss.core.model.Location;
 import org.cysoft.bss.core.model.Ticket;
@@ -15,7 +16,6 @@ import org.cysoft.bss.core.service.LocationService;
 import org.cysoft.bss.core.service.TicketService;
 import org.cysoft.bss.core.web.annotation.CyBssOperation;
 import org.cysoft.bss.core.web.annotation.CyBssService;
-import org.cysoft.bss.core.web.response.ICyBssResultConst;
 import org.cysoft.bss.core.web.response.file.FileListResponse;
 import org.cysoft.bss.core.web.response.rest.ticket.TicketCategoryListResponse;
 import org.cysoft.bss.core.web.response.rest.ticket.TicketListResponse;
@@ -103,8 +103,8 @@ public class TicketWs extends CyBssWebServiceAdapter
 			response.setFiles(fileService.getByEntity(Ticket.ENTITY_NAME, id));
 		}
 		else
-			setResult(response, ICyBssResultConst.RESULT_NOT_FOUND, 
-					ICyBssResultConst.RESULT_D_NOT_FOUND,response.getLanguageCode());
+			setResult(response, ICyBssMessageConst.RESULT_NOT_FOUND, 
+					ICyBssMessageConst.RESULT_D_NOT_FOUND,response.getLanguageCode());
 		
 		
 		logger.info("TicketWs.getFiles() <<< ");
@@ -137,8 +137,8 @@ public class TicketWs extends CyBssWebServiceAdapter
 				ticket.setLocation(locationService.get(ticket.getLocationId(),language.getId()));
 		}
 		else
-			setResult(response, ICyBssResultConst.RESULT_NOT_FOUND, 
-					ICyBssResultConst.RESULT_D_NOT_FOUND,response.getLanguageCode());
+			setResult(response, ICyBssMessageConst.RESULT_NOT_FOUND, 
+					ICyBssMessageConst.RESULT_D_NOT_FOUND,response.getLanguageCode());
 		
 		
 		logger.info("TicketWs.get() <<< ");
@@ -287,8 +287,8 @@ public class TicketWs extends CyBssWebServiceAdapter
 	
 	Ticket ticket=ticketService.get(id, language.getId());
 	if (ticket==null){
-		setResult(response, ICyBssResultConst.RESULT_NOT_FOUND, 
-				ICyBssResultConst.RESULT_D_NOT_FOUND,response.getLanguageCode());
+		setResult(response, ICyBssMessageConst.RESULT_NOT_FOUND, 
+				ICyBssMessageConst.RESULT_D_NOT_FOUND,response.getLanguageCode());
 		return response;
 	}
 	
@@ -296,8 +296,8 @@ public class TicketWs extends CyBssWebServiceAdapter
 	TicketStatus newState=new TicketStatus();
 	newState.setId(changeStatus.getStatusId());
 	if (nextStates==null || !nextStates.contains(newState)){
-		setResult(response, ICyBssResultConst.RESULT_STATUS_CANNOT, 
-				ICyBssResultConst.RESULT_D_STATUS_CANNOT,response.getLanguageCode());
+		setResult(response, ICyBssMessageConst.RESULT_STATUS_CANNOT, 
+				ICyBssMessageConst.RESULT_D_STATUS_CANNOT,response.getLanguageCode());
 		return response;
 	}
 	
@@ -334,8 +334,8 @@ public class TicketWs extends CyBssWebServiceAdapter
 		
 		Ticket ticket=ticketService.get(id,language.getId());
 		if (ticket==null){
-			setResult(response, ICyBssResultConst.RESULT_NOT_FOUND, 
-					ICyBssResultConst.RESULT_D_NOT_FOUND,response.getLanguageCode());
+			setResult(response, ICyBssMessageConst.RESULT_NOT_FOUND, 
+					ICyBssMessageConst.RESULT_D_NOT_FOUND,response.getLanguageCode());
 			return response;
 			}
 		
@@ -384,8 +384,8 @@ public class TicketWs extends CyBssWebServiceAdapter
 			language=languageService.getLanguage(languageCode);
 		
 		if (ticketService.get(id,language.getId())==null){
-			setResult(response, ICyBssResultConst.RESULT_NOT_FOUND, 
-					ICyBssResultConst.RESULT_D_NOT_FOUND,response.getLanguageCode());
+			setResult(response, ICyBssMessageConst.RESULT_NOT_FOUND, 
+					ICyBssMessageConst.RESULT_D_NOT_FOUND,response.getLanguageCode());
 			return response;
 			}
 		

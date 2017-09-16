@@ -2,12 +2,12 @@ package org.cysoft.bss.core.web.service.rest;
 
 
 import org.cysoft.bss.core.common.CyBssException;
+import org.cysoft.bss.core.message.ICyBssMessageConst;
 import org.cysoft.bss.core.model.PriceComponent;
 import org.cysoft.bss.core.model.PriceType;
 import org.cysoft.bss.core.service.PriceService;
 import org.cysoft.bss.core.web.annotation.CyBssOperation;
 import org.cysoft.bss.core.web.annotation.CyBssService;
-import org.cysoft.bss.core.web.response.ICyBssResultConst;
 import org.cysoft.bss.core.web.response.rest.price.PriceComponentListResponse;
 import org.cysoft.bss.core.web.response.rest.price.PriceComponentResponse;
 import org.cysoft.bss.core.web.response.rest.price.PriceTypeListResponse;
@@ -65,8 +65,8 @@ public class PriceWs extends CyBssWebServiceAdapter
 		if (priceType!=null)
 			response.setType(priceType);
 		else
-			setResult(response, ICyBssResultConst.RESULT_NOT_FOUND, 
-					ICyBssResultConst.RESULT_D_NOT_FOUND,response.getLanguageCode());
+			setResult(response, ICyBssMessageConst.RESULT_NOT_FOUND, 
+					ICyBssMessageConst.RESULT_D_NOT_FOUND,response.getLanguageCode());
 	
 		logger.info("PriceWs.getPriceType() <<< ");
 		return response;
@@ -100,8 +100,8 @@ public class PriceWs extends CyBssWebServiceAdapter
 		if (priceComponent!=null)
 			response.setComponent(priceComponent);
 		else
-			setResult(response, ICyBssResultConst.RESULT_NOT_FOUND, 
-					ICyBssResultConst.RESULT_D_NOT_FOUND,response.getLanguageCode());
+			setResult(response, ICyBssMessageConst.RESULT_NOT_FOUND, 
+					ICyBssMessageConst.RESULT_D_NOT_FOUND,response.getLanguageCode());
 	
 		logger.info("PriceWs.getPriceComponent() <<< ");
 		return response;
@@ -125,8 +125,8 @@ public class PriceWs extends CyBssWebServiceAdapter
 		// end checkGrant 
 		
 		if (priceService.getPriceComponent(id)==null){
-			setResult(response, ICyBssResultConst.RESULT_NOT_FOUND, 
-					ICyBssResultConst.RESULT_D_NOT_FOUND,response.getLanguageCode());
+			setResult(response, ICyBssMessageConst.RESULT_NOT_FOUND, 
+					ICyBssMessageConst.RESULT_D_NOT_FOUND,response.getLanguageCode());
 			return response;
 			}
 		

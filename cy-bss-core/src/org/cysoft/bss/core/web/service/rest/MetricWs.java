@@ -2,13 +2,13 @@ package org.cysoft.bss.core.web.service.rest;
 
 
 import org.cysoft.bss.core.common.CyBssException;
+import org.cysoft.bss.core.message.ICyBssMessageConst;
 import org.cysoft.bss.core.model.Currency;
 import org.cysoft.bss.core.model.Metric;
 import org.cysoft.bss.core.model.MetricScale;
 import org.cysoft.bss.core.service.MetricService;
 import org.cysoft.bss.core.web.annotation.CyBssOperation;
 import org.cysoft.bss.core.web.annotation.CyBssService;
-import org.cysoft.bss.core.web.response.ICyBssResultConst;
 import org.cysoft.bss.core.web.response.rest.country.CurrencyListResponse;
 import org.cysoft.bss.core.web.response.rest.metric.CurrencyResponse;
 import org.cysoft.bss.core.web.response.rest.metric.MetricListResponse;
@@ -85,8 +85,8 @@ implements ICyBssWebService{
 		if (metric!=null)
 			response.setMetric(metric);
 		else
-			setResult(response, ICyBssResultConst.RESULT_NOT_FOUND, 
-					ICyBssResultConst.RESULT_D_NOT_FOUND,response.getLanguageCode());
+			setResult(response, ICyBssMessageConst.RESULT_NOT_FOUND, 
+					ICyBssMessageConst.RESULT_D_NOT_FOUND,response.getLanguageCode());
 	
 		logger.info("MetricWs.getType() <<< ");
 		return response;
@@ -111,8 +111,8 @@ implements ICyBssWebService{
 		// end checkGrant 
 		
 		if (metricService.getMetric(id)==null){
-			setResult(response, ICyBssResultConst.RESULT_NOT_FOUND, 
-					ICyBssResultConst.RESULT_D_NOT_FOUND,response.getLanguageCode());
+			setResult(response, ICyBssMessageConst.RESULT_NOT_FOUND, 
+					ICyBssMessageConst.RESULT_D_NOT_FOUND,response.getLanguageCode());
 			return response;
 			}
 		
@@ -201,8 +201,8 @@ implements ICyBssWebService{
 		if (currency!=null)
 			response.setCurrency(currency);
 		else
-			setResult(response, ICyBssResultConst.RESULT_NOT_FOUND, 
-					ICyBssResultConst.RESULT_D_NOT_FOUND,response.getLanguageCode());
+			setResult(response, ICyBssMessageConst.RESULT_NOT_FOUND, 
+					ICyBssMessageConst.RESULT_D_NOT_FOUND,response.getLanguageCode());
 	
 		logger.info("MetricWs.getCurrency() <<< ");
 		return response;
@@ -227,8 +227,8 @@ implements ICyBssWebService{
 		// end checkGrant 
 		
 		if (metricService.getCurrency(id)==null){
-			setResult(response, ICyBssResultConst.RESULT_NOT_FOUND, 
-					ICyBssResultConst.RESULT_D_NOT_FOUND,response.getLanguageCode());
+			setResult(response, ICyBssMessageConst.RESULT_NOT_FOUND, 
+					ICyBssMessageConst.RESULT_D_NOT_FOUND,response.getLanguageCode());
 			return response;
 			}
 		
@@ -318,8 +318,8 @@ implements ICyBssWebService{
 		if (scale!=null)
 			response.setMetricScale(scale);
 		else
-			setResult(response, ICyBssResultConst.RESULT_NOT_FOUND, 
-					ICyBssResultConst.RESULT_D_NOT_FOUND,response.getLanguageCode());
+			setResult(response, ICyBssMessageConst.RESULT_NOT_FOUND, 
+					ICyBssMessageConst.RESULT_D_NOT_FOUND,response.getLanguageCode());
 	
 		logger.info("MetricWs.getMetricScale() <<< ");
 		return response;
@@ -344,8 +344,8 @@ implements ICyBssWebService{
 		// end checkGrant 
 		
 		if (metricService.getMetricScale(id)==null){
-			setResult(response, ICyBssResultConst.RESULT_NOT_FOUND, 
-					ICyBssResultConst.RESULT_D_NOT_FOUND,response.getLanguageCode());
+			setResult(response, ICyBssMessageConst.RESULT_NOT_FOUND, 
+					ICyBssMessageConst.RESULT_D_NOT_FOUND,response.getLanguageCode());
 			return response;
 			}
 		

@@ -4,13 +4,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.cysoft.bss.core.common.CyBssException;
+import org.cysoft.bss.core.message.ICyBssMessageConst;
 import org.cysoft.bss.core.model.Language;
 import org.cysoft.bss.core.model.Location;
 import org.cysoft.bss.core.service.FileService;
 import org.cysoft.bss.core.service.LocationService;
 import org.cysoft.bss.core.web.annotation.CyBssOperation;
 import org.cysoft.bss.core.web.annotation.CyBssService;
-import org.cysoft.bss.core.web.response.ICyBssResultConst;
 import org.cysoft.bss.core.web.response.file.FileListResponse;
 import org.cysoft.bss.core.web.response.rest.location.LocationListResponse;
 import org.cysoft.bss.core.web.response.rest.location.LocationResponse;
@@ -91,8 +91,8 @@ implements ICyBssWebService{
 		// end checkGrant 
 		
 		if (locationService.get(id,0)==null){
-			setResult(response, ICyBssResultConst.RESULT_NOT_FOUND, 
-					ICyBssResultConst.RESULT_D_NOT_FOUND,response.getLanguageCode());
+			setResult(response, ICyBssMessageConst.RESULT_NOT_FOUND, 
+					ICyBssMessageConst.RESULT_D_NOT_FOUND,response.getLanguageCode());
 			return response;
 			}
 		
@@ -125,8 +125,8 @@ implements ICyBssWebService{
 		
 		Location loc0=locationService.get(id, location.getLangId());
 		if (loc0==null){
-			setResult(response, ICyBssResultConst.RESULT_NOT_FOUND, 
-					ICyBssResultConst.RESULT_D_NOT_FOUND,response.getLanguageCode());
+			setResult(response, ICyBssMessageConst.RESULT_NOT_FOUND, 
+					ICyBssMessageConst.RESULT_D_NOT_FOUND,response.getLanguageCode());
 			return response;
 		}
 		location.setId(loc0.getId());
@@ -159,8 +159,8 @@ implements ICyBssWebService{
 		if (location!=null)
 			response.setLocation(location);
 		else
-			setResult(response, ICyBssResultConst.RESULT_NOT_FOUND, 
-					ICyBssResultConst.RESULT_D_NOT_FOUND,response.getLanguageCode());
+			setResult(response, ICyBssMessageConst.RESULT_NOT_FOUND, 
+					ICyBssMessageConst.RESULT_D_NOT_FOUND,response.getLanguageCode());
 		
 		logger.info("LocationWs.get() <<< ");
 		return response;
@@ -182,8 +182,8 @@ implements ICyBssWebService{
 			response.setFiles(fileService.getByEntity(Location.ENTITY_NAME, id));
 		}
 		else
-			setResult(response, ICyBssResultConst.RESULT_NOT_FOUND, 
-					ICyBssResultConst.RESULT_D_NOT_FOUND,response.getLanguageCode());
+			setResult(response, ICyBssMessageConst.RESULT_NOT_FOUND, 
+					ICyBssMessageConst.RESULT_D_NOT_FOUND,response.getLanguageCode());
 		
 		logger.info("LocationWs.getFiles() <<< ");
 		

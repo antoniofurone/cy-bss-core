@@ -2,7 +2,6 @@ package org.cysoft.bss.core.config;
 
 
 import org.cysoft.bss.core.common.CyBssDataSource;
-import org.cysoft.bss.core.common.CyBssMessageSource;
 import org.cysoft.bss.core.dao.AppDao;
 import org.cysoft.bss.core.dao.BillableDao;
 import org.cysoft.bss.core.dao.CityDao;
@@ -47,6 +46,7 @@ import org.cysoft.bss.core.dao.mysql.PurchaseMysql;
 import org.cysoft.bss.core.dao.mysql.SaleMysql;
 import org.cysoft.bss.core.dao.mysql.TicketMysql;
 import org.cysoft.bss.core.dao.mysql.UserMysql;
+import org.cysoft.bss.core.message.CyBssMessageSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -83,8 +83,6 @@ public class CyBssRestApp {
 	 @Description("Message Source Rest")
 	 public CyBssMessageSource messageSource(){
 		CyBssMessageSource ms=new CyBssMessageSource();
-		ms.setBasename("/WEB-INF/messages/messages");
-		ms.setDefaultEncoding("UTF-8");
 		return ms;
 	 }
 	

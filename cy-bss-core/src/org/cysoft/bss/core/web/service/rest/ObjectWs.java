@@ -1,12 +1,12 @@
 package org.cysoft.bss.core.web.service.rest;
 
 import org.cysoft.bss.core.common.CyBssException;
+import org.cysoft.bss.core.message.ICyBssMessageConst;
 import org.cysoft.bss.core.model.Attribute;
 import org.cysoft.bss.core.model.CyBssObject;
 import org.cysoft.bss.core.service.ObjectService;
 import org.cysoft.bss.core.web.annotation.CyBssOperation;
 import org.cysoft.bss.core.web.annotation.CyBssService;
-import org.cysoft.bss.core.web.response.ICyBssResultConst;
 import org.cysoft.bss.core.web.response.rest.attribute.AttributeListResponse;
 import org.cysoft.bss.core.web.response.rest.attribute.AttributeResponse;
 import org.cysoft.bss.core.web.response.rest.attribute.AttributeTypeListResponse;
@@ -55,8 +55,8 @@ public class ObjectWs extends CyBssWebServiceAdapter
 				
 	
 		if (objectService.get(attribute.getObjectId())==null){
-			setResult(response, ICyBssResultConst.RESULT_NOT_FOUND, 
-					ICyBssResultConst.RESULT_D_NOT_FOUND,response.getLanguageCode());
+			setResult(response, ICyBssMessageConst.RESULT_NOT_FOUND, 
+					ICyBssMessageConst.RESULT_D_NOT_FOUND,response.getLanguageCode());
 			return response;
 			}
 		
@@ -95,8 +95,8 @@ public class ObjectWs extends CyBssWebServiceAdapter
 		
 		CyBssObject object=objectService.getByName(name);
 		if (object==null){
-			setResult(response, ICyBssResultConst.RESULT_NOT_FOUND, 
-					ICyBssResultConst.RESULT_D_NOT_FOUND,response.getLanguageCode());
+			setResult(response, ICyBssMessageConst.RESULT_NOT_FOUND, 
+					ICyBssMessageConst.RESULT_D_NOT_FOUND,response.getLanguageCode());
 			return response;
 			}
 		
@@ -116,8 +116,8 @@ public class ObjectWs extends CyBssWebServiceAdapter
 		
 		CyBssObject object=objectService.getByEntity(entityName);
 		if (object==null){
-			setResult(response, ICyBssResultConst.RESULT_NOT_FOUND, 
-					ICyBssResultConst.RESULT_D_NOT_FOUND,response.getLanguageCode());
+			setResult(response, ICyBssMessageConst.RESULT_NOT_FOUND, 
+					ICyBssMessageConst.RESULT_D_NOT_FOUND,response.getLanguageCode());
 			return response;
 			}
 		
@@ -208,14 +208,14 @@ public class ObjectWs extends CyBssWebServiceAdapter
 		// end checkGrant 
 	
 		if (objectService.getAttribute(attribute.getId())==null){
-			setResult(response, ICyBssResultConst.RESULT_NOT_FOUND, 
-					ICyBssResultConst.RESULT_D_NOT_FOUND,response.getLanguageCode());
+			setResult(response, ICyBssMessageConst.RESULT_NOT_FOUND, 
+					ICyBssMessageConst.RESULT_D_NOT_FOUND,response.getLanguageCode());
 			return response;
 			}
 		
 		if (objectService.get(attribute.getObjectId())==null){
-			setResult(response, ICyBssResultConst.RESULT_NOT_FOUND, 
-					ICyBssResultConst.RESULT_D_NOT_FOUND,response.getLanguageCode());
+			setResult(response, ICyBssMessageConst.RESULT_NOT_FOUND, 
+					ICyBssMessageConst.RESULT_D_NOT_FOUND,response.getLanguageCode());
 			return response;
 			}
 		
@@ -245,8 +245,8 @@ public class ObjectWs extends CyBssWebServiceAdapter
 		// end checkGrant 
 				
 		if (objectService.getAttribute(attrId)==null){
-			setResult(response, ICyBssResultConst.RESULT_NOT_FOUND, 
-					ICyBssResultConst.RESULT_D_NOT_FOUND,response.getLanguageCode());
+			setResult(response, ICyBssMessageConst.RESULT_NOT_FOUND, 
+					ICyBssMessageConst.RESULT_D_NOT_FOUND,response.getLanguageCode());
 			return response;
 			}
 		
@@ -276,8 +276,8 @@ public class ObjectWs extends CyBssWebServiceAdapter
 				
 		Attribute attribute=objectService.getAttribute(attrValue.getId());
 		if (attribute==null){
-			setResult(response, ICyBssResultConst.RESULT_NOT_FOUND, 
-					ICyBssResultConst.RESULT_D_NOT_FOUND,response.getLanguageCode());
+			setResult(response, ICyBssMessageConst.RESULT_NOT_FOUND, 
+					ICyBssMessageConst.RESULT_D_NOT_FOUND,response.getLanguageCode());
 			return response;
 			}
 		

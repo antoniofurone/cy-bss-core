@@ -5,13 +5,13 @@ import java.util.List;
 
 import org.cysoft.bss.core.common.CyBssException;
 import org.cysoft.bss.core.common.CyBssPwdEncryption;
+import org.cysoft.bss.core.message.ICyBssMessageConst;
 import org.cysoft.bss.core.model.ChangePwd;
 import org.cysoft.bss.core.model.PwdEncrypted;
 import org.cysoft.bss.core.model.User;
 import org.cysoft.bss.core.model.UserRole;
 import org.cysoft.bss.core.web.annotation.CyBssOperation;
 import org.cysoft.bss.core.web.annotation.CyBssService;
-import org.cysoft.bss.core.web.response.ICyBssResultConst;
 import org.cysoft.bss.core.web.response.rest.user.UserListResponse;
 import org.cysoft.bss.core.web.response.rest.user.UserResponse;
 import org.cysoft.bss.core.web.response.rest.user.UserRoleListResponse;
@@ -52,8 +52,8 @@ public class UserWs extends CyBssWebServiceAdapter
 		// end checkGrant 
 		
 		if (userService.getByUserId(user.getUserId())!=null){
-			setResult(response, ICyBssResultConst.RESULT_USERID_USED, 
-					ICyBssResultConst.RESULT_D_USERID_USED,response.getLanguageCode());
+			setResult(response, ICyBssMessageConst.RESULT_USERID_USED, 
+					ICyBssMessageConst.RESULT_D_USERID_USED,response.getLanguageCode());
 			return response;
 		}
 		
@@ -84,8 +84,8 @@ public class UserWs extends CyBssWebServiceAdapter
 		// end checkGrant 
 		
 		if (userService.get(id)==null){
-			setResult(response, ICyBssResultConst.RESULT_NOT_FOUND, 
-					ICyBssResultConst.RESULT_D_NOT_FOUND,response.getLanguageCode());
+			setResult(response, ICyBssMessageConst.RESULT_NOT_FOUND, 
+					ICyBssMessageConst.RESULT_D_NOT_FOUND,response.getLanguageCode());
 			return response;
 			}
 		
@@ -120,8 +120,8 @@ public class UserWs extends CyBssWebServiceAdapter
 		if (user!=null)
 			response.setUser(user);
 		else
-			setResult(response, ICyBssResultConst.RESULT_NOT_FOUND, 
-					ICyBssResultConst.RESULT_D_NOT_FOUND,response.getLanguageCode());
+			setResult(response, ICyBssMessageConst.RESULT_NOT_FOUND, 
+					ICyBssMessageConst.RESULT_D_NOT_FOUND,response.getLanguageCode());
 		
 		logger.info("UserWs.get() <<< ");
 		
@@ -148,8 +148,8 @@ public class UserWs extends CyBssWebServiceAdapter
 		if (user!=null)
 			response.setUser(user);
 		else
-			setResult(response, ICyBssResultConst.RESULT_NOT_FOUND, 
-					ICyBssResultConst.RESULT_D_NOT_FOUND,response.getLanguageCode());
+			setResult(response, ICyBssMessageConst.RESULT_NOT_FOUND, 
+					ICyBssMessageConst.RESULT_D_NOT_FOUND,response.getLanguageCode());
 		
 		
 		logger.info("UserWs.getUserId() <<< ");
@@ -248,8 +248,8 @@ public class UserWs extends CyBssWebServiceAdapter
 		if (user!=null)
 			response.setUser(user);
 		else
-			setResult(response, ICyBssResultConst.RESULT_NOT_FOUND, 
-					ICyBssResultConst.RESULT_D_NOT_FOUND,response.getLanguageCode());
+			setResult(response, ICyBssMessageConst.RESULT_NOT_FOUND, 
+					ICyBssMessageConst.RESULT_D_NOT_FOUND,response.getLanguageCode());
 		
 		logger.info("UserWs.removePerson() <<< ");
 		
@@ -279,8 +279,8 @@ public class UserWs extends CyBssWebServiceAdapter
 		if (user!=null)
 			response.setUser(user);
 		else
-			setResult(response, ICyBssResultConst.RESULT_NOT_FOUND, 
-					ICyBssResultConst.RESULT_D_NOT_FOUND,response.getLanguageCode());
+			setResult(response, ICyBssMessageConst.RESULT_NOT_FOUND, 
+					ICyBssMessageConst.RESULT_D_NOT_FOUND,response.getLanguageCode());
 		
 		logger.info("UserWs.addPerson() <<< ");
 		
@@ -308,14 +308,14 @@ public class UserWs extends CyBssWebServiceAdapter
 		PwdEncrypted oldPwd=userService.getPwd(id);
 		
 		if (oldPwd==null){
-			setResult(response, ICyBssResultConst.RESULT_NOT_FOUND, 
-					ICyBssResultConst.RESULT_D_NOT_FOUND,response.getLanguageCode());
+			setResult(response, ICyBssMessageConst.RESULT_NOT_FOUND, 
+					ICyBssMessageConst.RESULT_D_NOT_FOUND,response.getLanguageCode());
 			return response;
 		}
 		
 		if (!CyBssPwdEncryption.authenticate(changePwd.getOldPwd(), oldPwd.getPwd(), oldPwd.getSalt())){
-			setResult(response, ICyBssResultConst.RESULT_PWD_DIFF, 
-					ICyBssResultConst.RESULT_D_PWD_DIFF,response.getLanguageCode());
+			setResult(response, ICyBssMessageConst.RESULT_PWD_DIFF, 
+					ICyBssMessageConst.RESULT_D_PWD_DIFF,response.getLanguageCode());
 			return response;
 		}
 		

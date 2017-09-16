@@ -93,7 +93,7 @@ public class SaleMysql extends CyBssMysqlDao
 		query+="a.CURRENCY_ID,a.CURRENCY_CODE,a.CURRENCY_NAME,";
 		query+="a.PRICE, a.AMOUNT,a.VAT,a.VAT_AMOUNT,";
 		query+="a.DATE,a.DATE_START,a.DATE_END,";
-		query+="a.TACIT_RENEWAL,a.TYPE,a.UPDATE_DATE";
+		query+="a.TACIT_RENEWAL,a.TYPE,a.UPDATE_DATE,a.NOBILLED";
 		query+=" from BSSV_SALE a";
 		if (attrName!=null && !attrName.equals("")){
 			query+=" join BSSV_ATTRIBUTE_VALUE b on b.OBJINST_ID=a.ID and b.NAME='"+attrName+"' and b.ENTITY='"+Sale.ENTITY_NAME+"'";
@@ -250,6 +250,7 @@ public class SaleMysql extends CyBssMysqlDao
 			sale.setTacitRenewal(rs.getString("TACIT_RENEWAL"));
 			sale.setTransactionType(rs.getString("TYPE"));
 			sale.setUpdateDate(rs.getString("UPDATE_DATE"));
+			sale.setNoBilled(rs.getInt("NOBILLED"));
 			sale.setPriceTot(sale.getPrice()+sale.getPrice()*sale.getVat()/100);
 			return sale;
 		}
@@ -321,7 +322,7 @@ public class SaleMysql extends CyBssMysqlDao
 		query+="a.CURRENCY_ID,a.CURRENCY_CODE,a.CURRENCY_NAME,";
 		query+="a.PRICE, a.AMOUNT,a.VAT,a.VAT_AMOUNT,";
 		query+="a.DATE,a.DATE_START,a.DATE_END,";
-		query+="a.TACIT_RENEWAL,a.TYPE,a.UPDATE_DATE";
+		query+="a.TACIT_RENEWAL,a.TYPE,a.UPDATE_DATE,a.NOBILLED";
 		query+=" from BSSV_SALE a ";
 		query+="where ID=?";
 		

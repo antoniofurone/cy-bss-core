@@ -7,6 +7,7 @@ import java.util.Locale;
 
 import org.cysoft.bss.core.common.CyBssException;
 import org.cysoft.bss.core.common.CyBssUtility;
+import org.cysoft.bss.core.message.ICyBssMessageConst;
 import org.cysoft.bss.core.model.User;
 import org.cysoft.bss.core.model.UserRole;
 import org.cysoft.bss.core.service.AppService;
@@ -16,7 +17,6 @@ import org.cysoft.bss.core.service.UserService;
 import org.cysoft.bss.core.web.annotation.CyBssOperation;
 import org.cysoft.bss.core.web.annotation.CyBssService;
 import org.cysoft.bss.core.web.response.ICyBssResponse;
-import org.cysoft.bss.core.web.response.ICyBssResultConst;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.core.env.Environment;
@@ -81,7 +81,7 @@ public abstract class CyBssWebServiceAdapter {
 		authService.refreshSession(securityToken);
 		long userId=authService.getUserIdByToken(securityToken);
 		if (userId==0){
-			setResult(response,ICyBssResultConst.RESULT_SESSION_NOK,ICyBssResultConst.RESULT_D_SESSION_NOK);
+			setResult(response,ICyBssMessageConst.RESULT_SESSION_NOK,ICyBssMessageConst.RESULT_D_SESSION_NOK);
 			return ret;
 		}
 		
@@ -118,8 +118,8 @@ public abstract class CyBssWebServiceAdapter {
 		}
 			
 		if (!ret)
-			setResult(response,ICyBssResultConst.RESULT_GRANT_NOK,
-					ICyBssResultConst.RESULT_D_GRANT_NOK,
+			setResult(response,ICyBssMessageConst.RESULT_GRANT_NOK,
+					ICyBssMessageConst.RESULT_D_GRANT_NOK,
 					CyBssUtility.getLocale(user.getLanguageCode()));
 				
 		return ret;

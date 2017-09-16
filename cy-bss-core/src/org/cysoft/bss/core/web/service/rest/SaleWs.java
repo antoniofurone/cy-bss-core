@@ -5,13 +5,14 @@ import java.util.List;
 
 import org.cysoft.bss.core.common.CyBssException;
 import org.cysoft.bss.core.common.CyBssUtility;
+import org.cysoft.bss.core.message.ICyBssMessageConst;
+import org.cysoft.bss.core.model.Billable;
 import org.cysoft.bss.core.model.PriceComponent;
 import org.cysoft.bss.core.model.Sale;
 import org.cysoft.bss.core.service.PriceService;
 import org.cysoft.bss.core.service.SaleService;
 import org.cysoft.bss.core.web.annotation.CyBssOperation;
 import org.cysoft.bss.core.web.annotation.CyBssService;
-import org.cysoft.bss.core.web.response.ICyBssResultConst;
 import org.cysoft.bss.core.web.response.rest.sale.SaleListResponse;
 import org.cysoft.bss.core.web.response.rest.sale.SaleResponse;
 import org.cysoft.bss.core.web.service.CyBssWebServiceAdapter;
@@ -67,8 +68,8 @@ public class SaleWs extends CyBssWebServiceAdapter
 		
 		PriceComponent component=priceService.getPriceComponent(sale.getComponentId());
 		if (component==null){
-			setResult(response, ICyBssResultConst.RESULT_NOT_FOUND, 
-					ICyBssResultConst.RESULT_D_NOT_FOUND,response.getLanguageCode());
+			setResult(response, ICyBssMessageConst.RESULT_NOT_FOUND, 
+					ICyBssMessageConst.RESULT_D_NOT_FOUND,response.getLanguageCode());
 			return response;
 		}	
 		
@@ -174,8 +175,8 @@ public class SaleWs extends CyBssWebServiceAdapter
 		if (sale!=null)
 			response.setSale(sale);
 		else
-			setResult(response, ICyBssResultConst.RESULT_NOT_FOUND, 
-					ICyBssResultConst.RESULT_D_NOT_FOUND,response.getLanguageCode());
+			setResult(response, ICyBssMessageConst.RESULT_NOT_FOUND, 
+					ICyBssMessageConst.RESULT_D_NOT_FOUND,response.getLanguageCode());
 	
 		logger.info("SaleWs.get() <<< ");
 		return response;
@@ -199,16 +200,16 @@ public class SaleWs extends CyBssWebServiceAdapter
 		// end checkGrant 
 		
 		if (saleService.get(id)==null){
-			setResult(response, ICyBssResultConst.RESULT_NOT_FOUND, 
-					ICyBssResultConst.RESULT_D_NOT_FOUND,response.getLanguageCode());
+			setResult(response, ICyBssMessageConst.RESULT_NOT_FOUND, 
+					ICyBssMessageConst.RESULT_D_NOT_FOUND,response.getLanguageCode());
 			return response;
 			}
 		
 		
 		PriceComponent component=priceService.getPriceComponent(sale.getComponentId());
 		if (component==null){
-			setResult(response, ICyBssResultConst.RESULT_NOT_FOUND, 
-					ICyBssResultConst.RESULT_D_NOT_FOUND,response.getLanguageCode());
+			setResult(response, ICyBssMessageConst.RESULT_NOT_FOUND, 
+					ICyBssMessageConst.RESULT_D_NOT_FOUND,response.getLanguageCode());
 			return response;
 		}	
 		
@@ -245,6 +246,15 @@ public class SaleWs extends CyBssWebServiceAdapter
 		if (!checkGrant(response,securityToken,"remove",String.class,Long.class))
 			return response;
 		// end checkGrant 
+		
+		List<Billable> billables=saleService.getBillables(id);
+		for (Billable billable:billables){
+			if (billable.isBilled()){
+				setResult(response, ICyBssMessageConst.RESULT_SALE_NOCANCEL, 
+						ICyBssMessageConst.RESULT_D_SALE_NOCANCEL,response.getLanguageCode());
+				return response;
+			}
+		}
 		
 		saleService.remove(id);
 	

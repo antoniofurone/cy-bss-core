@@ -1,6 +1,6 @@
-package org.cysoft.bss.core.web.response;
+package org.cysoft.bss.core.message;
 
-public interface ICyBssResultConst {
+public interface ICyBssMessageConst {
 	
 	public final static String RESULT_OK="00";
 	public final static String RESULT_NOK="01";
@@ -15,6 +15,8 @@ public interface ICyBssResultConst {
 	public final static String RESULT_COMPANYCODE_USED="10";
 	public final static String RESULT_INVOICE_TYPE_INVALID="11";
 	public final static String RESULT_CURRENCY_DIFF="12";
+	public final static String RESULT_PURCHASE_NOCANCEL="13";
+	public final static String RESULT_SALE_NOCANCEL="14";
 	
 	
 	public final static String RESULT_D_OK= "result.ok";
@@ -30,5 +32,7 @@ public interface ICyBssResultConst {
 	public final static String RESULT_D_COMPANYCODE_USED="result.companycode.used";
 	public final static String RESULT_D_INVOICE_TYPE_INVALID="result.invoice.type.invalid";
 	public final static String RESULT_D_CURRENCY_DIFF="result.invoice.currency.diff";
+	public final static String RESULT_D_PURCHASE_NOCANCEL="result.purchase.nocancel";
+	public final static String RESULT_D_SALE_NOCANCEL="result.sale.nocancel";
 	
 }

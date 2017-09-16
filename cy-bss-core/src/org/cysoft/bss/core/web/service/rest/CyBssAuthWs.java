@@ -2,10 +2,10 @@ package org.cysoft.bss.core.web.service.rest;
 
 import org.cysoft.bss.core.common.CyBssException;
 import org.cysoft.bss.core.common.CyBssUtility;
+import org.cysoft.bss.core.message.ICyBssMessageConst;
 import org.cysoft.bss.core.model.User;
 import org.cysoft.bss.core.web.annotation.CyBssOperation;
 import org.cysoft.bss.core.web.annotation.CyBssService;
-import org.cysoft.bss.core.web.response.ICyBssResultConst;
 import org.cysoft.bss.core.web.response.rest.auth.CyBssAuthLogOff;
 import org.cysoft.bss.core.web.response.rest.auth.CyBssAuthLogOn;
 import org.cysoft.bss.core.web.service.CyBssWebServiceAdapter;
@@ -38,7 +38,7 @@ public class CyBssAuthWs extends CyBssWebServiceAdapter
 		CyBssAuthLogOn auth=new CyBssAuthLogOn(); 
 		
 		if (authService.logOn(pUser.getUserId(), pUser.getPwd())){
-			setResult(auth, ICyBssResultConst.RESULT_OK, ICyBssResultConst.RESULT_D_OK);
+			setResult(auth, ICyBssMessageConst.RESULT_OK, ICyBssMessageConst.RESULT_D_OK);
 			
 			String securityToken=CyBssUtility.genToken(pUser.getUserId());
 			User user=userService.getByUserId(pUser.getUserId());
@@ -50,7 +50,7 @@ public class CyBssAuthWs extends CyBssWebServiceAdapter
 		}
 		else
 		{
-			setResult(auth, ICyBssResultConst.RESULT_NOK, ICyBssResultConst.RESULT_D_LOGON_NOK);
+			setResult(auth, ICyBssMessageConst.RESULT_NOK, ICyBssMessageConst.RESULT_D_LOGON_NOK);
 			auth.setUser(pUser);
 			auth.getUser().setPwd("***");
 		}

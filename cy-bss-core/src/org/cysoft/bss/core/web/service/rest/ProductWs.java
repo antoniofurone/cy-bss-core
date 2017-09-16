@@ -4,13 +4,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.cysoft.bss.core.common.CyBssException;
+import org.cysoft.bss.core.message.ICyBssMessageConst;
 import org.cysoft.bss.core.model.Product;
 import org.cysoft.bss.core.model.ProductCategory;
 import org.cysoft.bss.core.model.ProductType;
 import org.cysoft.bss.core.service.ProductService;
 import org.cysoft.bss.core.web.annotation.CyBssOperation;
 import org.cysoft.bss.core.web.annotation.CyBssService;
-import org.cysoft.bss.core.web.response.ICyBssResultConst;
 import org.cysoft.bss.core.web.response.rest.product.ProductCategoryListResponse;
 import org.cysoft.bss.core.web.response.rest.product.ProductCategoryResponse;
 import org.cysoft.bss.core.web.response.rest.product.ProductListResponse;
@@ -99,8 +99,8 @@ public class ProductWs extends CyBssWebServiceAdapter
 		if (category!=null)
 			response.setCategory(category);
 		else
-			setResult(response, ICyBssResultConst.RESULT_NOT_FOUND, 
-					ICyBssResultConst.RESULT_D_NOT_FOUND,response.getLanguageCode());
+			setResult(response, ICyBssMessageConst.RESULT_NOT_FOUND, 
+					ICyBssMessageConst.RESULT_D_NOT_FOUND,response.getLanguageCode());
 	
 		logger.info("ProductWs.getCategory() <<< ");
 		return response;
@@ -125,8 +125,8 @@ public class ProductWs extends CyBssWebServiceAdapter
 		// end checkGrant 
 		
 		if (productService.getCategory(id)==null){
-			setResult(response, ICyBssResultConst.RESULT_NOT_FOUND, 
-					ICyBssResultConst.RESULT_D_NOT_FOUND,response.getLanguageCode());
+			setResult(response, ICyBssMessageConst.RESULT_NOT_FOUND, 
+					ICyBssMessageConst.RESULT_D_NOT_FOUND,response.getLanguageCode());
 			return response;
 			}
 		
@@ -214,8 +214,8 @@ public class ProductWs extends CyBssWebServiceAdapter
 		if (type!=null)
 			response.setType(type);
 		else
-			setResult(response, ICyBssResultConst.RESULT_NOT_FOUND, 
-					ICyBssResultConst.RESULT_D_NOT_FOUND,response.getLanguageCode());
+			setResult(response, ICyBssMessageConst.RESULT_NOT_FOUND, 
+					ICyBssMessageConst.RESULT_D_NOT_FOUND,response.getLanguageCode());
 	
 		logger.info("ProductWs.getType() <<< ");
 		return response;
@@ -240,8 +240,8 @@ public class ProductWs extends CyBssWebServiceAdapter
 		// end checkGrant 
 		
 		if (productService.getType(id)==null){
-			setResult(response, ICyBssResultConst.RESULT_NOT_FOUND, 
-					ICyBssResultConst.RESULT_D_NOT_FOUND,response.getLanguageCode());
+			setResult(response, ICyBssMessageConst.RESULT_NOT_FOUND, 
+					ICyBssMessageConst.RESULT_D_NOT_FOUND,response.getLanguageCode());
 			return response;
 			}
 		
@@ -360,8 +360,8 @@ public class ProductWs extends CyBssWebServiceAdapter
 		if (product!=null)
 			response.setProduct(product);
 		else
-			setResult(response, ICyBssResultConst.RESULT_NOT_FOUND, 
-					ICyBssResultConst.RESULT_D_NOT_FOUND,response.getLanguageCode());
+			setResult(response, ICyBssMessageConst.RESULT_NOT_FOUND, 
+					ICyBssMessageConst.RESULT_D_NOT_FOUND,response.getLanguageCode());
 	
 		logger.info("ProductWs.get() <<< ");
 		return response;
@@ -385,8 +385,8 @@ public class ProductWs extends CyBssWebServiceAdapter
 		// end checkGrant 
 		
 		if (productService.get(id)==null){
-			setResult(response, ICyBssResultConst.RESULT_NOT_FOUND, 
-					ICyBssResultConst.RESULT_D_NOT_FOUND,response.getLanguageCode());
+			setResult(response, ICyBssMessageConst.RESULT_NOT_FOUND, 
+					ICyBssMessageConst.RESULT_D_NOT_FOUND,response.getLanguageCode());
 			return response;
 			}
 		
