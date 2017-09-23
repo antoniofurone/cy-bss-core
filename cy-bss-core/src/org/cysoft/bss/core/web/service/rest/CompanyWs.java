@@ -494,7 +494,7 @@ implements ICyBssWebService{
 			return response;
 			}
 		
-		if (companyService.getPersonRole(companyPerson.getPersonId(),
+		if (companyService.getPersonRole(companyPerson.getRoleId(),
 				languageService.getLanguage(response.getLanguageCode()).getId())==null){
 			setResult(response, ICyBssMessageConst.RESULT_NOT_FOUND, 
 					ICyBssMessageConst.RESULT_D_NOT_FOUND,response.getLanguageCode());

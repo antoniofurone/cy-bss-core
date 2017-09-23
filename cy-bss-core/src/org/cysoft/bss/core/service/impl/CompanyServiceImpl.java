@@ -108,7 +108,7 @@ implements CompanyService{
 		if (personDao.get(companyPerson.getPersonId())==null)
 			throw new CyBssException(msgSource.getMessage(ICyBssMessageConst.RESULT_D_NOT_FOUND));
 		
-		if (companyDao.getPersonRole(companyPerson.getPersonId(),
+		if (companyDao.getPersonRole(companyPerson.getRoleId(),
 				languageDao.getLanguage(languageCode).getId())==null)
 			throw new CyBssException(msgSource.getMessage(ICyBssMessageConst.RESULT_D_NOT_FOUND));
 		
