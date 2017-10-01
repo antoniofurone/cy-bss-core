@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration>
 
-	<property name="USER_HOME" value="c:/CyBusiness" />
+	<contextListener class="org.cysoft.bss.core.common.CyBssLoggerListener"/>
 	
-    <appender name="consoleAppender" class="ch.qos.logback.core.ConsoleAppender">
+	<appender name="consoleAppender" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
             <Pattern>.%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg %n
             </Pattern>
@@ -15,7 +15,7 @@
  
       <appender name="dailyRollingFileAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
        
-        <File>${USER_HOME}/cy-bss-core/logs/cy-bss-core.log</File>
+        <File>${LOG_HOME}/cy-bss-core/logs/cy-bss-core.log</File>
        
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
             <!-- daily rollover -->
@@ -37,7 +37,7 @@
       <appender name="minuteRollingFileAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
             <!-- rollover every minute -->
-            <FileNamePattern>${USER_HOME}/cy-bss-core/logs/cy-bss-core.%d{yyyy-MM-dd_HH-mm}.log</FileNamePattern>
+            <FileNamePattern>${LOG_HOME}/cy-bss-core/logs/cy-bss-core.%d{yyyy-MM-dd_HH-mm}.log</FileNamePattern>
  
             <!-- keep 30 minutes' worth of history -->
             <maxHistory>30</maxHistory>            

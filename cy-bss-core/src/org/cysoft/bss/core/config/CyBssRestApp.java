@@ -21,6 +21,7 @@ import org.cysoft.bss.core.dao.PriceDao;
 import org.cysoft.bss.core.dao.ProductDao;
 import org.cysoft.bss.core.dao.PurchaseDao;
 import org.cysoft.bss.core.dao.SaleDao;
+import org.cysoft.bss.core.dao.ServerDao;
 import org.cysoft.bss.core.dao.TicketDao;
 import org.cysoft.bss.core.dao.UserDao;
 import org.cysoft.bss.core.dao.mysql.AppMysql;
@@ -44,6 +45,7 @@ import org.cysoft.bss.core.dao.mysql.PriceMysql;
 import org.cysoft.bss.core.dao.mysql.ProductMysql;
 import org.cysoft.bss.core.dao.mysql.PurchaseMysql;
 import org.cysoft.bss.core.dao.mysql.SaleMysql;
+import org.cysoft.bss.core.dao.mysql.ServerMysql;
 import org.cysoft.bss.core.dao.mysql.TicketMysql;
 import org.cysoft.bss.core.dao.mysql.UserMysql;
 import org.cysoft.bss.core.message.CyBssMessageSource;
@@ -254,6 +256,14 @@ public class CyBssRestApp {
 		 	InvoiceDao invoiceDao=new InvoiceMysql();
 			return invoiceDao;
 		 }
+	 
+	 @Bean
+	 @Description("Server Dao Rest")
+	 public ServerDao serverDao(){
+		 	ServerDao serverDao=new ServerMysql();
+			return serverDao;
+		 }
+	 
 	 
 	 @Bean
 	 @Description("MySql Data Source Rest ")

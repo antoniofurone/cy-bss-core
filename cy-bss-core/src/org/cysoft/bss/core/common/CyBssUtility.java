@@ -41,6 +41,7 @@ public class CyBssUtility {
 	
 	   public static final String DATE_ddsMMsyyyy="dd/MM/yyyy";
 	   public static final String DATE_yyyy_MM_dd="yyyy-MM-dd";
+	   public static final String DATE_yyyy_MM_dd_HH_mm_ss="yyyy-MM-dd HH:mm:ss";
 	   
 	   public static Date stringToDate(String date,String fmt) throws java.text.ParseException{
 		   DateFormat datefmt = new SimpleDateFormat(fmt);

@@ -1,0 +1,9 @@
+Venus Version
+-------------
+
+1) Recurring Charge Price Component (Purchase, Sale);
+2) Uploading Purchase and Sales from csv (Server);
+3) Closing Views (Server);
+4) Resource Management;
+5) Wharehouse Reports.
+ 
