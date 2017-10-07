@@ -15,7 +15,7 @@
 <echo>-- End Display Property --</echo>
 	 						
 
-<target name="default" depends="setup,compile,buildwar"/> 
+<target name="default" depends="setup,compile,buildwar,buildjar"/> 
 
 <target name="setup">
 	<echo>-- 1. Setup --</echo>
@@ -60,6 +60,13 @@
 		<exclude name="**/.*"/>
 	</webinf>
 	</war>
+</target>	
+
+<target name="buildjar">
+	<echo>-- 4. Build Jar --</echo>
+	<jar basedir="${dist.webContent.dir}/WEB-INF/classes" destfile="${deploydir}/${ant.project.name}.jar"> 
+		<exclude name="org/cysoft/bss/core/config/**,org/cysoft/bss/core/web/**"/>
+	</jar>			
 </target>	
 
 </project>
