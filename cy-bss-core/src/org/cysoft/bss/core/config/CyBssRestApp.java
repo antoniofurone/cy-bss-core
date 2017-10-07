@@ -79,6 +79,9 @@ public class CyBssRestApp {
 	 Environment environment;
 	
 	 @Autowired
+	 CyBssDataSource dataSource;
+	 
+	 @Autowired
 	 CyBssAuthDao authDao;
 	
 	 @Bean
@@ -268,29 +271,7 @@ public class CyBssRestApp {
 	 @Bean
 	 @Description("MySql Data Source Rest ")
 	 public CyBssDataSource mySqlDS() {
-		 
-		 logger.info("CyBssRestApp.mySqlDS() >>>");
-		
-		 CyBssDataSource mySqlDs = new CyBssDataSource();
-		 String driver=environment.getProperty("mysql.driver");
-		 logger.info("mysql.driver="+driver);
-		 String url=environment.getProperty("mysql.url");
-		 logger.info("mysql.url="+url);
-		 String user=environment.getProperty("mysql.user");
-		 logger.info("mysql.user="+user);
-		 String psw=environment.getProperty("mysql.psw");
-		 
-		 mySqlDs.setDriverClassName(driver);
-	     mySqlDs.setUrl(url);
-	     mySqlDs.setUsername(user);
-         mySqlDs.setPassword(psw);
-         
-         mySqlDs.setTestOnBorrow(true);
-         mySqlDs.setValidationQuery("select 1");
-	     
-         
-		 logger.info("CyBssRestApp.mySqlDS() <<<");
- 	     
+		 CyBssDataSource mySqlDs = new CyBssDataSource(environment);
 		 return mySqlDs;
 	 }
 	
@@ -298,7 +279,7 @@ public class CyBssRestApp {
 	 @Description("Transaction Manager Rest ")
 	 public DataSourceTransactionManager transactionManager() {
 		 logger.info("CyBssRestApp.transactionManager() >>>");
-		 DataSourceTransactionManager transactionManager=new DataSourceTransactionManager(mySqlDS());
+		 DataSourceTransactionManager transactionManager=new DataSourceTransactionManager(dataSource);
 		 logger.info("CyBssRestApp.transactionManager() <<<");
  		 return transactionManager;
 	 }

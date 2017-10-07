@@ -47,6 +47,9 @@ private static final Logger logger = LoggerFactory.getLogger(CyBssFileApp.class)
 	@Autowired
 	Environment environment;
 	
+	@Autowired
+	CyBssDataSource dataSource;
+	 
 	
 	@Bean
 	@Description("Message Source File")
@@ -123,29 +126,7 @@ private static final Logger logger = LoggerFactory.getLogger(CyBssFileApp.class)
 	 @Bean
 	 @Description("MySql Data Source File ")
 	 public CyBssDataSource mySqlDS() {
-		 
-		 logger.info("CyBssFileApp.mySqlDS() >>>");
-		
-		 CyBssDataSource mySql = new CyBssDataSource();
-		 String driver=environment.getProperty("mysql.driver");
-		 logger.info("mysql.driver="+driver);
-		 String url=environment.getProperty("mysql.url");
-		 logger.info("mysql.url="+url);
-		 String user=environment.getProperty("mysql.user");
-		 logger.info("mysql.user="+user);
-		 String psw=environment.getProperty("mysql.psw");
-		 
-		 mySql.setDriverClassName(driver);
-	     mySql.setUrl(url);
-	     mySql.setUsername(user);
-         mySql.setPassword(psw);
-         
-         mySql.setTestOnBorrow(true);
-         mySql.setValidationQuery("select 1");
-        
-         logger.info("CyBssFileApp.mySqlDS() <<<");
- 		
-         
+		 CyBssDataSource mySql = new CyBssDataSource(environment);
 		 return mySql;
 	 }
 	
@@ -154,7 +135,7 @@ private static final Logger logger = LoggerFactory.getLogger(CyBssFileApp.class)
 	 @Description("Transaction Manager File ")
 	 public DataSourceTransactionManager transactionManager() {
 		 logger.info("CyBssRestApp.transactionManager() >>>");
-		 DataSourceTransactionManager transactionManager=new DataSourceTransactionManager(mySqlDS());
+		 DataSourceTransactionManager transactionManager=new DataSourceTransactionManager(dataSource);
 		 logger.info("CyBssRestApp.transactionManager() <<<");
  		 return transactionManager;
 	 }

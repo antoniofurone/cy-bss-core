@@ -14,6 +14,7 @@ import org.cysoft.bss.core.model.ServerQueueItem;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.dao.DataAccessException;
+import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 
@@ -97,7 +98,14 @@ public class ServerMysql extends CyBssMysqlDao
 		JdbcTemplate jdbcTemplate = new JdbcTemplate(tx.getDataSource());
 		logger.info(query+"["+nodeId+"]");
 		
-		Server ret=jdbcTemplate.queryForObject(query, new Object[] { nodeId },new RowMapperServer());
+		Server ret=null;
+		try {
+			ret=jdbcTemplate.queryForObject(query, new Object[] { nodeId },new RowMapperServer());
+		}
+		catch(IncorrectResultSizeDataAccessException e){
+			logger.info("ServerMysql.IncorrectResultSizeDataAccessException:"+e.getMessage());
+		
+		}
 		
 		logger.info("ServerMysql.getServer() <<<");
 		return ret;
@@ -116,7 +124,14 @@ public class ServerMysql extends CyBssMysqlDao
 		JdbcTemplate jdbcTemplate = new JdbcTemplate(tx.getDataSource());
 		logger.info(query+"["+id+"]");
 		
-		Server ret=jdbcTemplate.queryForObject(query, new Object[] { id },new RowMapperServer());
+		Server ret=null;
+		try {
+			ret=jdbcTemplate.queryForObject(query, new Object[] { id },new RowMapperServer());
+		}
+		catch(IncorrectResultSizeDataAccessException e){
+			logger.info("ServerMysql.IncorrectResultSizeDataAccessException:"+e.getMessage());
+		
+		}
 		
 		logger.info("ServerMysql.getServer() <<<");
 		return ret;
@@ -147,8 +162,8 @@ public class ServerMysql extends CyBssMysqlDao
 		
 		List<Object> parms=new ArrayList<Object>();
 		parms.add(server.getNodeId());
-		parms.add((server.getMachine()==null || server.getMachine().equals(""))?null:server.getMachine());
 		parms.add((server.getIp()==null || server.getIp().equals(""))?null:server.getIp());
+		parms.add((server.getMachine()==null || server.getMachine().equals(""))?null:server.getMachine());
 		parms.add(id);
 		
 		jdbcTemplate.update(cmd, parms.toArray());
@@ -161,16 +176,16 @@ public class ServerMysql extends CyBssMysqlDao
 		String cmd="update BSST_SER_SERVER set SER_S_STATUS=?";
 		
 		if (status.equals(Server.STATUS_RUNNING))
-			cmd+="SER_D_START_DATE=now()";
+			cmd+=",SER_D_START_DATE=now()";
 		else
 			if (status.equals(Server.STATUS_STOPPED))
-				cmd+="SER_D_STOP_DATE=now()";
+				cmd+=",SER_D_STOP_DATE=now()";
 			
 		cmd+="	where SER_N_SERVER_ID=?";
 		JdbcTemplate jdbcTemplate = new JdbcTemplate(tx.getDataSource());
 		logger.info(cmd+"["+id+","+status+"]");
 		
-		jdbcTemplate.update(cmd, new Object[]{id,status});
+		jdbcTemplate.update(cmd, new Object[]{status,id});
 	}
 
 		
@@ -280,6 +295,7 @@ public class ServerMysql extends CyBssMysqlDao
 				parms.add(dateMaxRequesteExe);
 			}
 			
+			query+=" order by SEC_D_REQUESTED_EXEC_DATE";
 		
 			JdbcTemplate jdbcTemplate = new JdbcTemplate(tx.getDataSource());
 			logger.info(query+"[idServer="+idServer+";status="+status+";dateMinExecution="+dateMinExecution
@@ -289,6 +305,27 @@ public class ServerMysql extends CyBssMysqlDao
 			List<ServerCommand> ret=jdbcTemplate.query(query, parms.toArray(),new RowMapperServerCommand());
 			return ret;
 	}
+	
+	@Override
+	public ServerCommand getCommand(long id) {
+		// TODO Auto-generated method stub
+		logger.info("ServerMysql.getCommand() >>>");
+		
+		String query="select SEC_N_SERVER_COMMAND_ID,SEC_S_COMMAND,SER_N_SERVER_ID,SEC_D_REQUESTED_EXEC_DATE,";
+		query+="SEC_D_EXECUTION_DATE,SEC_S_STATUS,SEC_S_RESULT ";
+		query+="from BSST_SEC_SERVER_COMMAND ";
+		query+="where SEC_N_SERVER_COMMAND_ID=?";
+		
+		JdbcTemplate jdbcTemplate = new JdbcTemplate(tx.getDataSource());
+		logger.info(query+"["+id+"]");
+		
+		ServerCommand ret=jdbcTemplate.queryForObject(query, new Object[] { id },new RowMapperServerCommand());
+		
+		logger.info("ServerMysql.getCommand() <<<");
+		return ret;
+
+	}
+
 
 	class RowMapperServerCommand implements RowMapper<ServerCommand> {
 
@@ -342,7 +379,7 @@ public class ServerMysql extends CyBssMysqlDao
 		if (item.getRequestedExecDate()==null || item.getRequestedExecDate().equals(""))
 			item.setRequestedExecDate(CyBssUtility.dateToString(CyBssUtility.getCurrentDate(),CyBssUtility.DATE_yyyy_MM_dd_HH_mm_ss));
 		
-		String cmd="insert into BSST_SEQ_SERVER_QUEUE(OBJ_N_OBJECT_ID,SEQ_N_OBJ_INST_ID,SEC_D_REQUESTED_EXEC_DATE)";
+		String cmd="insert into BSST_SEQ_SERVER_QUEUE(OBJ_N_OBJECT_ID,SEQ_N_OBJ_INST_ID,SEQ_D_REQUESTED_EXEC_DATE)";
 		cmd+=" values (?,?,?)";
 		JdbcTemplate jdbcTemplate = new JdbcTemplate(tx.getDataSource());
 		logger.info(cmd+"["+item+"]");
@@ -388,7 +425,7 @@ public class ServerMysql extends CyBssMysqlDao
 	}
 	
 	@Override
-	public List<ServerQueueItem> getQueueItem(long idServer, String status, String dateMinExecution,
+	public List<ServerQueueItem> getQueueItems(long idServer, String status, String dateMinExecution,
 			String dateMaxExecution, String dateMinRequestedExe, String dateMaxRequesteExe) {
 		// TODO Auto-generated method stub
 		
@@ -441,6 +478,7 @@ public class ServerMysql extends CyBssMysqlDao
 				parms.add(dateMaxRequesteExe);
 			}
 			
+			query+=" order by SEQ_D_REQUESTED_EXEC_DATE";
 		
 			JdbcTemplate jdbcTemplate = new JdbcTemplate(tx.getDataSource());
 			logger.info(query+"[idServer="+idServer+";status="+status+";dateMinExecution="+dateMinExecution
@@ -451,6 +489,30 @@ public class ServerMysql extends CyBssMysqlDao
 			return ret;
 
 	}
+	
+	@Override
+	public ServerQueueItem getQueueItem(long id) {
+		// TODO Auto-generated method stub
+		logger.info("ServerMysql.getQueueItem() >>>");
+		
+		String query="select a.SEQ_N_QUEUE_ITEM_ID, a.OBJ_N_OBJECT_ID,c.OBJ_S_NAME,a.SEQ_N_OBJ_INST_ID,";
+		query+="a.SER_N_SERVER_ID, b.SER_S_NODE_ID,a.SEQ_D_REQUESTED_EXEC_DATE,	a.SEQ_D_START_EXEC_DATE,";
+		query+="a.SEQ_D_END_EXEC_DATE,a.SEQ_S_STATUS,a.SEQ_S_RESULT ";
+		query+="from BSST_SEQ_SERVER_QUEUE a ";
+		query+="left join BSST_SER_SERVER b on b.SER_N_SERVER_ID=a.SER_N_SERVER_ID ";
+		query+="join BSST_OBJ_OBJECT c on c.OBJ_N_OBJECT_ID=a.OBJ_N_OBJECT_ID ";
+		query+="where a.SEQ_N_QUEUE_ITEM_ID=?";
+		
+		
+		JdbcTemplate jdbcTemplate = new JdbcTemplate(tx.getDataSource());
+		logger.info(query+"["+id+"]");
+		
+		ServerQueueItem ret=jdbcTemplate.queryForObject(query, new Object[] { id },new RowMapperServerQueueItem());
+		
+		logger.info("ServerMysql.getQueueItem() <<<");
+		return ret;
+	}
+
 	
 	class RowMapperServerQueueItem implements RowMapper<ServerQueueItem> {
 
@@ -508,9 +570,6 @@ public class ServerMysql extends CyBssMysqlDao
 		jdbcTemplate.update(cmd, new Object[]{ServerCommand.STATUS_EXECUTED,result,id});
 		
 	}
-
 	
-	
-
 		
 }

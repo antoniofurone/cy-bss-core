@@ -30,6 +30,7 @@ public interface ServerDao {
 			String dateMinExecution,String dateMaxExecution,
 			String dateMinRequestedExe,String dateMaxRequesteExe);
 	
+	public ServerCommand getCommand(long id);
 	public void startCommand(long id);
 	public void endCommand(long id,String result);
 
@@ -38,11 +39,11 @@ public interface ServerDao {
 	public void removeQueueItem(long id);
 	public void removeQueueItemsByServer(long serverId);
 	
-	
-	public List<ServerQueueItem> getQueueItem(long idServer,String status,
+	public List<ServerQueueItem> getQueueItems(long idServer,String status,
 			String dateMinExecution,String dateMaxExecution,
 			String dateMinRequestedExe,String dateMaxRequesteExe);
 	
+	public ServerQueueItem getQueueItem(long id);
 	public void lockQueueItem(long id,long idServer);
 	public void startRunQueueItem(long id);
 	public void endRunQueueItem(long id,String result);

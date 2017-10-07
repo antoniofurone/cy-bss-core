@@ -109,6 +109,13 @@ implements ServerService{
 	}
 
 	@Override
+	public ServerCommand getCommand(long id) {
+		// TODO Auto-generated method stub
+		return serverDao.getCommand(id);
+	}
+
+	
+	@Override
 	public void startCommand(long id) {
 		// TODO Auto-generated method stub
 		serverDao.startCommand(id);
@@ -139,10 +146,10 @@ implements ServerService{
 	}
 
 	@Override
-	public List<ServerQueueItem> getQueueItem(long idServer, String status, String dateMinExecution,
+	public List<ServerQueueItem> getQueueItems(long idServer, String status, String dateMinExecution,
 			String dateMaxExecution, String dateMinRequestedExe, String dateMaxRequesteExe) {
 		// TODO Auto-generated method stub
-		return serverDao.getQueueItem(idServer, status, dateMinExecution, dateMaxExecution, 
+		return serverDao.getQueueItems(idServer, status, dateMinExecution, dateMaxExecution, 
 				dateMinRequestedExe, dateMaxRequesteExe);
 	}
 
@@ -162,6 +169,13 @@ implements ServerService{
 	public void endRunQueueItem(long id, String result) {
 		// TODO Auto-generated method stub
 		serverDao.endRunQueueItem(id, result);
+	}
+
+	
+	@Override
+	public ServerQueueItem getQueueItem(long id) {
+		// TODO Auto-generated method stub
+		return serverDao.getQueueItem(id);
 	}
 	
 
