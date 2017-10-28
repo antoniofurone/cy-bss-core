@@ -2,6 +2,7 @@ package org.cysoft.bss.core.model;
 
 public class Server {
 
+	public static final String STATUS_STOPPING="Stopping";
 	public static final String STATUS_STOPPED="Stopped";
 	public static final String STATUS_PAUSE="Pause";
 	public static final String STATUS_RUNNING="Running";
