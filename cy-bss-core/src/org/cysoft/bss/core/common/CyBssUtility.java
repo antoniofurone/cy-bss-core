@@ -39,6 +39,7 @@ public class CyBssUtility {
 		        s.substring(1).toLowerCase();
 	}
 	
+	   public static final String DATE_ddMMyyyy="ddMMyyyy";
 	   public static final String DATE_ddsMMsyyyy="dd/MM/yyyy";
 	   public static final String DATE_yyyy_MM_dd="yyyy-MM-dd";
 	   public static final String DATE_yyyy_MM_dd_HH_mm_ss="yyyy-MM-dd HH:mm:ss";

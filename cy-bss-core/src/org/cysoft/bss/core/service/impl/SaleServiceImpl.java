@@ -114,14 +114,16 @@ implements SaleService {
 					List<Long> invoiceIds=new ArrayList<Long>();
 					for(Billable billable:billables){
 						if (!billable.isBilled() && billable.isLinkedToInvoice())
-							if (invoiceIds.contains(billable.getInvoiceId()))
+							if (!invoiceIds.contains(billable.getInvoiceId()))
 								invoiceIds.add(billable.getInvoiceId());
 					}
+					
+					billableRevenueDao.removeByParent(id);
+					
 					for(long invoiceId:invoiceIds){
 						invoiceService.updateAmounts(Invoice.TYPE_ACTIVE, invoiceId);
 					}
 					
-					billableRevenueDao.removeByParent(id);
 					
 					List<Billable> billedBillables=billableRevenueDao.getBilledByParent(id);
 					

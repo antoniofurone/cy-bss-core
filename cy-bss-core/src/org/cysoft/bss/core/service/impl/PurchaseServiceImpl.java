@@ -9,14 +9,11 @@ import org.cysoft.bss.core.dao.BillableDao;
 import org.cysoft.bss.core.dao.FileDao;
 import org.cysoft.bss.core.dao.ObjectDao;
 import org.cysoft.bss.core.dao.PurchaseDao;
-import org.cysoft.bss.core.dao.ServerDao;
 import org.cysoft.bss.core.model.Billable;
 import org.cysoft.bss.core.model.BillableCost;
 import org.cysoft.bss.core.model.CyBssFile;
-import org.cysoft.bss.core.model.CyBssObject;
 import org.cysoft.bss.core.model.Invoice;
 import org.cysoft.bss.core.model.Purchase;
-import org.cysoft.bss.core.model.ServerQueueItem;
 import org.cysoft.bss.core.service.InvoiceService;
 import org.cysoft.bss.core.service.PurchaseService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -58,12 +55,6 @@ public class PurchaseServiceImpl extends CyBssServiceBase
 			this.fileDao=fileDao;
 	}
 	
-	protected  ServerDao serverDao=null;
-	@Autowired
-	public void setServerDao(ServerDao serverDao) {
-		this.serverDao = serverDao;
-	}
-
 	protected InvoiceService invoiceService=null;
 	@Autowired
 	public void setInvoiceService(InvoiceService invoiceService){
@@ -87,13 +78,6 @@ public class PurchaseServiceImpl extends CyBssServiceBase
 					purchase.setId(id);
 					if (purchase.getTransactionType().equals(Purchase.TRANSACTION_TYPE_BILLABLE))
 						addBillable(purchase);
-					
-					
-					CyBssObject obj=objectDao.getByName(Purchase.ENTITY_NAME);
-					ServerQueueItem queueItem=new ServerQueueItem(); 
-					queueItem.setObjectId(obj.getId());
-					queueItem.setObjectInstId(purchase.getId());
-					serverDao.addQueueItem(queueItem);
 					
 					
 				} catch (CyBssException e) {
@@ -135,17 +119,18 @@ public class PurchaseServiceImpl extends CyBssServiceBase
 					List<Long> invoiceIds=new ArrayList<Long>();
 					for(Billable billable:billables){
 						if (!billable.isBilled() && billable.isLinkedToInvoice())
-							if (invoiceIds.contains(billable.getInvoiceId()))
+							if (!invoiceIds.contains(billable.getInvoiceId()))
 								invoiceIds.add(billable.getInvoiceId());
-					}
-					for(long invoiceId:invoiceIds){
-						invoiceService.updateAmounts(Invoice.TYPE_PASSIVE, invoiceId);
 					}
 					
 					billableCostDao.removeByParent(id);
 					
-					List<Billable> billedBillables=billableCostDao.getBilledByParent(id);
+					for(long invoiceId:invoiceIds){
+						invoiceService.updateAmounts(Invoice.TYPE_PASSIVE, invoiceId);
+					}
 					
+					
+					List<Billable> billedBillables=billableCostDao.getBilledByParent(id);
 					for(Billable billable:billedBillables){
 						
 						billable.setQty(billable.getQty()*-1);
@@ -161,15 +146,10 @@ public class PurchaseServiceImpl extends CyBssServiceBase
 					
 					purchaseDao.update(id, purchase);
 					purchase.setId(id);
+					
 					if (purchase.getTransactionType().equals(Purchase.TRANSACTION_TYPE_BILLABLE))
 						addBillable(purchase);
 				
-					CyBssObject obj=objectDao.getByName(Purchase.ENTITY_NAME);
-					ServerQueueItem queueItem=new ServerQueueItem(); 
-					queueItem.setObjectId(obj.getId());
-					queueItem.setObjectInstId(purchase.getId());
-					serverDao.addQueueItem(queueItem);
-					
 					
 				} catch (CyBssException e) {
 					// TODO Auto-generated catch block
