@@ -234,9 +234,9 @@ implements ObjectDao{
 	}
 
 	@Override
-	public void setAttributeValue(long id, long attrId, String value) {
+	public void setAttributeValue(long objInstId, long attrId, String value) {
 		// TODO Auto-generated method stub
-		Attribute attr=this.getAttributeValue(id, attrId);
+		Attribute attr=this.getAttributeValue(attrId,objInstId);
 		String cmd=null;
 		if (attr==null){
 			cmd="insert into BSST_ATV_ATTR_VALUE(ATV_S_VALUE,ATV_N_OBJ_INST_ID,ATT_N_ATTRIBUTE_ID) ";
@@ -248,26 +248,26 @@ implements ObjectDao{
 			}
 		
 		JdbcTemplate jdbcTemplate = new JdbcTemplate(tx.getDataSource());
-		logger.info(cmd+"["+value+","+id+","+attrId+"]");
+		logger.info(cmd+"["+value+","+objInstId+","+attrId+"]");
 		
 		jdbcTemplate.update(cmd, new Object[]{
-				value,id,attrId		
+				value,objInstId,attrId		
 			});
 	}
 
 	
 	@Override
-	public Attribute getAttributeValue(long id, long attrId) {
+	public Attribute getAttributeValue(long attrId, long objInstId) {
 		// TODO Auto-generated method stub
 		
 		JdbcTemplate jdbcTemplate = new JdbcTemplate(tx.getDataSource());
 		
 		String query="select ID,NAME,TYPE_ID,TYPE,OBJ_ID,OBJECT,ENTITY,OBJINST_ID,VALUE from BSSV_ATTRIBUTE_VALUE where ID=? and OBJINST_ID=?";
-		logger.info(query+"["+attrId+","+id+"]");
+		logger.info(query+"["+attrId+","+objInstId+"]");
 	
 		Attribute ret=null;
 		try {
-			ret=jdbcTemplate.queryForObject(query, new Object[] { attrId, id },
+			ret=jdbcTemplate.queryForObject(query, new Object[] { attrId, objInstId },
 					new RowMapperAttributeValue());
 		}
 			catch(IncorrectResultSizeDataAccessException e){
@@ -301,38 +301,38 @@ implements ObjectDao{
 	}
 	
 	@Override
-	public List<Attribute> getAttributeValues(long id,long objectId) {
+	public List<Attribute> getAttributeValues(long objInstId,long objectId) {
 		// TODO Auto-generated method stub
 		JdbcTemplate jdbcTemplate = new JdbcTemplate(tx.getDataSource());
 		
 		String query="select ID,NAME,TYPE_ID,TYPE,OBJ_ID,OBJECT,ENTITY,OBJINST_ID,VALUE from BSSV_ATTRIBUTE_VALUE where OBJINST_ID=? and OBJ_ID=?";
-		logger.info(query+"["+id+","+objectId+"]");
+		logger.info(query+"["+objInstId+","+objectId+"]");
 		
 		List<Attribute> ret = jdbcTemplate.query(
-                query,new Object[]{id,objectId}, 
+                query,new Object[]{objInstId,objectId}, 
                 new RowMapperAttributeValue());
 		return ret;
 	}
 
 	@Override
-	public void removeAttributeValue(long id, long attrId) {
+	public void removeAttributeValue(long objInstId, long attrId) {
 		// TODO Auto-generated method stub
 		String cmd="delete from BSST_ATV_ATTR_VALUE where ATV_N_OBJ_INST_ID=? and ATT_N_ATTRIBUTE_ID=?";
 		JdbcTemplate jdbcTemplate = new JdbcTemplate(tx.getDataSource());
-		logger.info(cmd+"["+id+","+attrId+"]");
+		logger.info(cmd+"["+objInstId+","+attrId+"]");
 		
 		jdbcTemplate.update(cmd, new Object[]{
-				id,attrId		
+				objInstId,attrId		
 			});
 	}
 	
 	@Override
-	public void removeAttributeValues(long id,String entityName){
+	public void removeAttributeValues(long objInstId,String entityName){
 		String cmd="delete from BSST_ATV_ATTR_VALUE where ATV_N_OBJ_INST_ID=? and ATT_N_ATTRIBUTE_ID in ";
 		cmd+="(select ATT_N_ATTRIBUTE_ID from BSST_ATT_ATTRIBUTE where OBJ_N_OBJECT_ID in (select OBJ_N_OBJECT_ID from BSST_OBJ_OBJECT where OBJ_S_ENTITY_NAME=?))";
 		JdbcTemplate jdbcTemplate = new JdbcTemplate(tx.getDataSource());
 		jdbcTemplate.update(cmd, new Object[]{
-					id,entityName
+				objInstId,entityName
 				});
 	}
 	
@@ -348,16 +348,16 @@ implements ObjectDao{
 	}
 	
 	@Override
-	public CyBssObject get(long id) {
+	public CyBssObject get(long objectId) {
 		// TODO Auto-generated method stub
 		JdbcTemplate jdbcTemplate = new JdbcTemplate(tx.getDataSource());
 
 		String query="select OBJ_N_OBJECT_ID,OBJ_S_NAME,OBJ_S_ENTITY_NAME from BSST_OBJ_OBJECT where OBJ_N_OBJECT_ID=?";
 		
-		logger.info(query+"["+id+"]");
+		logger.info(query+"["+objectId+"]");
 		CyBssObject ret=null;
 		try {
-			ret=jdbcTemplate.queryForObject(query, new Object[] {id},new RowMapperObject());
+			ret=jdbcTemplate.queryForObject(query, new Object[] {objectId},new RowMapperObject());
 		}
 		catch(IncorrectResultSizeDataAccessException e){
 			logger.info("ObjectMysql.IncorrectResultSizeDataAccessException:"+e.getMessage());

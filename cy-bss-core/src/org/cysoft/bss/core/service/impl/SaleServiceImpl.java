@@ -225,9 +225,12 @@ implements SaleService {
 		billableRevenue.setVatAmount(sale.getVatAmount());
 		billableRevenue.setTotAmount(sale.getAmount()+sale.getVatAmount());
 		
+		// da rivedere in caso di componente <> USG e NRC
 		billableRevenue.setDateStart(sale.getDate());
 		billableRevenue.setDateEnd(sale.getDate());
-		billableRevenue.setDate(CyBssUtility.dateToString(CyBssUtility.getCurrentDate(),CyBssUtility.DATE_yyyy_MM_dd));
+		//billableRevenue.setDate(CyBssUtility.dateToString(CyBssUtility.getCurrentDate(),CyBssUtility.DATE_yyyy_MM_dd));
+		billableRevenue.setDate(sale.getDate());
+		
 		
 		billableRevenue.setComponentId(sale.getComponentId());
 		billableRevenue.setBillableType(Billable.TYPE_ACTUAL);

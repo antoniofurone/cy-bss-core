@@ -11,7 +11,7 @@ public interface ObjectDao {
 	public List<CyBssObject> getObjectAll();
 	public CyBssObject getByEntity(String entityName);
 	public CyBssObject getByName(String objectName);
-	public CyBssObject get(long id);
+	public CyBssObject get(long objectId);
 	
 	
 	public List<AttributeType> getAttributeTypeAll();
@@ -23,10 +23,10 @@ public interface ObjectDao {
 	public void updateAttribute(Attribute attr);
 	public void removeAttribute(long attrId);
 	
-	public void setAttributeValue(long id,long attrId,String value);
-	public Attribute getAttributeValue(long id,long attrId);
-	public List<Attribute> getAttributeValues(long id, long objectId);
-	public void removeAttributeValue(long id,long attrId);
-	public void removeAttributeValues(long id,String entityName);
+	public void setAttributeValue(long objInstId,long attrId,String value);
+	public Attribute getAttributeValue(long attrId,long objInstId);
+	public List<Attribute> getAttributeValues(long objInstId, long objectId);
+	public void removeAttributeValue(long objInstId,long attrId);
+	public void removeAttributeValues(long objInstId,String entityName);
 	public void removeAttributeValues(long attrId);
 }

@@ -233,9 +233,11 @@ public class PurchaseServiceImpl extends CyBssServiceBase
 		billableCost.setVatAmount(purchase.getVatAmount());
 		billableCost.setTotAmount(purchase.getAmount()+purchase.getVatAmount());
 		
+		// da rivedere in caso di componente <> USG e NRC
 		billableCost.setDateStart(purchase.getDate());
 		billableCost.setDateEnd(purchase.getDate());
-		billableCost.setDate(CyBssUtility.dateToString(CyBssUtility.getCurrentDate(),CyBssUtility.DATE_yyyy_MM_dd));
+		//billableCost.setDate(CyBssUtility.dateToString(CyBssUtility.getCurrentDate(),CyBssUtility.DATE_yyyy_MM_dd));
+		billableCost.setDate(purchase.getDate());
 		
 		billableCost.setComponentId(purchase.getComponentId());
 		billableCost.setBillableType(Billable.TYPE_ACTUAL);
