@@ -1,20 +1,20 @@
 package org.cysoft.bss.core.service.impl;
 
-import java.util.ArrayList;
+import java.text.ParseException;
+import java.util.Date;
 import java.util.List;
 
 import org.cysoft.bss.core.common.CyBssException;
 import org.cysoft.bss.core.common.CyBssUtility;
 import org.cysoft.bss.core.dao.BillableDao;
-import org.cysoft.bss.core.dao.FileDao;
-import org.cysoft.bss.core.dao.ObjectDao;
 import org.cysoft.bss.core.dao.PurchaseDao;
+import org.cysoft.bss.core.message.ICyBssMessageConst;
 import org.cysoft.bss.core.model.Billable;
-import org.cysoft.bss.core.model.BillableCost;
 import org.cysoft.bss.core.model.CyBssFile;
 import org.cysoft.bss.core.model.Invoice;
+import org.cysoft.bss.core.model.PriceComponent;
+import org.cysoft.bss.core.model.PriceType;
 import org.cysoft.bss.core.model.Purchase;
-import org.cysoft.bss.core.service.InvoiceService;
 import org.cysoft.bss.core.service.PurchaseService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -25,7 +25,7 @@ import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import org.springframework.transaction.support.TransactionTemplate;
 
 @Service
-public class PurchaseServiceImpl extends CyBssServiceBase 
+public class PurchaseServiceImpl extends CTServiceBase
 	implements PurchaseService 
 		
 {
@@ -36,31 +36,11 @@ public class PurchaseServiceImpl extends CyBssServiceBase
 			this.purchaseDao=purchaseDao;
 	}
 	
-	protected BillableDao billableCostDao=null;
 	@Autowired
 	@Qualifier("billableCostDao")
 	public void setBillableCostDao(BillableDao billableCostDao){
-			this.billableCostDao=billableCostDao;
+			this.billableDao=billableCostDao;
 	}
-	
-	protected ObjectDao objectDao=null;
-	@Autowired
-	public void setObjectDao(ObjectDao objectDao){
-			this.objectDao=objectDao;
-	}
-	
-	protected  FileDao fileDao=null;
-	@Autowired
-	public void setFileDao(FileDao fileDao){
-			this.fileDao=fileDao;
-	}
-	
-	protected InvoiceService invoiceService=null;
-	@Autowired
-	public void setInvoiceService(InvoiceService invoiceService){
-			this.invoiceService=invoiceService;
-	}
-	
 	
 	@Override
 	public long add(final Purchase purchase) throws CyBssException {
@@ -76,9 +56,11 @@ public class PurchaseServiceImpl extends CyBssServiceBase
 				try {
 					id = purchaseDao.add(purchase);
 					purchase.setId(id);
-					if (purchase.getTransactionType().equals(Purchase.TRANSACTION_TYPE_BILLABLE))
-						addBillable(purchase);
+					calcBillable(purchase,Invoice.TYPE_PASSIVE,false);
 					
+					updateOld(purchase);
+					
+					addToServerQueue(purchase.getId(), Purchase.ENTITY_NAME);
 					
 				} catch (CyBssException e) {
 					// TODO Auto-generated catch block
@@ -114,42 +96,13 @@ public class PurchaseServiceImpl extends CyBssServiceBase
 				// TODO Auto-generated method stub
 				
 				try {
-					
-					List<Billable> billables=billableCostDao.getByParent(id);
-					List<Long> invoiceIds=new ArrayList<Long>();
-					for(Billable billable:billables){
-						if (!billable.isBilled() && billable.isLinkedToInvoice())
-							if (!invoiceIds.contains(billable.getInvoiceId()))
-								invoiceIds.add(billable.getInvoiceId());
-					}
-					
-					billableCostDao.removeByParent(id);
-					
-					for(long invoiceId:invoiceIds){
-						invoiceService.updateAmounts(Invoice.TYPE_PASSIVE, invoiceId);
-					}
-					
-					
-					List<Billable> billedBillables=billableCostDao.getBilledByParent(id);
-					for(Billable billable:billedBillables){
-						
-						billable.setQty(billable.getQty()*-1);
-						billable.setAmount(billable.getAmount()*-1);
-						billable.setVatAmount(billable.getVatAmount()*-1);
-						billable.setTotAmount(billable.getTotAmount()*-1);
-						
-						billable.setBillableType(Billable.TYPE_CANCELLATION);
-						billable.setDate(CyBssUtility.dateToString(CyBssUtility.getCurrentDate(),CyBssUtility.DATE_yyyy_MM_dd));
-						
-						billableCostDao.add(billable);
-					}
-					
 					purchaseDao.update(id, purchase);
 					purchase.setId(id);
+					calcBillable(purchase,Invoice.TYPE_PASSIVE,false);
 					
-					if (purchase.getTransactionType().equals(Purchase.TRANSACTION_TYPE_BILLABLE))
-						addBillable(purchase);
-				
+					updateOld(purchase);
+					
+					addToServerQueue(purchase.getId(), Purchase.ENTITY_NAME);
 					
 				} catch (CyBssException e) {
 					// TODO Auto-generated catch block
@@ -180,28 +133,19 @@ public class PurchaseServiceImpl extends CyBssServiceBase
 					
 				try {
 					
-					List<Billable> billables=billableCostDao.getByParent(id);
-					
 					List<CyBssFile> files=fileDao.getByEntity(Purchase.ENTITY_NAME,id);
 					if (files!=null)
 						for(CyBssFile file:files)
 							fileDao.remove(file.getId());
 					
-					billableCostDao.removeByParent(id);
+					Purchase purchase=new Purchase();
+					purchase.setId(id);
+					calcBillable(purchase,Invoice.TYPE_PASSIVE,true);
+					
 					objectDao.removeAttributeValues(id, Purchase.ENTITY_NAME);
 					purchaseDao.remove(id);
 			
-					List<Long> invoiceIds=new ArrayList<Long>();
-					for(Billable billable:billables){
-						if (!billable.isBilled() && billable.isLinkedToInvoice())
-							if (!invoiceIds.contains(billable.getInvoiceId()))
-								invoiceIds.add(billable.getInvoiceId());
-					}
-					for(long invoiceId:invoiceIds){
-						invoiceService.updateAmounts(Invoice.TYPE_PASSIVE, invoiceId);
-					}
-					
-					
+					addToServerQueue(id, Purchase.ENTITY_NAME);
 				
 				} catch (CyBssException e) {
 					// TODO Auto-generated catch block
@@ -211,46 +155,48 @@ public class PurchaseServiceImpl extends CyBssServiceBase
 			}
 		});
 	}
-
 	
-	private void addBillable(Purchase purchase) throws CyBssException {
+	private void updateOld(Purchase purchase) throws CyBssException {
 		
-		BillableCost billableCost=new BillableCost();
-		
-		billableCost.setParentId(purchase.getId());
-		billableCost.setCompanyId(purchase.getCompanyId());
-		billableCost.setProductId(purchase.getProductId());
-		billableCost.setSupplierId(purchase.getSupplierId());
-		billableCost.setPersonId(purchase.getPersonId());
-		
-		billableCost.setQty(purchase.getQty());
-		billableCost.setQtyUmId(purchase.getQtyUmId());
-		billableCost.setCurrencyId(purchase.getCurrencyId());
-		
-		billableCost.setPrice(purchase.getPrice());
-		billableCost.setAmount(purchase.getAmount());
-		billableCost.setVat(purchase.getVat());
-		billableCost.setVatAmount(purchase.getVatAmount());
-		billableCost.setTotAmount(purchase.getAmount()+purchase.getVatAmount());
-		
-		// da rivedere in caso di componente <> USG e NRC
-		billableCost.setDateStart(purchase.getDate());
-		billableCost.setDateEnd(purchase.getDate());
-		//billableCost.setDate(CyBssUtility.dateToString(CyBssUtility.getCurrentDate(),CyBssUtility.DATE_yyyy_MM_dd));
-		billableCost.setDate(purchase.getDate());
-		
-		billableCost.setComponentId(purchase.getComponentId());
-		billableCost.setBillableType(Billable.TYPE_ACTUAL);
-		
-		billableCostDao.add(billableCost);
-		
-	}
+		if (purchase.getOldId()!=0){
+			Purchase oldPurchase=purchaseDao.get(purchase.getOldId());
+			if (oldPurchase==null)
+				throw new CyBssException(msgSource.getMessage(ICyBssMessageConst.RESULT_D_PURCHASE_OLD_NOT_FOUND));
+			
+			PriceComponent component=priceService.getPriceComponent(oldPurchase.getComponentId());
+			if (component==null)
+				throw new CyBssException(msgSource.getMessage(ICyBssMessageConst.RESULT_D_NOT_FOUND));
+			
+			oldPurchase.setComponent(component);
+			
+			if (purchase.getComponent().getPriceType().getCode().equals(PriceType.TYPE_RC) && 
+				oldPurchase.getComponent().getPriceType().getCode().equals(purchase.getComponent().getPriceType().getCode())){
+			
+				Date dateStart;
+				try {
+					dateStart = CyBssUtility.tryStringToDate(purchase.getDateStart());
+				} catch (ParseException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+					throw new RuntimeException(e);
+				}
+				Date dateClose=CyBssUtility.addDayToDate(dateStart, -1);
+				oldPurchase.setDateClose(CyBssUtility.dateToString(dateClose, CyBssUtility.DATE_yyyy_MM_dd));
+				oldPurchase.setNewId(purchase.getId());
+				
+				calcBillable(oldPurchase,Invoice.TYPE_PASSIVE,false);
+				purchaseDao.update(oldPurchase.getId(), oldPurchase);
+				
+				addToServerQueue(oldPurchase.getId(), Purchase.ENTITY_NAME);
+			}
+		}
 
+	}
 
 	@Override
 	public List<Billable> getBillables(long id) throws CyBssException {
 		// TODO Auto-generated method stub
-		return billableCostDao.getByParent(id);
+		return billableDao.getByParent(id);
 	}
 	
 }

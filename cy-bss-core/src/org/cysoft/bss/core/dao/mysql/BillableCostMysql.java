@@ -277,7 +277,7 @@ public class BillableCostMysql extends CyBssMysqlDao
 		String query="select ";
 		query+="PURCHASE_ID,COMPANY_ID,PRODUCT_ID,SUPPLIER_ID,";
 		query+="PERSON_ID,COMPONENT_ID,QTY_UM_ID,CURRENCY_ID,PRICE,VAT,";
-		query+="sum(QTY) as QTY,sum(AMOUNT) as AMOUNT,sum(VAT_AMOUNT) as VAT_AMOUNT,sum(TOT_AMOUNT) as TOT_AMOUNT";
+		query+="min(DATE_START) AS DATE_START,max(DATE_END) AS DATE_END,sum(QTY) as QTY,sum(AMOUNT) as AMOUNT,sum(VAT_AMOUNT) as VAT_AMOUNT,sum(TOT_AMOUNT) as TOT_AMOUNT";
 		query+=" from BSSV_BILLABLE_COST";
 		query+=" where BILLED='Y' and PURCHASE_ID=?";
 		query+=" group by PURCHASE_ID,COMPANY_ID,PRODUCT_ID,SUPPLIER_ID,";
@@ -312,6 +312,8 @@ public class BillableCostMysql extends CyBssMysqlDao
 			billable.setPrice(rs.getDouble("PRICE"));
 			billable.setVat(rs.getDouble("VAT"));
 			
+			billable.setDateStart(rs.getString("DATE_START"));
+			billable.setDateEnd(rs.getString("DATE_END"));
 			billable.setQty(rs.getDouble("QTY"));
 			billable.setAmount(rs.getDouble("AMOUNT"));
 			billable.setVatAmount(rs.getDouble("VAT_AMOUNT"));

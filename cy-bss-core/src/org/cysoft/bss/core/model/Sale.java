@@ -1,6 +1,6 @@
 package org.cysoft.bss.core.model;
 
-public class Sale extends CommercialTransaction{
+public class Sale extends CT{
 	public static final String ENTITY_NAME="Sale";
 
 	public long getCustomerId() {
@@ -23,6 +23,8 @@ public class Sale extends CommercialTransaction{
 	public void setCustomerName(String customerName) {
 		setTpCompanyName(customerName);
 	}
+	
+	
 	@Override
 	public String toString() {
 		return "Sale [getId()=" + getId() + ", getCompanyId()=" + getCompanyId() + ", getCompanyCode()="

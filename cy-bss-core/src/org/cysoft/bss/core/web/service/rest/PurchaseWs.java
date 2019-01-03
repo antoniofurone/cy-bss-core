@@ -8,6 +8,7 @@ import org.cysoft.bss.core.common.CyBssUtility;
 import org.cysoft.bss.core.message.ICyBssMessageConst;
 import org.cysoft.bss.core.model.Billable;
 import org.cysoft.bss.core.model.PriceComponent;
+import org.cysoft.bss.core.model.PriceType;
 import org.cysoft.bss.core.model.Purchase;
 import org.cysoft.bss.core.service.PriceService;
 import org.cysoft.bss.core.service.PurchaseService;
@@ -73,6 +74,20 @@ public class PurchaseWs extends CyBssWebServiceAdapter
 					ICyBssMessageConst.RESULT_D_NOT_FOUND,response.getLanguageCode());
 			return response;
 		}	
+		
+		if (component.getPriceType().getCode().equals(PriceType.TYPE_RC) && 
+			(purchase.getDateStart()==null || purchase.getDateStart().equals(""))){
+				setResult(response, ICyBssMessageConst.RESULT_RC_DATE_START_REQUIRED, 
+						ICyBssMessageConst.RESULT_D_RC_DATE_START_REQUIRED,response.getLanguageCode());
+				return response;
+			}
+				
+		if (component.getPriceType().getCode().equals(PriceType.TYPE_RC) && 
+			(purchase.getDateEnd()==null || purchase.getDateEnd().equals(""))){
+				setResult(response, ICyBssMessageConst.RESULT_RC_DATE_END_REQUIRED, 
+						ICyBssMessageConst.RESULT_D_RC_DATE_END_REQUIRED,response.getLanguageCode());
+				return response;
+			}
 		
 		purchase.setComponent(component);
 		
@@ -215,6 +230,20 @@ public class PurchaseWs extends CyBssWebServiceAdapter
 					ICyBssMessageConst.RESULT_D_NOT_FOUND,response.getLanguageCode());
 			return response;
 		}	
+
+		if (component.getPriceType().getCode().equals(PriceType.TYPE_RC) && 
+			(purchase.getDateStart()==null || purchase.getDateStart().equals(""))){
+					setResult(response, ICyBssMessageConst.RESULT_RC_DATE_START_REQUIRED, 
+							ICyBssMessageConst.RESULT_D_RC_DATE_START_REQUIRED,response.getLanguageCode());
+					return response;
+				}
+					
+		if (component.getPriceType().getCode().equals(PriceType.TYPE_RC) && 
+			(purchase.getDateEnd()==null || purchase.getDateEnd().equals(""))){
+				setResult(response, ICyBssMessageConst.RESULT_RC_DATE_END_REQUIRED, 
+						ICyBssMessageConst.RESULT_D_RC_DATE_END_REQUIRED,response.getLanguageCode());
+				return response;
+			}
 		
 		purchase.setComponent(component);
 		

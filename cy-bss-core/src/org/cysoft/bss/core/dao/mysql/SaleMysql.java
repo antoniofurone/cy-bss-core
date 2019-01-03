@@ -32,8 +32,8 @@ public class SaleMysql extends CyBssMysqlDao
 		String cmd="insert into BSST_SAL_SALE(MNC_N_COMPANY_ID,PRO_N_PRODUCT_ID,COM_N_COMPANY_ID,";
 		cmd+="PER_N_PERSON_ID,SAL_N_QUANTITY,MES_N_METRIC_SCALE_ID,SAL_N_PRICE,SAL_N_AMOUNT,CUR_N_CURRENCY_ID,";
 		cmd+="SAL_N_VAT,SAL_N_VAT_AMOUNT,SAL_D_DATE_START,SAL_D_DATE_END,PRC_N_PRICE_COMPONENT_ID,";
-		cmd+="SAL_N_FREQUENCY,SAL_D_DATE,SAL_C_TACIT_RENEWAL,SAL_C_TYPE)";
-		cmd+=" values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+		cmd+="SAL_N_FREQUENCY,SAL_D_DATE,SAL_C_TACIT_RENEWAL,SAL_C_TYPE,SAL_D_DATE_CLOSE,SAL_N_OLD_SALE_ID)";
+		cmd+=" values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
 		JdbcTemplate jdbcTemplate = new JdbcTemplate(tx.getDataSource());
 		logger.info(cmd+"["+sale+"]");
 		
@@ -56,7 +56,10 @@ public class SaleMysql extends CyBssMysqlDao
 					sale.getFrequencyId()==0?null:sale.getFrequencyId(),
 					CyBssUtility.tryStringToDate(sale.getDate()),
 					sale.getTacitRenewal(),
-					sale.getTransactionType()
+					sale.getTransactionType(),
+					(sale.getDateClose()==null || sale.getDateClose().equals(""))?null:CyBssUtility.tryStringToDate(sale.getDateClose()),
+					sale.getOldId()==0?null:sale.getOldId()
+							
 				});
 		} catch (DataAccessException | ParseException e) {
 			// TODO Auto-generated catch block
@@ -92,8 +95,8 @@ public class SaleMysql extends CyBssMysqlDao
 		query+="a.FREQUENCY_ID,a.FREQUENCY_NAME,";
 		query+="a.CURRENCY_ID,a.CURRENCY_CODE,a.CURRENCY_NAME,";
 		query+="a.PRICE, a.AMOUNT,a.VAT,a.VAT_AMOUNT,";
-		query+="a.DATE,a.DATE_START,a.DATE_END,";
-		query+="a.TACIT_RENEWAL,a.TYPE,a.UPDATE_DATE,a.NOBILLED";
+		query+="a.DATE,a.DATE_START,a.DATE_END,a.DATE_CLOSE,";
+		query+="a.TACIT_RENEWAL,a.TYPE,a.UPDATE_DATE,a.NEW_ID,a.OLD_ID,a.NOBILLED";
 		query+=" from BSSV_SALE a";
 		if (attrName!=null && !attrName.equals("")){
 			query+=" join BSSV_ATTRIBUTE_VALUE b on b.OBJINST_ID=a.ID and b.NAME='"+attrName+"' and b.ENTITY='"+Sale.ENTITY_NAME+"'";
@@ -247,9 +250,12 @@ public class SaleMysql extends CyBssMysqlDao
 			sale.setDate(rs.getString("DATE"));
 			sale.setDateStart(rs.getString("DATE_START"));
 			sale.setDateEnd(rs.getString("DATE_END"));
+			sale.setDateClose(rs.getString("DATE_CLOSE"));
 			sale.setTacitRenewal(rs.getString("TACIT_RENEWAL"));
 			sale.setTransactionType(rs.getString("TYPE"));
 			sale.setUpdateDate(rs.getString("UPDATE_DATE"));
+			sale.setNewId(rs.getLong("NEW_ID"));
+			sale.setOldId(rs.getLong("OLD_ID"));
 			sale.setNoBilled(rs.getInt("NOBILLED"));
 			sale.setPriceTot(sale.getPrice()+sale.getPrice()*sale.getVat()/100);
 			return sale;
@@ -264,8 +270,8 @@ public class SaleMysql extends CyBssMysqlDao
 		
 		String cmd="update BSST_SAL_SALE set MNC_N_COMPANY_ID=?,PRO_N_PRODUCT_ID=?,COM_N_COMPANY_ID=?,";
 		cmd+="PER_N_PERSON_ID=?,SAL_N_QUANTITY=?,MES_N_METRIC_SCALE_ID=?,SAL_N_PRICE=?,SAL_N_AMOUNT=?,CUR_N_CURRENCY_ID=?,";
-		cmd+="SAL_N_VAT=?,SAL_N_VAT_AMOUNT=?,SAL_D_DATE_START=?,SAL_D_DATE_END=?,PRC_N_PRICE_COMPONENT_ID=?,";
-		cmd+="SAL_N_FREQUENCY=?,SAL_D_DATE=?,SAL_C_TACIT_RENEWAL=?,SAL_C_TYPE=? ";
+		cmd+="SAL_N_VAT=?,SAL_N_VAT_AMOUNT=?,SAL_D_DATE_START=?,SAL_D_DATE_END=?,SAL_D_DATE_CLOSE=?,PRC_N_PRICE_COMPONENT_ID=?,";
+		cmd+="SAL_N_FREQUENCY=?,SAL_D_DATE=?,SAL_C_TACIT_RENEWAL=?,SAL_C_TYPE=?,SAL_N_NEW_SALE_ID=?,SAL_N_OLD_SALE_ID=? ";
 		cmd+="where SAL_N_SALE_ID=?";
 		
 		JdbcTemplate jdbcTemplate = new JdbcTemplate(tx.getDataSource());
@@ -286,11 +292,14 @@ public class SaleMysql extends CyBssMysqlDao
 					sale.getVatAmount(),
 					(sale.getDateStart()==null || sale.getDateStart().equals(""))?null:CyBssUtility.tryStringToDate(sale.getDateStart()),
 					(sale.getDateEnd()==null || sale.getDateEnd().equals(""))?null:CyBssUtility.tryStringToDate(sale.getDateEnd()),
+					(sale.getDateClose()==null || sale.getDateClose().equals(""))?null:CyBssUtility.tryStringToDate(sale.getDateClose()),
 					sale.getComponentId(),
 					sale.getFrequencyId()==0?null:sale.getFrequencyId(),
 					CyBssUtility.tryStringToDate(sale.getDate()),
 					sale.getTacitRenewal(),
 					sale.getTransactionType(),
+					sale.getNewId()==0?null:sale.getNewId(),
+					sale.getOldId()==0?null:sale.getOldId(),
 					id
 				});
 		} catch (DataAccessException | ParseException e) {
@@ -321,8 +330,8 @@ public class SaleMysql extends CyBssMysqlDao
 		query+="a.FREQUENCY_ID,a.FREQUENCY_NAME,";
 		query+="a.CURRENCY_ID,a.CURRENCY_CODE,a.CURRENCY_NAME,";
 		query+="a.PRICE, a.AMOUNT,a.VAT,a.VAT_AMOUNT,";
-		query+="a.DATE,a.DATE_START,a.DATE_END,";
-		query+="a.TACIT_RENEWAL,a.TYPE,a.UPDATE_DATE,a.NOBILLED";
+		query+="a.DATE,a.DATE_START,a.DATE_END,a.DATE_CLOSE,";
+		query+="a.TACIT_RENEWAL,a.TYPE,a.UPDATE_DATE,a.NEW_ID,a.OLD_ID,a.NOBILLED";
 		query+=" from BSSV_SALE a ";
 		query+="where ID=?";
 		

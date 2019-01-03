@@ -32,8 +32,8 @@ public class PurchaseMysql extends CyBssMysqlDao
 		String cmd="insert into BSST_PUR_PURCHASE(MNC_N_COMPANY_ID,PRO_N_PRODUCT_ID,COM_N_COMPANY_ID,";
 		cmd+="PER_N_PERSON_ID,PUR_N_QUANTITY,MES_N_METRIC_SCALE_ID,PUR_N_PRICE,PUR_N_AMOUNT,CUR_N_CURRENCY_ID,";
 		cmd+="PUR_N_VAT,PUR_N_VAT_AMOUNT,PUR_D_DATE_START,PUR_D_DATE_END,PRC_N_PRICE_COMPONENT_ID,";
-		cmd+="PUR_N_FREQUENCY,PUR_D_DATE,PUR_C_TACIT_RENEWAL,PUR_C_TYPE)";
-		cmd+=" values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+		cmd+="PUR_N_FREQUENCY,PUR_D_DATE,PUR_C_TACIT_RENEWAL,PUR_C_TYPE,PUR_D_DATE_CLOSE,PUR_N_OLD_PURCHASE_ID)";
+		cmd+=" values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
 		JdbcTemplate jdbcTemplate = new JdbcTemplate(tx.getDataSource());
 		logger.info(cmd+"["+purchase+"]");
 		
@@ -56,7 +56,9 @@ public class PurchaseMysql extends CyBssMysqlDao
 					purchase.getFrequencyId()==0?null:purchase.getFrequencyId(),
 					CyBssUtility.tryStringToDate(purchase.getDate()),
 					purchase.getTacitRenewal(),
-					purchase.getTransactionType()
+					purchase.getTransactionType(),
+					(purchase.getDateClose()==null || purchase.getDateClose().equals(""))?null:CyBssUtility.tryStringToDate(purchase.getDateClose()),
+					purchase.getOldId()==0?null:purchase.getOldId()
 				});
 		} catch (DataAccessException | ParseException e) {
 			// TODO Auto-generated catch block
@@ -90,8 +92,8 @@ public class PurchaseMysql extends CyBssMysqlDao
 		query+="a.FREQUENCY_ID,a.FREQUENCY_NAME,";
 		query+="a.CURRENCY_ID,a.CURRENCY_CODE,a.CURRENCY_NAME,";
 		query+="a.PRICE, a.AMOUNT,a.VAT,a.VAT_AMOUNT,";
-		query+="a.DATE,a.DATE_START,a.DATE_END,";
-		query+="a.TACIT_RENEWAL,a.TYPE,a.UPDATE_DATE,a.NOBILLED";
+		query+="a.DATE,a.DATE_START,a.DATE_END,a.DATE_CLOSE,";
+		query+="a.TACIT_RENEWAL,a.TYPE,a.UPDATE_DATE,a.NEW_ID,a.OLD_ID,a.NOBILLED";
 		query+=" from BSSV_PURCHASE a";
 		if (attrName!=null && !attrName.equals("")){
 			query+=" join BSSV_ATTRIBUTE_VALUE b on b.OBJINST_ID=a.ID and b.NAME='"+attrName+"' and b.ENTITY='"+Purchase.ENTITY_NAME+"'";
@@ -245,9 +247,12 @@ public class PurchaseMysql extends CyBssMysqlDao
 			purchase.setDate(rs.getString("DATE"));
 			purchase.setDateStart(rs.getString("DATE_START"));
 			purchase.setDateEnd(rs.getString("DATE_END"));
+			purchase.setDateClose(rs.getString("DATE_CLOSE"));
 			purchase.setTacitRenewal(rs.getString("TACIT_RENEWAL"));
 			purchase.setTransactionType(rs.getString("TYPE"));
 			purchase.setUpdateDate(rs.getString("UPDATE_DATE"));
+			purchase.setNewId(rs.getLong("NEW_ID"));
+			purchase.setOldId(rs.getLong("OLD_ID"));
 			purchase.setNoBilled(rs.getInt("NOBILLED"));
 			purchase.setPriceTot(purchase.getPrice()+purchase.getPrice()*purchase.getVat()/100);
 			return purchase;
@@ -261,8 +266,8 @@ public class PurchaseMysql extends CyBssMysqlDao
 		
 		String cmd="update BSST_PUR_PURCHASE set MNC_N_COMPANY_ID=?,PRO_N_PRODUCT_ID=?,COM_N_COMPANY_ID=?,";
 		cmd+="PER_N_PERSON_ID=?,PUR_N_QUANTITY=?,MES_N_METRIC_SCALE_ID=?,PUR_N_PRICE=?,PUR_N_AMOUNT=?,CUR_N_CURRENCY_ID=?,";
-		cmd+="PUR_N_VAT=?,PUR_N_VAT_AMOUNT=?,PUR_D_DATE_START=?,PUR_D_DATE_END=?,PRC_N_PRICE_COMPONENT_ID=?,";
-		cmd+="PUR_N_FREQUENCY=?,PUR_D_DATE=?,PUR_C_TACIT_RENEWAL=?,PUR_C_TYPE=? ";
+		cmd+="PUR_N_VAT=?,PUR_N_VAT_AMOUNT=?,PUR_D_DATE_START=?,PUR_D_DATE_END=?,PUR_D_DATE_CLOSE=?,PRC_N_PRICE_COMPONENT_ID=?,";
+		cmd+="PUR_N_FREQUENCY=?,PUR_D_DATE=?,PUR_C_TACIT_RENEWAL=?,PUR_C_TYPE=?,PUR_N_NEW_PURCHASE_ID=?,PUR_N_OLD_PURCHASE_ID=? ";
 		cmd+="where PUR_N_PURCHASE_ID=?";
 		
 		JdbcTemplate jdbcTemplate = new JdbcTemplate(tx.getDataSource());
@@ -283,11 +288,14 @@ public class PurchaseMysql extends CyBssMysqlDao
 					purchase.getVatAmount(),
 					(purchase.getDateStart()==null || purchase.getDateStart().equals(""))?null:CyBssUtility.tryStringToDate(purchase.getDateStart()),
 					(purchase.getDateEnd()==null || purchase.getDateEnd().equals(""))?null:CyBssUtility.tryStringToDate(purchase.getDateEnd()),
+					(purchase.getDateClose()==null || purchase.getDateClose().equals(""))?null:CyBssUtility.tryStringToDate(purchase.getDateClose()),
 					purchase.getComponentId(),
 					purchase.getFrequencyId()==0?null:purchase.getFrequencyId(),
 					CyBssUtility.tryStringToDate(purchase.getDate()),
 					purchase.getTacitRenewal(),
 					purchase.getTransactionType(),
+					purchase.getNewId()==0?null:purchase.getNewId(),
+					purchase.getOldId()==0?null:purchase.getOldId(),
 					id
 				});
 		} catch (DataAccessException | ParseException e) {
@@ -317,8 +325,8 @@ public class PurchaseMysql extends CyBssMysqlDao
 		query+="a.FREQUENCY_ID,a.FREQUENCY_NAME,";
 		query+="a.CURRENCY_ID,a.CURRENCY_CODE,a.CURRENCY_NAME,";
 		query+="a.PRICE, a.AMOUNT,a.VAT,a.VAT_AMOUNT,";
-		query+="a.DATE,a.DATE_START,a.DATE_END,";
-		query+="a.TACIT_RENEWAL,a.TYPE,a.UPDATE_DATE,a.NOBILLED";
+		query+="a.DATE,a.DATE_START,a.DATE_END,a.DATE_CLOSE,";
+		query+="a.TACIT_RENEWAL,a.TYPE,a.UPDATE_DATE,a.NEW_ID,a.OLD_ID,a.NOBILLED";
 		query+=" from BSSV_PURCHASE a ";
 		query+="where ID=?";
 		

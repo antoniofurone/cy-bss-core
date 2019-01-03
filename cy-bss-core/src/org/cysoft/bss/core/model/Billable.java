@@ -1,6 +1,6 @@
 package org.cysoft.bss.core.model;
 
-public abstract class Billable {
+public class Billable {
 
 	private long id;
 	public long getId() {

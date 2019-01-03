@@ -17,6 +17,10 @@ public interface ICyBssMessageConst {
 	public final static String RESULT_CURRENCY_DIFF="12";
 	public final static String RESULT_PURCHASE_NOCANCEL="13";
 	public final static String RESULT_SALE_NOCANCEL="14";
+	public final static String RESULT_SALE_OLD_NOT_FOUND="15";
+	public final static String RESULT_PURCHASE_OLD_NOT_FOUND="16";
+	public final static String RESULT_RC_DATE_START_REQUIRED="17";
+	public final static String RESULT_RC_DATE_END_REQUIRED="18";
 	
 	
 	public final static String RESULT_D_OK= "result.ok";
@@ -34,5 +38,9 @@ public interface ICyBssMessageConst {
 	public final static String RESULT_D_CURRENCY_DIFF="result.invoice.currency.diff";
 	public final static String RESULT_D_PURCHASE_NOCANCEL="result.purchase.nocancel";
 	public final static String RESULT_D_SALE_NOCANCEL="result.sale.nocancel";
+	public final static String RESULT_D_SALE_OLD_NOT_FOUND="result.sale.oldnotfound";
+	public final static String RESULT_D_PURCHASE_OLD_NOT_FOUND="result.purchase.oldnotfound";
+	public final static String RESULT_D_RC_DATE_START_REQUIRED="result.rc.datestartrequired";
+	public final static String RESULT_D_RC_DATE_END_REQUIRED="result.rc.dateendrequired";
 	
 }

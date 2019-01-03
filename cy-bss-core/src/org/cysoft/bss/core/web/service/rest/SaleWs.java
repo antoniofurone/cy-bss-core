@@ -8,6 +8,7 @@ import org.cysoft.bss.core.common.CyBssUtility;
 import org.cysoft.bss.core.message.ICyBssMessageConst;
 import org.cysoft.bss.core.model.Billable;
 import org.cysoft.bss.core.model.PriceComponent;
+import org.cysoft.bss.core.model.PriceType;
 import org.cysoft.bss.core.model.Sale;
 import org.cysoft.bss.core.service.PriceService;
 import org.cysoft.bss.core.service.SaleService;
@@ -72,7 +73,21 @@ public class SaleWs extends CyBssWebServiceAdapter
 					ICyBssMessageConst.RESULT_D_NOT_FOUND,response.getLanguageCode());
 			return response;
 		}	
-		
+		 
+		if (component.getPriceType().getCode().equals(PriceType.TYPE_RC) && 
+			(sale.getDateStart()==null || sale.getDateStart().equals(""))){
+			setResult(response, ICyBssMessageConst.RESULT_RC_DATE_START_REQUIRED, 
+					ICyBssMessageConst.RESULT_D_RC_DATE_START_REQUIRED,response.getLanguageCode());
+			return response;
+		}
+			
+		if (component.getPriceType().getCode().equals(PriceType.TYPE_RC) && 
+			(sale.getDateEnd()==null || sale.getDateEnd().equals(""))){
+			setResult(response, ICyBssMessageConst.RESULT_RC_DATE_END_REQUIRED, 
+					ICyBssMessageConst.RESULT_D_RC_DATE_END_REQUIRED,response.getLanguageCode());
+			return response;
+		}
+					
 		sale.setComponent(component);
 		sale.calcAmounts();
 		
@@ -83,6 +98,7 @@ public class SaleWs extends CyBssWebServiceAdapter
 		
 		if (sale.getDate()==null || sale.getDate().equals(""))
 			sale.setDate(CyBssUtility.dateToString(CyBssUtility.getCurrentDate(),CyBssUtility.DATE_yyyy_MM_dd));
+		
 		
 		long id=saleService.add(sale);
 		sale.setId(id);
@@ -211,7 +227,21 @@ public class SaleWs extends CyBssWebServiceAdapter
 			setResult(response, ICyBssMessageConst.RESULT_NOT_FOUND, 
 					ICyBssMessageConst.RESULT_D_NOT_FOUND,response.getLanguageCode());
 			return response;
-		}	
+		}
+		
+		if (component.getPriceType().getCode().equals(PriceType.TYPE_RC) && 
+				(sale.getDateStart()==null || sale.getDateStart().equals(""))){
+				setResult(response, ICyBssMessageConst.RESULT_RC_DATE_START_REQUIRED, 
+						ICyBssMessageConst.RESULT_D_RC_DATE_START_REQUIRED,response.getLanguageCode());
+				return response;
+			}
+				
+		if (component.getPriceType().getCode().equals(PriceType.TYPE_RC) && 
+			(sale.getDateEnd()==null || sale.getDateEnd().equals(""))){
+			setResult(response, ICyBssMessageConst.RESULT_RC_DATE_END_REQUIRED, 
+					ICyBssMessageConst.RESULT_D_RC_DATE_END_REQUIRED,response.getLanguageCode());
+			return response;
+		}
 		
 		sale.setComponent(component);
 		

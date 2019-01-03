@@ -1,6 +1,6 @@
 package org.cysoft.bss.core.model;
 
-public class Purchase extends CommercialTransaction{
+public class Purchase extends CT{
 	public static final String ENTITY_NAME="Purchase";
 
 	public long getSupplierId() {

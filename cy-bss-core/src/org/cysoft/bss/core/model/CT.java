@@ -3,9 +3,9 @@ package org.cysoft.bss.core.model;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public abstract class CommercialTransaction {
+public abstract class CT {
 	
-	private static final Logger logger = LoggerFactory.getLogger(CommercialTransaction.class);
+	private static final Logger logger = LoggerFactory.getLogger(CT.class);
 	
 	private long id;
 	public long getId() {
@@ -56,10 +56,10 @@ public abstract class CommercialTransaction {
 	private String tpCompanyCode="";
 	private String tpCompanyName="";
 	
-	protected long getTpCompanyId() {
+	public long getTpCompanyId() {
 		return tpCompanyId;
 	}
-	protected void setTpCompanyId(long tpCompanyId) {
+	public void setTpCompanyId(long tpCompanyId) {
 		this.tpCompanyId = tpCompanyId;
 	}
 	protected String getTpCompanyCode() {
@@ -239,6 +239,7 @@ public abstract class CommercialTransaction {
 	private String date;
 	private String dateStart;
 	private String dateEnd;
+	private String dateClose;
 	public String getDate() {
 		return date;
 	}
@@ -256,6 +257,13 @@ public abstract class CommercialTransaction {
 	}
 	public void setDateEnd(String dateEnd) {
 		this.dateEnd = dateEnd;
+	}
+	
+	public String getDateClose() {
+		return dateClose;
+	}
+	public void setDateClose(String dateClose) {
+		this.dateClose = dateClose;
 	}
 
 	private String updateDate="";
@@ -305,6 +313,22 @@ public abstract class CommercialTransaction {
 		this.noBilled = noBilled;
 	}
 	
+	private long newId;
+	public long getNewId() {
+		return newId;
+	}
+	public void setNewId(long newId) {
+		this.newId = newId;
+	}
+	
+	private long oldId;
+	public long getOldId() {
+		return oldId;
+	}
+	public void setOldId(long oldId) {
+		this.oldId = oldId;
+	}
+	
 	@Override
 	public String toString() {
 		return "CommercialTransaction [id=" + id + ", companyId=" + companyId + ", companyCode=" + companyCode
@@ -318,8 +342,9 @@ public abstract class CommercialTransaction {
 				+ frequencyName + ", currencyId=" + currencyId + ", currencyCode=" + currencyCode + ", currencyName="
 				+ currencyName + ", price=" + price + ", priceTot=" + priceTot + ", amount=" + amount + ", vat=" + vat
 				+ ", vatAmount=" + vatAmount + ", date=" + date + ", dateStart=" + dateStart + ", dateEnd=" + dateEnd
-				+ ", updateDate=" + updateDate + ", tacitRenewal=" + tacitRenewal + ", transactionType="
-				+ transactionType + ", component=" + component + "]";
+				+ ", dateClose=" + dateClose + ", updateDate=" + updateDate + ", tacitRenewal=" + tacitRenewal
+				+ ", transactionType=" + transactionType + ", component=" + component + ", noBilled=" + noBilled
+				+ ", newId=" + newId + ", oldId=" + oldId + "]";
 	}
 	
 	public void calcAmounts(){
